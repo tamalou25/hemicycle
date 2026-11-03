@@ -145,8 +145,8 @@ export function briefMandat(etat, donnees, leviers) {
       const p = piste(o.id, etat);
       return `<li class="py-1 border-b border-bord last:border-0" data-objectif="${esc(o.id)}">
       <div class="flex items-center justify-between gap-2"><div class="min-w-0 text-sm leading-5"><strong>${esc(o.titre)}</strong>
-        <span class="block text-xs leading-4"><span class="tabular-nums">${esc(t.v)} / ${esc(t.c)}</span> · <span class="font-bold ${o.atteint ? 'text-[#1F6E43]' : 'text-doux'}">${o.atteint ? 'Atteinte pour l’instant' : 'Pas encore atteinte'}</span></span></div>${bouton(p.aller, o.titre)}</div>
-      <div class="hidden sm:block h-1.5 my-0.5 bg-[#E8E1CD] rounded" role="meter" aria-label="Progression : ${esc(o.titre)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-valuetext="${pct} %"><div class="h-1.5 rounded" style="width:${pct}%;background:${o.atteint ? '#1F6E43' : '#8A5A00'}"></div></div>
+        <span class="block text-xs leading-4"><span class="tabular-nums">${o.depart != null ? `départ ${esc(texteValeur({ ...o, valeur: o.depart }).v)} → ` : ''}${esc(t.v)} / ${esc(t.c)}</span> · <span class="font-bold ${o.atteint ? 'text-[#1F6E43]' : 'text-doux'}">${o.atteint ? 'Atteinte pour l’instant' : 'Pas encore atteinte'}</span></span></div>${bouton(p.aller, o.titre)}</div>
+      <div class="hidden sm:block h-1.5 my-0.5 bg-[#E8E1CD] rounded" role="meter" aria-label="Rapport à la cible (pas un progrès depuis le départ) : ${esc(o.titre)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-valuetext="${pct} %"><div class="h-1.5 rounded" style="width:${pct}%;background:${o.atteint ? '#1F6E43' : '#8A5A00'}"></div></div>
       <p class="hidden sm:block text-xs leading-4">${esc(p.texte)} <span class="text-doux">${esc(disponibilite(p.aller, liste, etat, refusPLF))}</span></p></li>`;
     }).join('');
     corps = `<p class="text-sm">${restants} Au bilan : +${points} points par objectif atteint.</p>

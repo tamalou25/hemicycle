@@ -7,7 +7,7 @@ import { initialiserGroupes } from './groupes.js';
 import { secteursInitiaux } from './secteurs.js';
 import { relationsInitiales } from './relations.js';
 import { confianceRegionsInitiale } from './confianceRegions.js';
-import { normaliserObjectifs } from './objectifs.js';
+import { normaliserObjectifs, evaluerObjectifs } from './objectifs.js';
 import { creerMission } from './mission.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
@@ -83,7 +83,9 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     mission: null, // mission d'initiation (mode « Découvrir en jouant »), sinon null
   };
   // Population (E3) : calculée sur l'état initial complet
-  const complet = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
+  const avecGroupes = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
+  // Valeurs de départ des objectifs (pour afficher départ, actuel et cible : la jauge n'est pas un progrès accompli)
+  const complet = { ...avecGroupes, objectifsInitiaux: Object.fromEntries(evaluerObjectifs(avecGroupes, { objectifs, regions }).filter((o) => o.valeur != null).map((o) => [o.id, o.valeur])) };
   return mission ? { ...complet, mission: creerMission(complet, mission) } : complet;
 }
 

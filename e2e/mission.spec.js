@@ -104,3 +104,31 @@ test('ancienne partie (v12) : aucune mission ajoutée', async ({ page }) => {
   await expect(page.locator('#mission')).toHaveCount(0);
   expect((await sauve(page)).mission ?? null).toBeNull();
 });
+
+test('bilan du mois et engagements : la décision, sa suite et son échéance', async ({ page }) => {
+  const mission = await decouverte(page, 'ECOS', 31);
+  await mission.getByRole('button', { name: 'Choisir : Recrutement de soignants' }).click();
+  const attendu = page.getByRole('region', { name: 'Qu’attends-je de mes décisions ?' });
+  await expect(attendu).toContainText('Recrutement de soignants');
+  await expect(attendu).toContainText('Mise en service');
+  await moisSuivant(page);
+  const bilan = page.locator('#bilan-mois');
+  await expect(bilan).toContainText('Lancement : Recrutement de soignants');
+  await moisSuivant(page); await moisSuivant(page); await moisSuivant(page);
+  // Mois 4 : premier effet local, attribué au projet, visible même s'il pèse peu au niveau national
+  await expect(page.locator('#bilan-mois')).toContainText(/Recrutement de soignants.*accès aux soins/);
+});
+
+test('fiche détaillée : accessible au clavier, sans modifier la partie', async ({ page }) => {
+  await decouverte(page, 'HOR', 8);
+  const avant = JSON.stringify(await sauve(page));
+  await page.getByRole('tab', { name: 'Décisions' }).or(page.getByRole('navigation', { name: 'Sections principales' }).getByRole('button', { name: 'Décisions', exact: true })).locator('visible=true').first().click();
+  const resume = page.locator('#panneau details summary', { hasText: 'Fiche détaillée' }).first();
+  await resume.focus();
+  await page.keyboard.press('Enter');
+  const fiche = page.locator('#panneau details[open]', { hasText: 'Effets théoriques' }).first();
+  await expect(fiche).toContainText('Premiers effets');
+  await expect(fiche).toContainText('Étape institutionnelle');
+  await expect(fiche).toContainText('le total futur n’est pas garanti');
+  expect(JSON.stringify(await sauve(page))).toBe(avant);
+});

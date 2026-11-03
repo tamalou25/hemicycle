@@ -20,7 +20,7 @@ export function importerPartie(texte) {
   if (etat.version === 10) etat = { ...etat, version: 11, objectifs: [] };
   if (etat.version === 11) etat = { ...etat, version: 12, evenementRegion: null };
   // v13 : mission d'initiation ; les anciennes parties n'en ont pas (aucune activation rétroactive)
-  if (etat.version === 12) etat = { ...etat, version: 13, mission: null };
+  if (etat.version === 12) etat = { ...etat, version: 13, mission: null, objectifsInitiaux: {} };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -103,6 +103,7 @@ function assainir(e) {
     historique: liste(e.historique, (x) => ({ tour: nb(x.tour), ...Object.fromEntries(INDICATEURS.map((i) => [i, nb(x[i])])) })),
     journal: liste(e.journal, (x) => ({ tour: nb(x.tour), type: ch(x.type, 30), texte: ch(x.texte, 300) })),
     mission: assainirMission(e.mission),
+    objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({

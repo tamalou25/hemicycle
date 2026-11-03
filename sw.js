@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-aaa91ac656d3';
+const CACHE = 'hemicycle-3247e84273ef';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -28,6 +28,7 @@ const FICHIERS = [
   "./src/data/regions.json",
   "./src/data/senat.json",
   "./src/data/situation.json",
+  "./src/engine/bilan.js",
   "./src/engine/briefing.js",
   "./src/engine/budget.js",
   "./src/engine/budgetEtat.js",
@@ -38,6 +39,7 @@ const FICHIERS = [
   "./src/engine/elections.js",
   "./src/engine/events.js",
   "./src/engine/explications.js",
+  "./src/engine/fiches.js",
   "./src/engine/finances.js",
   "./src/engine/fins.js",
   "./src/engine/groupes.js",
@@ -60,6 +62,7 @@ const FICHIERS = [
   "./src/engine/turn.js",
   "./src/main.js",
   "./src/ui/components/avatar.js",
+  "./src/ui/components/bilanMois.js",
   "./src/ui/components/budget.js",
   "./src/ui/components/carte.js",
   "./src/ui/components/carteLoi.js",
@@ -68,6 +71,7 @@ const FICHIERS = [
   "./src/ui/components/elections.js",
   "./src/ui/components/etatPays.js",
   "./src/ui/components/evenement.js",
+  "./src/ui/components/fiche.js",
   "./src/ui/components/finances.js",
   "./src/ui/components/jauge.js",
   "./src/ui/components/mission.js",

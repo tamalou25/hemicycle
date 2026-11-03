@@ -42,6 +42,7 @@ export function evaluerObjectifs(etat, donnees) {
     const atteint = o.sens === 'max' ? valeur <= o.cible : valeur >= o.cible;
     // Progression indicative : rapport à la cible (bornée 0-1)
     const progression = atteint ? 1 : Math.max(0, Math.min(1, o.sens === 'max' ? o.cible / valeur : valeur / o.cible));
-    return { id, titre: o.titre, description: o.description, valeur: Math.round(valeur * 100) / 100, cible: o.cible, sens: o.sens, atteint, progression: Math.round(progression * 100) / 100 };
+    const depart = etat.objectifsInitiaux?.[id];
+    return { id, titre: o.titre, description: o.description, valeur: Math.round(valeur * 100) / 100, cible: o.cible, sens: o.sens, atteint, progression: Math.round(progression * 100) / 100, depart: Number.isFinite(depart) ? depart : null };
   }).filter(Boolean);
 }

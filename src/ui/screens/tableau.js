@@ -16,6 +16,7 @@ import { briefing, satisfactionNationale, compterDecisions } from '../../engine/
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
 import { briefMandat } from '../components/objectifs.js';
 import { sectionMission, brancherMission } from '../components/mission.js';
+import { sectionBilanMois, sectionEngagements } from '../components/bilanMois.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
@@ -39,10 +40,22 @@ function enteteBureau(etat, d, parti) {
 
 const ACTIONS_BRIEFING = { evenement: 'Répondre', territoire: 'Voir sur la carte', projet: 'Suivre le projet', budget: 'Ouvrir le budget' };
 
-function carteBriefing(pt, i) {
+/** Pourquoi ce point est proposé : lien avec la mission ou un objectif sélectionné (jamais une orientation politique). */
+function raisonPoint(pt, etat) {
+  if (pt.type === 'evenement') return 'Une réponse est attendue ce mois-ci ; sans réponse, l’option par défaut s’applique.';
+  if (pt.type === 'territoire' && etat.mission?.statut === 'en_cours' && pt.region === etat.mission.region && pt.indice === etat.mission.indice) return 'Région et indice de votre mission.';
+  if (pt.type === 'territoire' && (etat.objectifs ?? []).some((o) => ['territoires', 'aucun-abandon', 'confiance'].includes(o))) return 'Lié à un de vos objectifs territoriaux.';
+  if (pt.type === 'projet') return 'Un de vos engagements arrive à échéance.';
+  return '';
+}
+
+function carteBriefing(pt, i, etat, vus = new Set()) {
   const icone = { evenement: '!', territoire: '◎', projet: '⚙', budget: '€' }[pt.type] ?? '•';
+  // Une même raison n'est pas répétée sur chaque carte
+  let pourquoi = etat ? raisonPoint(pt, etat) : '';
+  if (vus.has(pourquoi)) pourquoi = ''; else vus.add(pourquoi);
   return `<li class="bg-carte border border-bord rounded-lg p-2 pl-3 filet-laiton flex items-center justify-between gap-2">
-    <p class="min-w-0 text-sm leading-snug"><span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${icone}</span>${esc(pt.titre)}.</span> <span class="text-doux">${esc(pt.texte)}</span></p>
+    <p class="min-w-0 text-sm leading-snug"><span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${icone}</span>${esc(pt.titre)}.</span> <span class="text-doux">${esc(pt.texte)}</span>${pourquoi ? `<br><span class="text-xs">${esc(pourquoi)}</span>` : ''}</p>
     <button type="button" id="brief-${i}" data-brief="${i}" class="btn btn-s shrink-0 !px-3 text-sm">${ACTIONS_BRIEFING[pt.type] ?? 'Ouvrir'}<span class="sr-only"> : ${esc(pt.titre)}</span></button></li>`;
 }
 
@@ -57,17 +70,27 @@ function lienDecisions(etat, ctx) {
 function ongletBureau(etat, ctx, donnees, points, brief) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
-  return `${sectionMission(etat, ctx)}${brief.html}${sectionEtatPays(etat)}
-    <section aria-labelledby="h-brief" class="mb-5">
-      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">À traiter</h2>
+  return `${sectionMission(etat, ctx)}${brief.html}
+    <section aria-labelledby="h-q1" class="mb-4">
+      <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
+      ${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
+        ${sectionEtatPays(etat, sat)}
+    </section>
+    <section aria-labelledby="h-brief" class="mb-4">
+      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Que puis-je faire ?</h2>
       ${plfOuvert ? '<p class="mb-3 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
-      <ul class="grid md:grid-cols-3 gap-2 mb-1">${points.map(carteBriefing).join('')}</ul>
+      <ul class="grid md:grid-cols-3 gap-2 mb-1">${(() => { const vus = new Set(); return points.map((pt, i) => carteBriefing(pt, i, etat, vus)).join(''); })()}</ul>
       ${lienDecisions(etat, ctx)}
     </section>
-    ${sectionCeMois(etat, donnees)}
-    ${sectionTousIndicateurs(etat, sat)}
-    ${panneauSecteurs(etat, ctx)}
+    <section aria-labelledby="h-attendu" class="mb-4">
+      <h2 id="h-attendu" class="font-serif font-bold text-xl mb-2">Qu’attends-je de mes décisions ?</h2>
+      ${sectionEngagements(etat, ctx)}
+    </section>
+    <div class="grid grid-cols-2 gap-2 items-start mb-4 [&>*]:!mb-0 [&>*:has([open])]:col-span-2 [&>details[open]]:col-span-2" id="details-bureau">
+      ${sectionTousIndicateurs(etat, sat)}
+      ${panneauSecteurs(etat, ctx)}
+    </div>
     <p class="hidden sm:block text-xs text-doux">Situation de départ au ${esc(ctx.situation.date_collecte)} : Président ${esc(ctx.situation.president)}, Premier ministre ${esc(ctx.situation.premier_ministre)}.</p>`;
 }
 
