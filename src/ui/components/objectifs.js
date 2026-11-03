@@ -1,6 +1,6 @@
 // Objectifs du mandat : sélection à la création (3 cases à cocher) et suivi au Bureau.
 import { esc, fmt } from '../util.js';
-import { evaluerObjectifs } from '../../engine/index.js';
+import { evaluerObjectifs, objectifPossible } from '../../engine/index.js';
 
 /** Fieldset de sélection : exactement `nombre_a_choisir` objectifs. `st.objectifs` = ids cochés (modifié sur place). */
 export function fieldsetObjectifs(catalogue, st) {
@@ -11,8 +11,8 @@ export function fieldsetObjectifs(catalogue, st) {
   const cases = catalogue.objectifs.map((o) => {
     const coche = st.objectifs.includes(o.id);
     return `<li><label class="flex items-start gap-3 min-h-[44px] py-1 cursor-pointer">
-      <input type="checkbox" name="objectif" value="${esc(o.id)}" class="mt-1 w-5 h-5 shrink-0" ${coche ? 'checked' : ''} ${plein && !coche ? 'disabled' : ''}>
-      <span class="min-w-0"><strong>${esc(o.titre)}</strong><br><span class="text-sm text-doux">${esc(o.description)}</span></span></label></li>`;
+      <input type="checkbox" name="objectif" value="${esc(o.id)}" data-role="${esc(o.role ?? '')}" class="mt-1 w-5 h-5 shrink-0" ${coche ? 'checked' : ''} ${plein && !coche ? 'disabled' : ''}>
+      <span class="min-w-0"><strong>${esc(o.titre)}</strong><br><span class="text-sm text-doux">${esc(o.description)}</span>${o.role === 'premier_ministre' ? '<br><span class="text-xs text-doux">Réservé au chef du gouvernement.</span>' : ''}</span></label></li>`;
   }).join('');
   return `<fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4" id="fs-objectifs"><legend class="font-serif font-bold px-1">Objectifs du mandat</legend>
     <p class="text-sm mb-2" aria-live="polite">Choisissez exactement ${n} objectifs : <strong id="nb-objectifs">${st.objectifs.length}/${n}</strong>. Ils sont évalués en fin de mandat.</p>
@@ -24,14 +24,20 @@ export function brancherObjectifs(racine, catalogue, st) {
   if (!catalogue) return;
   const n = catalogue.nombre_a_choisir;
   const cases = [...racine.querySelectorAll('[name=objectif]')];
+  const roleChoisi = () => racine.querySelector('[name=role]:checked')?.value ?? 'depute';
   const maj = () => {
+    // Un objectif réservé à un autre rôle est décoché et désactivé
+    const role = roleChoisi();
+    const incompatible = (c) => c.dataset.role && c.dataset.role !== role;
+    cases.forEach((c) => { if (incompatible(c)) c.checked = false; });
     st.objectifs = cases.filter((c) => c.checked).map((c) => c.value);
-    cases.forEach((c) => { c.disabled = st.objectifs.length >= n && !c.checked; });
+    cases.forEach((c) => { c.disabled = incompatible(c) || (st.objectifs.length >= n && !c.checked); });
     racine.querySelector('#nb-objectifs').textContent = `${st.objectifs.length}/${n}`;
     const go = racine.querySelector('#go');
     if (go) go.disabled = st.objectifs.length !== n || (go.dataset.elu === '1' && !racine.querySelector('[name=elu]:checked'));
   };
   cases.forEach((c) => c.addEventListener('change', maj));
+  racine.querySelectorAll('[name=role]').forEach((r) => r.addEventListener('change', maj));
   maj(); // à chaque rendu : l'état du bouton « Commencer » reflète toujours le choix réel
 }
 

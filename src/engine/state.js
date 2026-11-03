@@ -73,7 +73,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     // Relations avec les partis (E5)
     relations: relationsInitiales(partis),
     // Objectifs de mandat (3 choisis par le joueur, sinon ceux par défaut)
-    objectifs: normaliserObjectifs(joueur.objectifs, objectifs),
+    objectifs: normaliserObjectifs(joueur.objectifs, objectifs, ROLES.includes(joueur.role) ? joueur.role : 'depute'),
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],

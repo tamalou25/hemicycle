@@ -20,9 +20,12 @@ export function valeurObjectif(o, etat, { regions } = {}) {
 }
 
 /** Valide et normalise un choix d'objectifs (exactement N ids connus, sans doublon ; sinon le choix par défaut). */
-export function normaliserObjectifs(choix, catalogue) {
+export const objectifPossible = (o, role) => !o.role || o.role === role;
+
+export function normaliserObjectifs(choix, catalogue, role) {
   if (!catalogue) return [];
-  const ids = new Set(catalogue.objectifs.map((o) => o.id));
+  // Seuls les objectifs atteignables dans le rôle du joueur (ex. programmes nationaux : Premier ministre)
+  const ids = new Set(catalogue.objectifs.filter((o) => objectifPossible(o, role)).map((o) => o.id));
   const uniques = [...new Set((choix ?? []).filter((id) => ids.has(id)))];
   return uniques.length === catalogue.nombre_a_choisir ? uniques : [...catalogue.defaut];
 }

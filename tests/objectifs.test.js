@@ -69,3 +69,11 @@ describe('défis et objectifs (revue PR #21)', () => {
     expect(relevee.objectifs).toEqual(objectifs.defaut);
   });
 });
+
+describe('objectifs et rôle (revue PR #21)', () => {
+  it('un député ne peut pas choisir « Investir dans l’avenir » (programmes réservés au gouvernement)', () => {
+    const depute = creerPartie({ joueur: { nom: 'D', parti: 'epr', role: 'depute', objectifs: ['programmes', 'dette', 'reformes'] }, situation: lire('situation.json'), ...donnees });
+    expect(depute.objectifs).toEqual(objectifs.defaut);
+    expect(partie(['programmes', 'dette', 'reformes']).objectifs).toEqual(['programmes', 'dette', 'reformes']);
+  });
+});

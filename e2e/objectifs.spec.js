@@ -39,3 +39,15 @@ test('élu réel : décocher un objectif puis changer de filtre laisse « Commen
   await filtre.selectOption({ index: 1 });
   await expect(page.locator('#go')).toBeDisabled();
 });
+
+test('création : « Investir dans l’avenir » désactivé pour un député, possible pour un PM', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  const programmes = page.locator('input[name=objectif][value=programmes]');
+  await page.getByLabel(/Député/).check();
+  await expect(programmes).toBeDisabled();
+  await page.getByLabel(/Premier ministre/).check();
+  await page.locator('input[name=objectif]:checked').first().uncheck();
+  await expect(programmes).toBeEnabled();
+});
