@@ -22,12 +22,14 @@ export function render(racine, etat, dispatch, ctx) {
         <button type="button" class="btn btn-s" id="reprendre" ${ctx.accepte && sauv ? '' : 'disabled'}>Reprendre</button>
         <label class="btn btn-s cursor-pointer ${ctx.accepte ? '' : 'opacity-55'}" for="import">Importer une sauvegarde</label>
         <input type="file" id="import" accept="application/json,.json" class="sr-only" ${ctx.accepte ? '' : 'disabled'}>
+        <button type="button" class="btn btn-s" id="classement">Classement</button>
       </div>
       ${sauv ? '' : '<p class="text-sm text-doux mt-2">Aucune partie sauvegardée sur cet appareil.</p>'}
     </section>`;
   racine.querySelector('#accept').addEventListener('change', (e) => dispatch({ type: 'accepter', valeur: e.target.checked }));
   racine.querySelector('#nouvelle').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'creation' }));
   racine.querySelector('#elu').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'choixElu' }));
+  racine.querySelector('#classement').addEventListener('click', () => dispatch({ type: 'classement' }));
   racine.querySelector('#reprendre').addEventListener('click', () => dispatch({ type: 'reprendre' }));
   racine.querySelector('#import').addEventListener('change', async (e) => {
     const f = e.target.files?.[0];

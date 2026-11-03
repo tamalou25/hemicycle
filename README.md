@@ -28,6 +28,11 @@ npm test
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
+### Phase 6 : Partage
+- **Défis** : un lien `#defi=…` reproduit le même départ et le même hasard pour un ami
+- **Classement local** : les 10 meilleurs bilans, stockés sur l'appareil
+- Multijoueur et backend : voir l'[ADR 0001](docs/adr/0001-multijoueur.md) (décision reportée)
+
 ### Phase 5 : Profondeur
 - 18 événements fictifs (grèves, crises, Europe, climat, santé, scandale dans l'entourage du joueur), chacun avec 2 ou 3 réponses
 - Budget annuel du Premier ministre : leviers dépenses et impôts
@@ -60,4 +65,4 @@ npm test
 - Sondage mensuel
 - Sauvegarde automatique, plus export et import d'un fichier JSON
 
-Roadmap : et enfin le volet social. Voir `CLAUDE.md`.
+Roadmap terminée (phases 1 à 6). Prochaine étape possible : backend avec rejeu anti-triche, voir l'ADR.

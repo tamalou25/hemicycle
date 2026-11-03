@@ -117,3 +117,20 @@ describe('sauvegarde', () => {
     expect(() => importerPartie(JSON.stringify({ ...nouvelle(), indicateurs: {} }))).toThrow(/Indicateur/);
   });
 });
+
+describe('sauvegarde : sécurité', () => {
+  it('un champ numérique piégé est neutralisé (anti-XSS)', () => {
+    const e = { ...nouvelle(), joueur: { ...nouvelle().joueur, capital: '<img src=x onerror=alert(1)>' }, dateDepart: { annee: '<script>', mois: 11 } };
+    const r = importerPartie(JSON.stringify(e));
+    expect(r.joueur.capital).toBe(0);
+    expect(r.dateDepart.annee).toBe(2026);
+    expect(JSON.stringify(r)).not.toMatch(/<img|<script/);
+  });
+  it('champs manquants reconstruits, champs inconnus supprimés', () => {
+    const e = { ...nouvelle(), historique: undefined, journal: 'x', inconnu: '<b>' };
+    const r = importerPartie(JSON.stringify(e));
+    expect(r.historique).toEqual([]);
+    expect(r.journal).toEqual([]);
+    expect(r.inconnu).toBeUndefined();
+  });
+});
