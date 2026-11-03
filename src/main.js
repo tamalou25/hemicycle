@@ -18,7 +18,7 @@ const ECRANS = { accueil, creation, choixElu, tableau, fin, defi, classement };
 const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const ecrire = (k, v) => { try { localStorage.setItem(k, v); } catch { /* stockage indisponible */ } };
 
-const lireJson = (k) => { try { const v = JSON.parse(lire(k)); return Array.isArray(v) ? v : []; } catch { return []; } };
+const lireJson = (k) => { try { const v = JSON.parse(lire(k)); return Array.isArray(v) ? v.filter((x) => x !== null && x !== undefined) : []; } catch { return []; } };
 
 // Enregistre une partie terminée au classement local, une seule fois par partie.
 function enregistrerClassement(e) {
@@ -67,12 +67,14 @@ function aller(nom) {
 }
 
 export function dispatch(action) {
+  // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
+  const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
     const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
-      case 'classement': ctx.classement = lireJson(CLE_CLASSEMENT); ctx.confirmEffacer = false; return aller('classement');
+      case 'classement': ctx.classement = lireJson(CLE_CLASSEMENT).filter((x) => typeof x === 'object' && Number.isFinite(x.score)); ctx.confirmEffacer = false; return aller('classement');
       case 'effacerClassement':
         if (action.etape === 'confirme') { ecrire(CLE_CLASSEMENT, '[]'); ctx.classement = []; toast('Classement effacé.', 'info'); }
         ctx.confirmEffacer = action.etape === 'demande';
@@ -107,12 +109,17 @@ export function dispatch(action) {
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
       default: throw new Error(`Action inconnue : ${action.type}`);
     }
-    if (etat) ecrire(CLE, JSON.stringify(etat));
-    if (etat?.fin) enregistrerClassement(etat);
     const cible = !etat ? 'accueil' : etat.fin ? 'fin' : 'tableau';
     if (cible !== ecran || action.type === 'nouvelle' || action.type === 'relever' || action.type === 'reprendre' || action.type === 'importer') aller(cible);
     else afficher({ focus: false });
+    // Sauvegarde uniquement après un rendu réussi (une partie corrompue n'écrase pas la bonne)
+    if (etat) ecrire(CLE, JSON.stringify(etat));
+    if (etat?.fin) enregistrerClassement(etat);
   } catch (e) {
+    if (etat !== etatPrecedent || ecran !== ecranPrecedent) {
+      etat = etatPrecedent; ecran = ecranPrecedent;
+      try { afficher({ focus: false }); } catch { /* ignoré */ }
+    }
     toast(e.message || String(e));
   }
 }
@@ -130,7 +137,11 @@ async function init() {
   const code = location.hash.slice(1).split('&').find((p) => p.startsWith('defi='));
   if (code !== undefined) {
     try { history.replaceState(null, '', location.pathname + location.search); } catch { /* ignoré */ }
-    try { ctx.defi = decoderDefi(decodeURIComponent(code.slice(5))); ecran = 'defi'; } catch (e) { toast(e.message || 'Défi invalide.'); }
+    try {
+      const defi = decoderDefi(decodeURIComponent(code.slice(5)));
+      if (!ctx.partis.some((p) => p.id === defi.joueur.parti)) throw new Error('Défi invalide : parti inconnu.');
+      ctx.defi = defi; ecran = 'defi';
+    } catch (e) { toast(e.message || 'Défi invalide.'); }
   }
   afficher({ focus: false });
 }
