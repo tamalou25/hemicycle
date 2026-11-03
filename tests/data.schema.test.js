@@ -68,3 +68,26 @@ describe('senat.json', () => {
     expect(senat.sources.length).toBeGreaterThan(0);
   });
 });
+
+describe('politicians.json (règles de contenu)', () => {
+  const politiciens = lire('politicians.json');
+  const ids = new Set(partis.map((p) => p.id));
+  it('ids uniques, partis connus, fonction sourcée', () => {
+    expect(new Set(politiciens.map((p) => p.id)).size).toBe(politiciens.length);
+    for (const p of politiciens) {
+      expect(ids.has(p.parti), p.id).toBe(true);
+      expect(p.fonction_source.url).toMatch(/^https?:\/\//);
+    }
+  });
+  it('citations : < 15 mots, source, date et URL obligatoires', () => {
+    for (const p of politiciens) for (const c of p.citations) {
+      expect(c.texte.trim().split(/\s+/).length, `${p.id}: ${c.texte}`).toBeLessThan(15);
+      expect(c.source.length).toBeGreaterThan(0);
+      expect(c.date).toMatch(/^\d{4}-\d{2}(-\d{2})?$/);
+      expect(c.url).toMatch(/^https?:\/\//);
+    }
+  });
+  it('aucune position ni compétence individuelle (neutralité)', () => {
+    for (const p of politiciens) { expect(p.positions).toBeUndefined(); expect(p.competences).toBeUndefined(); }
+  });
+});
