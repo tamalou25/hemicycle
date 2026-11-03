@@ -1,0 +1,29 @@
+/* Feuille source : compilée en assets/app.css par `npm run build:css`. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Police auto-hébergée (SIL Open Font License, voir assets/fonts/LICENSE-OFL.txt) */
+@font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/source-serif-4-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 700; font-display: swap; src: url('./fonts/source-serif-4-latin-700-normal.woff2') format('woff2'); }
+
+/* Jetons de design (réutilisables hors Tailwind, ex. SVG de la carte) */
+:root {
+  --ivoire: #FAF6EC; --papier: #FFFDF7; --encre: #14213D; --filet: #D9D2BF;
+  --bleu: #1F3A6E; --rouge: #B3262B; --bordeaux: #7A1F2B; --laiton: #8A6A1F;
+}
+
+@layer components {
+  body { background: #FAF6EC; color: #14213D; }
+  :focus-visible { outline: 3px solid #1F3A6E; outline-offset: 2px; border-radius: 4px; }
+  .tricolore { height: 4px; background: linear-gradient(90deg, #1F3A6E 0 33.3%, #fff 33.3% 66.6%, #B3262B 66.6%); border-bottom: 1px solid #D9D2BF; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 6px; font-weight: 600; border: 1px solid #14213D; }
+  .btn-p { background: #14213D; color: #fff; }
+  .btn-p:hover:not(:disabled) { background: #1F3A6E; }
+  .btn-s { background: #FFFDF7; color: #14213D; }
+  .btn-s:hover:not(:disabled) { background: #EFE9D6; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .champ { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #6B7280; border-radius: 6px; background: #fff; }
+  input[type=range] { width: 100%; accent-color: #1F3A6E; min-height: 28px; }
+  .filet-laiton { border-top: 2px solid var(--laiton); }
+}
