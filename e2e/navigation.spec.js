@@ -61,6 +61,11 @@ test('Bureau : synthèse, À traiter avec action, détails repliés, hauteur mob
     if (await evt.count() && await evt.isEnabled()) await evt.click();
     await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').click();
   }
+  // Le dernier mois peut tirer un nouvel événement : on y répond aussi, pour mesurer un Bureau stable
+  // (la hauteur ne doit pas dépendre de l'aléa ; la carte d'événement est mesurée à part au chantier 2).
+  const dernier = page.locator('[data-evenement]').first();
+  if (await dernier.count() && await dernier.isEnabled()) await dernier.click();
+  await expect(page.locator('[data-evenement]')).toHaveCount(0);
   await expect(page.getByRole('status').filter({ hasText: /ce mois-ci|stable/ })).toBeVisible();
   await expect(page.locator('details#secteurs')).not.toHaveAttribute('open', '');
   await expect(page.getByRole('heading', { name: 'Bonnes nouvelles' })).toBeVisible();
