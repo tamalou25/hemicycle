@@ -6,6 +6,7 @@ import { populariteCible, intentionsDeVote } from './polls.js';
 import { avancerNavette, censureSpontanee } from './navette.js';
 import { tenirElections } from './elections.js';
 import { tirerEvenement, resoudreEvenement } from './events.js';
+import { registreDuMois, archiver } from './explications.js';
 
 /**
  * Ordre d'un tour :
@@ -32,7 +33,7 @@ export function tourSuivant(etatInitial, donnees) {
   const tour = etat.tour + 1;
 
   // 1. Effets des lois
-  const { indicateurs: apresLois, file } = appliquerEffets(etat.indicateurs, etat.effetsEnCours, tour);
+  const { indicateurs: apresLois, file, appliques } = appliquerEffets(etat.indicateurs, etat.effetsEnCours, tour);
   const ind = { ...apresLois };
 
   // 2. Dynamique : retour lent vers l'équilibre + petits chocs aléatoires
@@ -49,6 +50,9 @@ export function tourSuivant(etatInitial, donnees) {
   [n, g] = bruit(g, 1);
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
+  // Registre des causes (explications du mois)
+  const explications = archiver(etat.explications, registreDuMois(tour, appliques, apresLois, ind), tour);
+
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
 
@@ -63,6 +67,7 @@ export function tourSuivant(etatInitial, donnees) {
     graine: g,
     indicateurs: ind,
     effetsEnCours: file,
+    explications,
     actionCeMois: false,
     negoCeMois: false,
     campagneCeMois: false,

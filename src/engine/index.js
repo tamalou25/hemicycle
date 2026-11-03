@@ -20,6 +20,7 @@ export { tirerEvenement, resoudreEvenement, eligible, PROBA_EVENEMENT } from './
 export { voterBudget, raisonRefusBudget, effetsBudget, LEVIERS } from './budget.js';
 export { scoreBilan, evaluerFin } from './fins.js';
 export { encoderDefi, decoderDefi, entreeClassement, ajouterAuClassement, TAILLE_CLASSEMENT } from './share.js';
+export { registreDuMois, prevoir, principales, phraseExplication, nomCause } from './explications.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';
