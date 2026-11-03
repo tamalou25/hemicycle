@@ -54,7 +54,8 @@ describe('événements régionaux', () => {
     const ev = regionaux.find((x) => x.id === 'fermeture-usine');
     const e = { ...partie(), evenement: ev.id, evenementRegion: 'guyane' };
     const r = tourSuivant(e, donnees);
-    expect(r.explications.some((y) => y.region === 'guyane' && y.source === `evenement:${ev.id}`)).toBe(true);
+    // Datés du mois affiché après le passage, pour apparaître dans la fiche région (revue PR #22)
+    expect(r.explications.some((y) => y.region === 'guyane' && y.source === `evenement:${ev.id}` && y.tour === r.tour)).toBe(true);
     const s = { ...partie(), evenement: ev.id, evenementRegion: 'guyane' };
     expect(importerPartie(exporterPartie(s))).toEqual(s);
   });

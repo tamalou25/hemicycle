@@ -34,7 +34,10 @@ export function tourSuivant(etatInitial, donnees) {
   // Événement ignoré : on applique automatiquement le dernier choix (option passive)
   if (etat.evenement && donnees.evenements) {
     const ev = donnees.evenements.find((e) => e.id === etat.evenement);
+    const n = (etat.explications ?? []).length;
     etat = ev ? resoudreEvenement(etat, ev.choix.length - 1, donnees) : { ...etat, evenement: null };
+    // Réponse automatique au passage du mois : ses effets locaux sont datés du mois qui s'affiche
+    etat = { ...etat, explications: (etat.explications ?? []).map((x, i) => (i >= n ? { ...x, tour: etat.tour + 1 } : x)) };
   }
   const loisAvant = etat.loisAdoptees.length;
   const texteAvant = etat.texte; // orientation finale (après amendements / CMP), effacée par la navette à la promulgation
