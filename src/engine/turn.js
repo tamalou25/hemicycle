@@ -60,7 +60,7 @@ export function tourSuivant(etatInitial, donnees) {
     const { mois } = dateDuTour({ ...etat, tour });
     etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md) };
     // La satisfaction des territoires (pondérée par la population) tire la popularité
-    bonusTerritoires = (satisfactionNationale(etat.territoires, donnees.regions.regions) - (etat.satisfactionInitiale ?? 50)) / 2;
+    bonusTerritoires = satisfactionNationale(etat.territoires, donnees.regions.regions) - (etat.satisfactionInitiale ?? 50);
   }
 
   // 3. Popularité : converge à 15 %/mois vers la cible

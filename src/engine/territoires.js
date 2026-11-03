@@ -4,7 +4,7 @@
 
 export const INDICES = ['emploi', 'sante', 'transports'];
 export const POIDS_SATISFACTION = { emploi: 0.4, sante: 0.35, transports: 0.25 };
-export const EROSION_MENSUELLE = { sante: 0.12, transports: 0.12 }; // usure sans entretien ni investissement
+export const EROSION_MENSUELLE = { sante: 0.08, transports: 0.08 }; // usure sans entretien ni investissement
 
 const borne = (v) => Math.round(Math.min(100, Math.max(0, v)) * 100) / 100;
 

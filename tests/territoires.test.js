@@ -30,7 +30,7 @@ describe('territoires', () => {
     let e = partie();
     const s0 = e.territoires.alpha.sante;
     for (let i = 0; i < 6; i++) e = tourSuivant({ ...e, evenement: null }, donnees);
-    expect(e.territoires.alpha.sante).toBeCloseTo(s0 - 0.72, 1);
+    expect(e.territoires.alpha.sante).toBeCloseTo(s0 - 0.48, 1);
   });
 });
 
@@ -57,7 +57,7 @@ describe('projets', () => {
     expect(e.finances.recurrent).toBeCloseTo(def.cout_annuel_md);
     // gain total = effet × efficacité × facteur taille ; moins l'usure sur la période
     const gain = def.effets.sante * p.efficacite * facteurTaille(1_250_000);
-    expect(e.territoires.beta.sante - s0).toBeCloseTo(gain - 0.12 * e.tour, 0);
+    expect(e.territoires.beta.sante - s0).toBeCloseTo(gain - 0.08 * e.tour, 0);
     const x = e.explications.find((y) => y.type === 'projet' && y.region === 'beta');
     expect(phraseExplication(x, donnees)).toMatch(/Centres de santé.*Bêta/);
     expect(e.journal.some((j) => /Mise en service/.test(j.texte))).toBe(true);
@@ -80,6 +80,11 @@ describe('projets', () => {
     let e = { ...partie(), finances: { enveloppe: 0, recurrent: 0, annee: 0 } };
     for (let i = 0; i < 3; i++) e = tourSuivant({ ...e, evenement: null }, donnees); // nov → fév
     expect(e.finances.enveloppe).toBe(projets.enveloppe_annuelle_md);
+  });
+  it('les coûts de fonctionnement réduisent l’enveloppe de l’année suivante', () => {
+    let e = { ...partie(), finances: { enveloppe: 0, recurrent: 0.5, annee: 0 } };
+    for (let i = 0; i < 3; i++) e = tourSuivant({ ...e, evenement: null }, donnees);
+    expect(e.finances.enveloppe).toBeCloseTo(projets.enveloppe_annuelle_md - 0.5);
   });
 });
 
