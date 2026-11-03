@@ -7,6 +7,7 @@ import { initialiserGroupes } from './groupes.js';
 import { secteursInitiaux } from './secteurs.js';
 import { relationsInitiales } from './relations.js';
 import { confianceRegionsInitiale } from './confianceRegions.js';
+import { normaliserObjectifs } from './objectifs.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -16,7 +17,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -71,6 +72,8 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     secteurs: secteursInitiaux(politiques), politiques: [],
     // Relations avec les partis (E5)
     relations: relationsInitiales(partis),
+    // Objectifs de mandat (3 choisis par le joueur, sinon ceux par défaut)
+    objectifs: normaliserObjectifs(joueur.objectifs, objectifs),
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
