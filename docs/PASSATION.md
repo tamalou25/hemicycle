@@ -20,6 +20,16 @@
 - **Règle apprise** : toujours lancer `npm run build` avant de commiter (CSS et `sw.js`). `npm test` le vérifie désormais.
 - **Restant (hors code)** : tests sur un vrai téléphone (APK de la CI), build iOS sur Mac, publication sur les stores, recoupement des fonctions des élus, citations vérifiées (0 aujourd'hui), équilibrage par de vraies parties jouées.
 
+## Refonte de la première expérience (Claude, branche `refonte-experience`, PR #25 en brouillon)
+- **Fait** : « Découvrir en jouant » (mission d'initiation de 6 mois, même moteur), Bureau en trois questions, fiches comparables,
+  bilan du mois, engagements, objectifs « départ → actuel / cible ». Détail : `docs/REFONTE-EXPERIENCE.md`.
+- **Moteur** : nouveaux `mission.js`, `fiches.js`, `bilan.js` ; `tourSuivant` clôt la mission ; réponse automatique à un événement
+  journalisée `evenement-auto`. **Sauvegarde v13** (`mission`, `objectifsInitiaux`), migration v12 → v13 sans activation rétroactive.
+  Défis : champ `m`.
+- **Données** : `src/data/mission.json` (test de schéma dans `tests/data.schema.test.js`).
+- **Tests** : voir la PR (Vitest et Playwright, dont l'audit axe des nouveaux écrans).
+- **À confirmer** : compréhension et intérêt avec un vrai débutant ; captures dans `docs/captures/refonte-*`.
+
 ## Cap du mandat (Claude, branche `ui-cap-du-mandat`)
 - **Problème** : un joueur a dit « on ne comprend pas grand-chose, il faut un but ».
 - **Fait (interface uniquement)** :

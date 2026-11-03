@@ -132,3 +132,14 @@ test('fiche détaillée : accessible au clavier, sans modifier la partie', async
   await expect(fiche).toContainText('le total futur n’est pas garanti');
   expect(JSON.stringify(await sauve(page))).toBe(avant);
 });
+
+test('fin anticipée pendant la mission : débrief indiqué à l’écran de fin, distinct du score', async ({ page }) => {
+  const mission = await decouverte(page, 'GDR', 3);
+  await mission.getByRole('button', { name: 'Choisir : Recrutement de soignants' }).click();
+  await page.evaluate((c) => { const e = JSON.parse(localStorage.getItem(c)); e.indicateurs.popularite = 1; localStorage.setItem(c, JSON.stringify(e)); }, CLE);
+  await page.reload();
+  await page.getByRole('button', { name: /Reprendre/ }).click();
+  await moisSuivant(page);
+  await expect(page.locator('#fin-mission')).toContainText('Engagement pris, effets encore attendus');
+  await expect(page.locator('#fin-mission')).toContainText('n’entre pas dans le score');
+});

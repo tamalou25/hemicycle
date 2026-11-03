@@ -49,3 +49,41 @@ sa progression est **déduite de l’état du moteur** (projet lancé, mise en s
 - Les simulations automatiques utilisent quelques graines et partis ; la compréhension doit être vérifiée avec un vrai débutant.
 - Mayotte a l’indice de santé de jeu le plus bas (0/100, densité de médecins sous le plancher de l’indice) : le jeu l’explique,
   sans en conclure qu’il n’y a aucun accès aux soins.
+
+## Règles ajoutées (lots 2 et 3)
+- `ficheDecision(etat, item, donnees)` (pure) : coûts immédiat et annuel, capital, premiers effets, effets théoriques avec leur sens,
+  contrepartie, étape institutionnelle, risques (vote estimé à l’Assemblée, censure constitutionnelle, 49.3 et censure pour le PM),
+  blocage (raison du catalogue), objectifs sélectionnés concernés, lien avec la mission.
+- `bilanMois(etat, donnees)` (pure, rien de stocké) : décisions du mois précédent, résultats (votes, mises en service, élections…),
+  effets de vos décisions et effets locaux (même minimes), événements et conjoncture, effets attendus, prochaine étape de mission.
+- `engagements(etat, donnees)` : projets, programmes, texte en navette, budget, accords et mission, avec la prochaine échéance.
+- Réponse automatique à un événement : journalisée `evenement-auto` (« réponse par défaut, faute de choix »), jamais comptée
+  comme une décision du joueur.
+- `etat.objectifsInitiaux` (v13) : valeurs de départ des objectifs, figées à la création. Le Bureau affiche
+  « départ → actuel / cible » ; la jauge reste un **rapport à la cible**, pas un progrès accompli.
+
+## Parcours avant / après
+| | Avant (`0621beb`) | Après |
+|---|---|---|
+| Entrée | « Créer mon personnage » : 6 axes, 4 compétences, rôle, 3 objectifs sur 10 | « Découvrir en jouant » : 1 choix (famille politique) puis le Bureau |
+| Premier écran | État du pays, alertes, objectifs, « Ce mois-ci » | Mission : situation, deux réponses comparées (coût, délai, effet d’ici 6 mois, risque) ou « différer » |
+| Après un choix | Un toast | Étapes de la mission (chantier → mise en service → effet), engagement et échéance au Bureau |
+| Mois suivant | Variations nationales | « Ce mois-ci » commence par vos décisions, leurs suites et leurs effets (effets locaux inclus) |
+| Mois 6 | — | Débrief : réalisé, attendu, choix expliquant le résultat ; la partie continue |
+
+## Parcours de test manuel (5 minutes)
+1. Accueil → cocher l’avertissement → **Découvrir en jouant** → choisir un parti → **Commencer la découverte**.
+2. Lire la mission : quelle région, quel indice, combien d’enveloppe ? Comparer les deux réponses.
+3. Choisir la voie courte. Vérifier : enveloppe diminuée, étapes « Fait / En cours », engagement avec échéance.
+4. **Mois suivant** ×3 : lire « Ce mois-ci » (vos décisions, leurs suites). Au 4ᵉ mois, l’effet local apparaît.
+5. Mois 6 : lire le débrief. Continuer le mandat. Recommencer en différant : le résultat doit être différent.
+6. Question au joueur débutant : « Quel est ton but ? Qu’as-tu fait ? Qu’en est-il sorti ? Que vas-tu faire ensuite ? »
+
+## Simulations effectuées et limites
+- Tests moteur : 5 partis (EPR, RN, LFI, PS, DR) × graines pour la voie courte ; 8 graines pour la cohérence aperçu / résultat ;
+  investissement lent, différer, fin anticipée, changement de rôle, reprise, ancienne sauvegarde, défi.
+- Tests navigateur : parcours complet (voie courte, différer + reprise, investissement lent, fin anticipée), bilan du mois,
+  fiche au clavier, audit axe (WCAG AA) des nouveaux écrans, hors ligne (PWA), hauteur du Bureau mobile.
+- Le changement de rôle par la présidentielle est testé en forçant le rôle (le tirage réel dépend de l’élection simulée).
+- Les graines des tests navigateur sont fixées après la création de la partie : l’aléa de création (graine initiale) reste réel.
+- Non vérifié : compréhension et intérêt par un vrai débutant ; lecteur d’écran réel ; appareil mobile physique.

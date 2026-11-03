@@ -97,13 +97,28 @@ describe('mission d’initiation', () => {
     expect(etape(e, 'effet')).toBe('fait');
   });
 
+  it('aperçu cohérent avec le résultat : sans aléa, l’effet observé à l’échéance égale l’effet annoncé « d’ici la fin de la mission »', () => {
+    let n = 0;
+    for (const graine of [1, 2, 3, 5, 8, 13, 21, 34]) {
+      let e = partie(graine);
+      const annonce = apercuProjet(e, 'recrutement-soignants', e.mission.region, donnees).effetsDansMission[0].total;
+      e = lancerProjet(e, 'recrutement-soignants', e.mission.region, donnees);
+      if (projetMission(e, donnees).alea) continue; // aléa tiré : efficacité réduite, annoncée comme risque
+      e = jouer(e, 6);
+      if (e.fin) continue;
+      expect(e.mission.debrief.effetObserve).toBeCloseTo(annonce, 0);
+      n++;
+    }
+    expect(n).toBeGreaterThan(2);
+  });
+
   it('aperçu pur : ni état, ni graine, ni ressources modifiés', () => {
     const e = partie(8);
     const avant = JSON.stringify(e);
     const a = apercuProjet(e, 'recrutement-soignants', e.mission.region, donnees);
     const b = apercuProjet(e, 'centres-sante', e.mission.region, donnees);
     expect(JSON.stringify(e)).toBe(avant);
-    expect(a.premiersEffetsTour).toBe(4);
+    expect(a.premiersEffetsTour).toBe(3);
     expect(a.effetsDansMission[0].total).toBeGreaterThan(0);
     expect(b.effetsDansMission[0].total).toBe(0); // résultats après la mission : annoncé honnêtement
     expect(a.coutMd).toBeLessThan(b.coutMd);

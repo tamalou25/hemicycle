@@ -1,3 +1,4 @@
+import { RESULTATS_MISSION } from '../../engine/index.js';
 import { esc, fmt, MOIS } from '../util.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { dateDuTour, evaluerFin, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
@@ -29,6 +30,7 @@ export function render(racine, etat, dispatch, ctx) {
     <p class="mt-2 text-lg">${esc(f.texte)}</p>
     ${etat.fin.texte ? `<p class="mt-1 text-doux">${esc(etat.fin.texte)}</p>` : ''}
     ${elu ? '<p class="mt-2 text-sm text-doux">Résultat issu d’un scrutin simulé, sans lien avec une élection réelle.</p>' : ''}
+    ${etat.mission?.debrief ? `<p class="mt-3 text-sm border-l-4 border-laiton bg-carte p-2" id="fin-mission"><strong>Mission d’initiation :</strong> ${esc(RESULTATS_MISSION[etat.mission.debrief.resultat])}. Elle n’entre pas dans le score de bilan.</p>` : ''}
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
       <div class="flex justify-between items-baseline"><h2 class="font-serif font-bold text-xl">Score de bilan</h2><span class="text-2xl font-bold tabular-nums">${f.score}<span class="text-sm text-doux"> /100</span></span></div>
       <div class="h-3 bg-[#E8E1CD] rounded mt-2" role="meter" aria-label="Score de bilan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${f.score}" aria-valuetext="${f.score} sur 100"><div class="h-3 rounded" style="width:${f.score}%;background:${couleur}"></div></div>

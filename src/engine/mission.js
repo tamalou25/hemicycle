@@ -124,7 +124,7 @@ export function apercuProjet(etat, projetId, regionId, donnees) {
   const region = donnees.regions?.regions.find((r) => r.id === regionId);
   if (!def || !region) return null;
   const facteur = facteurTaille(region.population);
-  const debut = etat.tour + def.delai_mois + 1; // premier mois où l'indice bouge
+  const debut = etat.tour + def.delai_mois; // premier mois où l'indice bouge (mise en service = 1er mois de montée en charge)
   return {
     id: def.id, titre: def.titre, description: def.description, beneficiaires: def.beneficiaires ?? null,
     region: region.id, regionNom: region.nom, secteur: def.secteur,
