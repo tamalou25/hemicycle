@@ -32,5 +32,6 @@ export const SEUIL_OPPOSITION = 60;       // écart idéologique au-delà duquel
 
 export const borner = (ind, v) => {
   const [min, max] = BORNES[ind];
-  return Math.round(Math.min(max, Math.max(min, v)) * 100) / 100;
+  // 4 décimales : un petit effet mensuel (ex. 0,0014 pt) ne doit pas être perdu à l'arrondi
+  return Math.round(Math.min(max, Math.max(min, v)) * 10000) / 10000;
 };

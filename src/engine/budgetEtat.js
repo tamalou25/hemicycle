@@ -150,6 +150,7 @@ export function voterPLF(etat, { partis }) {
       return { ...etat, plf: null, journal, dernierVote: { loi: 'budget', chambre: 'censure', ...c }, fin: { type: 'censure', texte: 'Votre gouvernement a été renversé sur le budget.' } };
     }
     journal.push({ tour: etat.tour, type: 'censure', texte: `Motion de censure rejetée (${c.pour} voix) : le budget est adopté.` });
+    etat = { ...etat, dernierVote: { loi: 'budget', chambre: 'censure', ...c } };
     adopte = true;
   } else {
     const v = voterBudgetAssemblee(etat, AN, plf);
@@ -172,7 +173,8 @@ export function voterPLF(etat, { partis }) {
 export function evoluerBudget(etat, moisCalendaire) {
   const b = etat.budget;
   if (!b) return { etat, entrees: [] };
-  const pib = r2(b.pib * (1 + etat.indicateurs.croissance / 1200));
+  // PIB nominal : croissance réelle + inflation (cohérent avec la dynamique de la dette en % du PIB)
+  const pib = r2(b.pib * (1 + (etat.indicateurs.croissance + etat.indicateurs.inflation) / 1200));
   let budget = { ...b, pib };
   let effetsEnCours = etat.effetsEnCours;
   if (moisCalendaire === 1) {
@@ -180,7 +182,7 @@ export function evoluerBudget(etat, moisCalendaire) {
     const interets = r2(detteMd * b.taux);
     const delta = r2(interets - b.depenses.interets);
     budget = { ...budget, depenses: { ...b.depenses, interets }, annee: (b.annee ?? 0) + 1 };
-    if (delta) effetsEnCours = [...effetsEnCours, ...planifierEffets([{ indicateur: 'deficit', valeur: r2((delta / pib) * 100 * 100) / 100, delaiMois: 0, duree: 12 }], etat.tour + 1, 'interets')];
+    if (delta) effetsEnCours = [...effetsEnCours, ...planifierEffets([{ indicateur: 'deficit', valeur: r2((delta / pib) * 100 * 100) / 100, delaiMois: 0, duree: 12 }], etat.tour + 2, 'interets')]; // etat.tour + 1 est le mois en cours, déjà appliqué
   }
   return { etat: { ...etat, budget, effetsEnCours } };
 }
