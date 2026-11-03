@@ -18,7 +18,7 @@ export const DUREE_MANDAT = 60;       // 5 ans
 export const SEUIL_DEFAITE = 8;       // popularité sous laquelle la partie s'arrête
 export const CAPITAL_MENSUEL = 2;     // capital politique gagné chaque mois
 export const CAPITAL_MAX = 10;
-export const VERSION_SAUVEGARDE = 5;
+export const VERSION_SAUVEGARDE = 6;
 
 // --- Institutions (Phase 2) ---
 export const ROLES = ['depute', 'premier_ministre'];

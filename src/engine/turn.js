@@ -10,6 +10,7 @@ import { registreDuMois, archiver } from './explications.js';
 import { evoluerTerritoires, satisfactionNationale } from './territoires.js';
 import { avancerProjets } from './projets.js';
 import { renouvelerEnveloppe } from './finances.js';
+import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
 import { dateDuTour } from './state.js';
 
 /**
@@ -33,6 +34,7 @@ export function tourSuivant(etatInitial, donnees) {
   }
   ({ etat, graine: g } = avancerNavette(etat, donnees, g));
   ({ etat, graine: g } = censureSpontanee(etat, donnees, g));
+  etat = voterPLF(etat, donnees); // projet de loi de finances en discussion ce mois-ci
   if (etat.fin) return { ...etat, graine: g };
   const tour = etat.tour + 1;
 
@@ -55,13 +57,17 @@ export function tourSuivant(etatInitial, donnees) {
   let bonusTerritoires = 0;
   if (etat.territoires && donnees.regions && donnees.projets) {
     const evo = evoluerTerritoires(etat.territoires, ind.chomage - etat.indicateurs.chomage, tour);
-    const p = avancerProjets({ ...etat, territoires: evo.territoires }, donnees, tour);
-    entreesTerritoires = [...evo.entrees, ...p.entrees];
+    const bt = effetsBudgetTerritoires(evo.territoires, etat.budget, tour);
+    const p = avancerProjets({ ...etat, territoires: bt.territoires }, donnees, tour);
+    entreesTerritoires = [...evo.entrees, ...bt.entrees, ...p.entrees];
     const { mois } = dateDuTour({ ...etat, tour });
     etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md) };
     // La satisfaction des territoires (pondérée par la population) tire la popularité
     bonusTerritoires = satisfactionNationale(etat.territoires, donnees.regions.regions) - (etat.satisfactionInitiale ?? 50);
   }
+
+  // 2 ter. Finances publiques : PIB, dette, charge d'intérêts (révisée en janvier)
+  if (etat.budget) etat = evoluerBudget({ ...etat, indicateurs: ind }, dateDuTour({ ...etat, tour }).mois).etat;
 
   // 3. Popularité : converge à 15 %/mois vers la cible
   const cible = populariteCible(ind, etat.joueur.competences) + bonusTerritoires;

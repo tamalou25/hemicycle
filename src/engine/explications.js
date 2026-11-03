@@ -9,6 +9,7 @@ export function typeSource(source = '') {
   if (source === 'budget') return 'budget';
   if (source.startsWith('evenement:')) return 'evenement';
   if (source.startsWith('projet:')) return 'projet';
+  if (source === 'interets') return 'interets';
   return 'loi';
 }
 
@@ -70,6 +71,7 @@ const LIBELLES = {
   tensions: ['les tensions sociales', 'pt'],
   emploi: ['l’indice emploi', 'pt'], sante: ['l’accès aux soins', 'pt'], transports: ['l’indice transports', 'pt'],
 };
+const LIBELLES_SECTEURS = { sante: 'santé', infrastructures_environnement: 'infrastructures et environnement' };
 const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`;
 
 /** Nom lisible de la cause. */
@@ -78,7 +80,8 @@ export function nomCause(entree, { lois = [], evenements = [], projets } = {}) {
   if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
   if (entree.type === 'loi') return `la loi « ${lois.find((l) => l.id === entree.source)?.titre ?? entree.source} »`;
   if (entree.type === 'evenement') return `votre réponse à « ${evenements.find((e) => `evenement:${e.id}` === entree.source)?.titre ?? 'un événement'} »`;
-  if (entree.type === 'budget') return 'le budget adopté';
+  if (entree.type === 'budget') return entree.source?.startsWith('budget:') ? `les crédits « ${LIBELLES_SECTEURS[entree.source.slice(7)] ?? entree.source.slice(7)} » du budget` : 'le budget adopté';
+  if (entree.type === 'interets') return 'la charge de la dette';
   if (entree.type === 'opinion') return 'l’évolution de l’opinion';
   return 'la conjoncture économique';
 }
@@ -90,7 +93,7 @@ export function phraseExplication(entree, donnees) {
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
-  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
+  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'interets' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;
   return `${cause[0].toUpperCase()}${cause.slice(1)} ${etape} : ${nom} ${valeur}.`;
 }
