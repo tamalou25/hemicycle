@@ -20,6 +20,18 @@
 - **Règle apprise** : toujours lancer `npm run build` avant de commiter (CSS et `sw.js`). `npm test` le vérifie désormais.
 - **Restant (hors code)** : tests sur un vrai téléphone (APK de la CI), build iOS sur Mac, publication sur les stores, recoupement des fonctions des élus, citations vérifiées (0 aujourd'hui), équilibrage par de vraies parties jouées.
 
+## Cap du mandat (Claude, branche `ui-cap-du-mandat`)
+- **Problème** : un joueur a dit « on ne comprend pas grand-chose, il faut un but ».
+- **Fait (interface uniquement)** :
+  - brief « Votre mandat » en tête du Bureau, qui remplace l'ancien bloc des objectifs. Il affiche les mois restants, le bonus de +8 points au bilan, et pour chaque objectif choisi : sa valeur, sa cible et son état « pour l'instant », issus de `evaluerObjectifs` ;
+  - une piste par objectif avec un bouton vers Décisions (filtre adapté, ancien filtre levé), Carte (vue adaptée) ou Budget (Premier ministre). Le nombre de leviers disponibles vient du catalogue du moteur. Ces boutons ne font que naviguer ;
+  - « Comment jouer un mois » est replié ; on y trouve les fins anticipées réelles (popularité < 8 %, censure pour le Premier ministre, présidentielle) ;
+  - une section « Le but » à l'accueil ;
+  - une ancienne partie sans objectifs affiche une explication et des repères. Rien n'est attribué ni modifié.
+- **Moteur, données, migrations** : inchangés. Seul `main.js` change (l'action `onglet` accepte un filtre de Décisions).
+- **Tests** : nouveau `e2e/cap-mandat.spec.js` ; `objectifs.spec.js` adapté. La hauteur mobile du Bureau reste sous la limite existante.
+- **À confirmer** : la compréhension par un vrai débutant.
+
 ## Travail en parallèle (Claude + Codex)
 > **Mise à jour du 03/11/2026 (décision de l'utilisateur)** : Claude reprend **tout**, interface et moteur, jusqu'à la fin des chantiers listés ci-dessous. Le partage décrit ici reste la référence si Codex reprend la main. Chaque sujet garde sa branche et sa PR, et on vérifie toujours `main` avant de merger, pour ne jamais écraser un éventuel commit de Codex.
 

@@ -14,10 +14,10 @@ import { sectionEtatPays, sectionTousIndicateurs } from '../components/etatPays.
 import { sectionCeMois } from '../components/ceMois.js';
 import { briefing, satisfactionNationale, compterDecisions } from '../../engine/index.js';
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
-import { sectionObjectifs } from '../components/objectifs.js';
+import { briefMandat } from '../components/objectifs.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
-import { raisonRefusPLF } from '../../engine/index.js';
+import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
 const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold border rounded-full mr-1 ${p[2]}" title="${p[1]}"><span aria-hidden="true">${p[0]}</span><span class="sr-only">${p[1]} :</span></span>` : ''; };
@@ -52,10 +52,10 @@ function lienDecisions(etat, ctx) {
     <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
 }
 
-function ongletBureau(etat, ctx, donnees, points) {
+function ongletBureau(etat, ctx, donnees, points, brief) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
-  return `${sectionEtatPays(etat)}
+  return `${brief.html}${sectionEtatPays(etat)}
     <section aria-labelledby="h-brief" class="mb-5">
       <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">À traiter</h2>
       ${sectionEvenement(etat, ctx)}
@@ -63,7 +63,6 @@ function ongletBureau(etat, ctx, donnees, points) {
       <ul class="grid md:grid-cols-3 gap-2 mb-1">${points.map(carteBriefing).join('')}</ul>
       ${lienDecisions(etat, ctx)}
     </section>
-    ${sectionObjectifs(etat, { regions: ctx.regions, objectifs: ctx.objectifs })}
     ${sectionCeMois(etat, donnees)}
     ${sectionTousIndicateurs(etat, sat)}
     ${panneauSecteurs(etat, ctx)}
@@ -115,7 +114,9 @@ export function render(racine, etat, dispatch, ctx) {
   const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
-  const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)
+  const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
+    { liste: catalogue(etat, ctx), refusPLF: raisonRefusPLF(etat), dureeMandat: DUREE_MANDAT, seuilDefaite: SEUIL_DEFAITE, points: POINTS_PAR_OBJECTIF }) : null;
+  const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief)
     : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
@@ -133,6 +134,13 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
+    // Pistes du mandat : simple navigation (aucune décision exécutée). Le filtre de Décisions est remplacé
+    // pour qu'un ancien filtre (statut, secteur) ne masque pas le levier proposé.
+    racine.querySelectorAll('[data-piste]').forEach((b) => b.addEventListener('click', () => {
+      const { onglet: o, decisions, vue } = brief.pistes[Number(b.dataset.piste)].aller;
+      if (o === 'decisions') dispatch({ type: 'onglet', onglet: o, decisions: { categorie: '', secteur: '', statut: '', ...decisions }, haut: true });
+      else dispatch({ type: 'onglet', onglet: o, vue, haut: true });
+    }));
     racine.querySelector('[data-aller-budget]')?.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'budget', haut: true }));
     racine.querySelectorAll('[data-brief]').forEach((b) => b.addEventListener('click', () => {
       const pt = points[Number(b.dataset.brief)];

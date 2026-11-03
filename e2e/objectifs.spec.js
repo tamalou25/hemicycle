@@ -21,11 +21,11 @@ test('choisir 3 objectifs non défaut, les voir au Bureau', async ({ page }) => 
   await expect(fs.getByRole('checkbox', { name: /Apaiser le pays/ })).toBeDisabled();
   expect(await cases.evaluateAll((l) => l.filter((c) => !c.disabled && !c.checked).length)).toBe(0);
   await page.getByRole('button', { name: 'Commencer' }).click();
-  const bloc = page.getByRole('region', { name: 'Objectifs du mandat' });
+  const bloc = page.getByRole('region', { name: 'Votre mandat' });
   await expect(bloc).toBeVisible();
-  for (const t of choix) await expect(bloc.getByText(t)).toBeVisible();
-  await expect(bloc.getByText('Évalués en fin de mandat')).toBeVisible();
-  await expect(bloc.getByText(/Atteint|En cours/)).toHaveCount(3);
+  for (const t of choix) await expect(bloc.getByText(t, { exact: true })).toBeVisible();
+  await expect(bloc.getByText('60 mois restants sur 60.')).toBeVisible();
+  await expect(bloc.getByText(/Atteinte pour l’instant|Pas encore atteinte/)).toHaveCount(3);
   expect(erreurs).toEqual([]);
 });
 
