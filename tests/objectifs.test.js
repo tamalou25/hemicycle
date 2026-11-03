@@ -53,3 +53,19 @@ describe('objectifs de mandat', () => {
     expect(importerPartie(exporterPartie(e))).toEqual(e);
   });
 });
+
+describe('défis et objectifs (revue PR #21)', () => {
+  it('un défi transmet les objectifs choisis ; la partie relevée a le même barème', async () => {
+    const { encoderDefi, decoderDefi } = await import('../src/engine/index.js');
+    const e = partie(['dette', 'reformes', 'confiance']);
+    const d = decoderDefi(encoderDefi({ graine: e.graineInitiale, joueur: { ...e.joueur, objectifs: e.objectifs } }));
+    const relevee = creerPartie({ ...d, situation: lire('situation.json'), ...donnees });
+    expect(relevee.objectifs).toEqual(['dette', 'reformes', 'confiance']);
+  });
+  it('un défi piégé ne peut pas imposer d’objectifs invalides', async () => {
+    const { decoderDefi } = await import('../src/engine/index.js');
+    const code = btoa(JSON.stringify({ v: 1, g: 1, j: { n: 'x', o: ['<script>', 42, 'dette'] } }));
+    const relevee = creerPartie({ ...decoderDefi(code), situation: lire('situation.json'), ...donnees });
+    expect(relevee.objectifs).toEqual(objectifs.defaut);
+  });
+});

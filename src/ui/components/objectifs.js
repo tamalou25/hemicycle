@@ -32,6 +32,7 @@ export function brancherObjectifs(racine, catalogue, st) {
     if (go) go.disabled = st.objectifs.length !== n || (go.dataset.elu === '1' && !racine.querySelector('[name=elu]:checked'));
   };
   cases.forEach((c) => c.addEventListener('change', maj));
+  maj(); // à chaque rendu : l'état du bouton « Commencer » reflète toujours le choix réel
 }
 
 const UNITES = { chomage: ' %', deficit: ' %', dette: ' %', popularite: ' %', reformes: ' lois', programmes: ' programmes' };

@@ -28,3 +28,14 @@ test('choisir 3 objectifs non défaut, les voir au Bureau', async ({ page }) => 
   await expect(bloc.getByText(/Atteint|En cours/)).toHaveCount(3);
   expect(erreurs).toEqual([]);
 });
+
+test('élu réel : décocher un objectif puis changer de filtre laisse « Commencer » désactivé', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: 'Jouer un élu réel' }).click();
+  await page.locator('input[name=elu]').first().check();
+  await page.locator('input[name=objectif]:checked').first().uncheck();
+  const filtre = page.locator('#fp');
+  await filtre.selectOption({ index: 1 });
+  await expect(page.locator('#go')).toBeDisabled();
+});
