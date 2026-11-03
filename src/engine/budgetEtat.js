@@ -4,6 +4,7 @@
 import { planifierEffets } from './effects.js';
 import { groupesAssemblee, voterChambre, voterCensure, ecartIdeologique, accordActif } from './parliament.js';
 import { SEUIL_OPPOSITION } from './constants.js';
+import { reagir } from './relations.js';
 
 export const SECTEURS = ['protection_sociale', 'sante', 'education', 'defense_securite', 'infrastructures_environnement', 'recherche', 'administration_autres'];
 export const RECETTES = ['impots_menages', 'impots_entreprises', 'tva_consommation', 'cotisations_sociales'];
@@ -163,7 +164,8 @@ export function voterPLF(etat, { partis }) {
     return { ...etat, plf: null, dernierPLF: etat.tour, journal, chocs: { ...(etat.chocs ?? {}), 'loi-speciale': -1.5 }, indicateurs: { ...etat.indicateurs, popularite: Math.max(0, etat.indicateurs.popularite - 2) } };
   }
   journal.push({ tour: etat.tour, type: 'budget', texte: 'Loi de finances promulguée.' });
-  return appliquerPLF({ ...etat, plf: null, dernierPLF: etat.tour, journal }, plf);
+  const rx = reagir(etat, partis, { theme: 'fiscalite', orientation: orientationPLF(plf), source: 'budget:plf', libelle: 'la loi de finances' });
+  return appliquerPLF({ ...etat, plf: null, dernierPLF: etat.tour, journal, relations: rx.relations, explications: [...(etat.explications ?? []), ...rx.entrees] }, plf);
 }
 
 /**

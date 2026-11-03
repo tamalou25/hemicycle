@@ -31,6 +31,7 @@ export {
 export { resultats, satisfactionGroupe, confianceMoyenne, voteJoueurParGroupe, siegesParRegion, RESULTATS } from './groupes.js';
 export { engagerPolitique, raisonRefusPolitique, evoluerSecteurs, secteursInitiaux } from './secteurs.js';
 export { catalogueDecisions, filtrerDecisions, compterDecisions, CATEGORIES, SECTEURS_DECISION } from './decisions.js';
+export { relationsInitiales, reactionParti, reagir, bonusVote, bonusTolerance, attitudeCensure, RELATION_NEUTRE } from './relations.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

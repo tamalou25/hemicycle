@@ -64,7 +64,7 @@ export function prevoir(etat, horizon = 6) {
 
 /** Les n explications les plus marquantes d'un mois (hors bruit). */
 export const principales = (registre, tour, n = 5) =>
-  (registre ?? []).filter((e) => e.tour === tour && (!e.region || e.type === 'projet')).sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
+  (registre ?? []).filter((e) => e.tour === tour && (!e.region || e.type === 'projet') && e.type !== 'relation').sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
 
 const LIBELLES = {
   chomage: ['le chômage', 'pt'], croissance: ['la croissance', 'pt'], deficit: ['le déficit', 'pt de PIB'],
@@ -90,6 +90,10 @@ export function nomCause(entree, { lois = [], evenements = [], projets, politiqu
 
 /** Phrase explicative, au présent pour l'observé, au futur pour la prévision. */
 export function phraseExplication(entree, donnees) {
+  if (entree.type === 'relation') {
+    const sigle = donnees?.partis?.find((p) => p.id === entree.parti)?.sigle ?? entree.parti;
+    return `${sigle} ${entree.delta > 0 ? 'approuve' : 'désapprouve'} ${entree.libelle ? `« ${entree.libelle} »` : 'votre décision'} : relation ${fmt(entree.delta)} pt (simulation).`;
+  }
   const [nom, unite] = LIBELLES[entree.indicateur] ?? (entree.indicateur?.startsWith('secteur:') ? [`le niveau « ${donnees?.politiques?.secteurs?.[entree.secteur]?.nom ?? entree.secteur} »`, 'pt'] : [entree.indicateur, '']);
   const cause = nomCause(entree, donnees);
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;

@@ -12,6 +12,7 @@ import { avancerProjets } from './projets.js';
 import { renouvelerEnveloppe } from './finances.js';
 import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
 import { evoluerSecteurs } from './secteurs.js';
+import { reagir, estomperRelations } from './relations.js';
 import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
 
@@ -34,7 +35,16 @@ export function tourSuivant(etatInitial, donnees) {
     const ev = donnees.evenements.find((e) => e.id === etat.evenement);
     etat = ev ? resoudreEvenement(etat, ev.choix.length - 1, donnees) : { ...etat, evenement: null };
   }
+  const loisAvant = etat.loisAdoptees.length;
   ({ etat, graine: g } = avancerNavette(etat, donnees, g));
+  // E5 : réaction des partis aux lois promulguées ce mois-ci
+  for (const id of etat.loisAdoptees.slice(loisAvant)) {
+    const loi = donnees.lois?.find((l) => l.id === id);
+    if (loi && etat.relations) {
+      const rx = reagir(etat, partis, { theme: loi.theme, orientation: loi.orientation, source: id, libelle: loi.titre });
+      etat = { ...etat, relations: rx.relations, explications: [...(etat.explications ?? []), ...rx.entrees] };
+    }
+  }
   ({ etat, graine: g } = censureSpontanee(etat, donnees, g));
   etat = voterPLF(etat, donnees); // projet de loi de finances en discussion ce mois-ci
   if (etat.fin) return { ...etat, graine: g };
@@ -88,7 +98,7 @@ export function tourSuivant(etatInitial, donnees) {
     entreesGroupes = gr.entrees;
     bonusConfiance = ((confianceMoyenne(etat.groupes, donnees.groupes) ?? 40) - 40) * 0.5;
   }
-  etat = { ...etat, chocs: {} };
+  etat = { ...etat, chocs: {}, relations: estomperRelations(etat.relations) };
 
   // 3. Popularité : converge à 15 %/mois vers la cible
   const cible = populariteCible(ind, etat.joueur.competences) + bonusTerritoires + bonusConfiance;
