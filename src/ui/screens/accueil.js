@@ -17,7 +17,8 @@ export function render(racine, etat, dispatch, ctx) {
         </label>
       </div>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <button type="button" class="btn btn-p" id="nouvelle" ${ctx.accepte ? '' : 'disabled'}>Nouvelle partie</button>
+        <button type="button" class="btn btn-p" id="nouvelle" ${ctx.accepte ? '' : 'disabled'}>Créer mon personnage</button>
+        <button type="button" class="btn btn-p" id="elu" ${ctx.accepte ? '' : 'disabled'}>Jouer un élu réel</button>
         <button type="button" class="btn btn-s" id="reprendre" ${ctx.accepte && sauv ? '' : 'disabled'}>Reprendre</button>
         <label class="btn btn-s cursor-pointer ${ctx.accepte ? '' : 'opacity-55'}" for="import">Importer une sauvegarde</label>
         <input type="file" id="import" accept="application/json,.json" class="sr-only" ${ctx.accepte ? '' : 'disabled'}>
@@ -26,6 +27,7 @@ export function render(racine, etat, dispatch, ctx) {
     </section>`;
   racine.querySelector('#accept').addEventListener('change', (e) => dispatch({ type: 'accepter', valeur: e.target.checked }));
   racine.querySelector('#nouvelle').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'creation' }));
+  racine.querySelector('#elu').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'choixElu' }));
   racine.querySelector('#reprendre').addEventListener('click', () => dispatch({ type: 'reprendre' }));
   racine.querySelector('#import').addEventListener('change', async (e) => {
     const f = e.target.files?.[0];

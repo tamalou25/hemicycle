@@ -3,6 +3,7 @@ import { dateDuTour, raisonRefus } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { carteLoi } from '../components/carteLoi.js';
 import { blocVote, blocSondage } from '../components/vote.js';
+import { sectionReactions } from '../components/reactions.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
@@ -27,6 +28,7 @@ export function render(racine, etat, dispatch, ctx) {
     <header class="flex flex-wrap items-end justify-between gap-3 mb-4">
       <div>
         <h1 class="font-serif font-bold text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
+        ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
         <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))} · mois ${etat.tour} sur 60</p>
       </div>
       <div class="flex gap-2 flex-wrap">
@@ -45,6 +47,8 @@ export function render(racine, etat, dispatch, ctx) {
     </section>
 
     ${sectionParlement(etat, ctx)}
+
+    ${sectionReactions(etat, ctx)}
 
     <div class="grid lg:grid-cols-2 gap-6 mb-6">
       <section aria-labelledby="h-son" class="bg-carte border border-bord rounded-lg p-4">
