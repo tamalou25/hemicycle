@@ -119,7 +119,8 @@ export function render(racine, etat, dispatch, ctx) {
   const d = dateDuTour(etat);
   const parti = partis.find((p) => p.id === etat.joueur.parti);
   const onglet = ONGLETS.some(([id]) => id === ctx.onglet) ? ctx.onglet : 'bureau';
-  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
+  // Toutes les définitions nécessaires aux phrases d'explication (programmes, partis…)
+  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)

@@ -20,7 +20,7 @@ export function raisonRefusPolitique(etat, politique, pol) {
   for (const req of politique.prerequis ?? []) {
     const p = (etat.politiques ?? []).find((x) => x.id === req);
     const nom = pol.politiques.find((x) => x.id === req)?.titre ?? req;
-    if (!p || p.statut === 'preparation') return `Prérequis : « ${nom} » doit être en œuvre.`;
+    if (!p || p.statut !== 'en_oeuvre') return `Prérequis : « ${nom} » doit être en œuvre.`;
   }
   for (const [s, min] of Object.entries(politique.niveau_min ?? {})) {
     if ((etat.secteurs[s] ?? 0) < min) return `Prérequis : niveau ${pol.secteurs[s]?.nom ?? s} ≥ ${min} (actuel ${Math.round(etat.secteurs[s])}).`;
