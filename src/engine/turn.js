@@ -11,6 +11,7 @@ import { evoluerTerritoires, satisfactionNationale } from './territoires.js';
 import { avancerProjets } from './projets.js';
 import { renouvelerEnveloppe } from './finances.js';
 import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
+import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
 
 /**
@@ -70,16 +71,36 @@ export function tourSuivant(etatInitial, donnees) {
   // 2 ter. Finances publiques : PIB, dette, charge d'intérêts (révisée en janvier)
   if (etat.budget) etat = evoluerBudget({ ...etat, indicateurs: ind }, dateDuTour({ ...etat, tour }).mois).etat;
 
+  // 2 quater. Population (E3) : satisfaction et confiance des groupes sociaux
+  let entreesGroupes = [];
+  let bonusConfiance = 0;
+  if (etat.groupes && donnees.groupes) {
+    const gr = evoluerGroupes({ ...etat, indicateurs: ind }, donnees, etat.chocs ?? {}, tour);
+    etat = { ...etat, groupes: gr.groupes };
+    entreesGroupes = gr.entrees;
+    bonusConfiance = ((confianceMoyenne(etat.groupes, donnees.groupes) ?? 40) - 40) * 0.5;
+  }
+  etat = { ...etat, chocs: {} };
+
   // 3. Popularité : converge à 15 %/mois vers la cible
-  const cible = populariteCible(ind, etat.joueur.competences) + bonusTerritoires;
+  const cible = populariteCible(ind, etat.joueur.competences) + bonusTerritoires + bonusConfiance;
   [n, g] = bruit(g, 1);
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
+  // E3 : la part du parti du joueur dépend de la confiance des groupes sociaux
+  if (etat.groupes && donnees.groupes) {
+    const base = sondage.intentions[etat.joueur.parti] ?? 0;
+    const part = voteJoueurNational(etat.groupes, donnees.groupes, base);
+    const autres = 100 - base;
+    for (const k of Object.keys(sondage.intentions)) if (k !== etat.joueur.parti) sondage.intentions[k] = Math.round((sondage.intentions[k] * (100 - part) / (autres || 1)) * 10) / 10;
+    sondage.intentions[etat.joueur.parti] = Math.round(part * 10) / 10;
+    sondage.parGroupe = voteJoueurParGroupe(etat.groupes, donnees.groupes, base);
+  }
 
   // 6. Fin de partie
   let fin = null;

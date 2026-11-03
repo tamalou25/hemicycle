@@ -97,7 +97,7 @@ export function deposerPLF(etat, choix) {
 export function recourir493PLF(etat) {
   if (!etat.plf) throw new Error('Aucun projet de loi de finances en discussion.');
   if (etat.plf.recours493) throw new Error('49.3 déjà engagé sur le budget.');
-  return { ...etat, plf: { ...etat.plf, recours493: true }, journal: [...etat.journal, { tour: etat.tour, type: '493', texte: 'Le gouvernement engage sa responsabilité (49.3) sur le budget.' }] };
+  return { ...etat, plf: { ...etat.plf, recours493: true }, chocs: { ...(etat.chocs ?? {}), '49.3': -3 }, journal: [...etat.journal, { tour: etat.tour, type: '493', texte: 'Le gouvernement engage sa responsabilité (49.3) sur le budget.' }] };
 }
 
 /** Applique un PLF adopté : nouveaux montants, effets différés (déficit, secteurs, recettes). */
@@ -159,7 +159,7 @@ export function voterPLF(etat, { partis }) {
   }
   if (!adopte) {
     journal.push({ tour: etat.tour, type: 'budget', texte: 'Faute de budget, une loi spéciale reconduit les crédits de l’année précédente.' });
-    return { ...etat, plf: null, dernierPLF: etat.tour, journal, indicateurs: { ...etat.indicateurs, popularite: Math.max(0, etat.indicateurs.popularite - 2) } };
+    return { ...etat, plf: null, dernierPLF: etat.tour, journal, chocs: { ...(etat.chocs ?? {}), 'loi-speciale': -1.5 }, indicateurs: { ...etat.indicateurs, popularite: Math.max(0, etat.indicateurs.popularite - 2) } };
   }
   journal.push({ tour: etat.tour, type: 'budget', texte: 'Loi de finances promulguée.' });
   return appliquerPLF({ ...etat, plf: null, dernierPLF: etat.tour, journal }, plf);

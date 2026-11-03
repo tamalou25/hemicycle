@@ -74,6 +74,7 @@ export function recourir493(etat, { lois }) {
     texte: { ...etat.texte, recours493: true },
     // Coût d'image immédiat : passage en force
     indicateurs: { ...ind, popularite: borner('popularite', ind.popularite - 3), tensions: borner('tensions', ind.tensions + 6) },
+    chocs: { ...(etat.chocs ?? {}), '49.3': -3 }, // perte de confiance de tous les groupes
     journal: ajouterJournal(etat, '493', `Le gouvernement engage sa responsabilité (49.3) sur « ${loi?.titre} ».`),
   };
 }

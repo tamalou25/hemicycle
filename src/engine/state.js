@@ -3,6 +3,7 @@ import { AXES, COMPETENCES, ROLES, VERSION_SAUVEGARDE } from './constants.js';
 import { initialiserTerritoires, satisfactionNationale } from './territoires.js';
 import { financesInitiales } from './finances.js';
 import { budgetInitial } from './budgetEtat.js';
+import { initialiserGroupes } from './groupes.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -12,7 +13,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -20,7 +21,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
   const d = dateDepart ?? situation?.date_collecte ?? '2026-11-01';
   const [annee, mois] = d.split('-').map(Number);
 
-  return {
+  const etat = {
     version: VERSION_SAUVEGARDE,
     graine: graine >>> 0,
     graineInitiale: graine >>> 0, // pour rejouer / partager la partie en défi
@@ -68,6 +69,8 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
     fin: null,
   };
+  // Population (E3) : calculée sur l'état initial complet
+  return { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
 }
 
 /** Date affichable du tour courant. */
@@ -84,8 +87,9 @@ export function etatTerritorial(regions, projets) {
 }
 
 /** Complète une partie qui n'a pas encore de territoires (sauvegarde antérieure à E1). */
-export function assurerTerritoires(etat, { regions, projets, finances }) {
+export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage }) {
   let e = etat.territoires ? etat : { ...etat, ...etatTerritorial(regions, projets) };
   if (!e.budget && finances) e = { ...e, budget: budgetInitial(finances), plf: null, dernierPLF: null };
+  if (!e.groupes && groupes) e = { ...e, groupes: initialiserGroupes(e, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
   return e;
 }

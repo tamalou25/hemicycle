@@ -13,6 +13,7 @@ export function importerPartie(texte) {
   if (etat.version === 3) etat = { ...etat, version: 4, evenement: null, evenementsPasses: [], dernierBudget: null };
   if (etat.version === 4) etat = { ...etat, version: 5, territoires: null, projets: [], finances: null, satisfactionInitiale: null };
   if (etat.version === 5) etat = { ...etat, version: 6, budget: null, plf: null, dernierPLF: null };
+  if (etat.version === 6) etat = { ...etat, version: 7, groupes: null, chocs: {} };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -45,7 +46,7 @@ function assainir(e) {
     amendements: nb(e.texte.amendements), depot: nb(e.texte.depot),
   } : null;
   const s = e.sondage && typeof e.sondage === 'object'
-    ? { tour: nb(e.sondage.tour), popularite: nb(e.sondage.popularite), intentions: nombres(e.sondage.intentions) ?? {} }
+    ? { tour: nb(e.sondage.tour), popularite: nb(e.sondage.popularite), intentions: nombres(e.sondage.intentions) ?? {}, ...(e.sondage.parGroupe ? { parGroupe: nombres(e.sondage.parGroupe) ?? {} } : {}) }
     : null;
   return {
     version: VERSION_SAUVEGARDE,
@@ -110,9 +111,15 @@ function assainir(e) {
       depenses: nombres(e.plf.depenses) ?? {}, recettes: nombres(e.plf.recettes) ?? {}, depot: nb(e.plf.depot), recours493: bool(e.plf.recours493),
     } : null,
     dernierPLF: nbOuNull(e.dernierPLF),
+    groupes: e.groupes && typeof e.groupes === 'object' && !Array.isArray(e.groupes)
+      ? Object.fromEntries(Object.entries(e.groupes).slice(0, 20).map(([id, g]) => [id.slice(0, 50), {
+        satisfaction: nb(g?.satisfaction, 50), confiance: nb(g?.confiance, 40), confianceInitiale: nb(g?.confianceInitiale, 40) }]))
+      : null,
+    chocs: nombres(e.chocs) ?? {},
     explications: liste(e.explications, (x) => ({
+      ...(typeof x.groupe === 'string' ? { groupe: x.groupe.slice(0, 60) } : {}),
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),
