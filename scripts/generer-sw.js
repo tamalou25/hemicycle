@@ -2,7 +2,7 @@
 // dérivée de leur contenu : toute modification d'un fichier change la version du cache.
 // Usage : npm run build:sw (la CI vérifie que sw.js commité est à jour).
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const RACINE = process.cwd();
@@ -40,5 +40,12 @@ self.addEventListener('fetch', (e) => {
     e.request.mode === 'navigate' ? caches.match('./index.html') : Response.error())));
 });
 `;
-writeFileSync(join(RACINE, 'sw.js'), sw);
-console.log(`sw.js : ${fichiers.length} fichiers, version ${version}`);
+// --verifier : ne réécrit rien, échoue si sw.js commité n'est pas à jour (utilisé par les tests)
+if (process.argv.includes('--verifier')) {
+  const actuel = existsSync(join(RACINE, 'sw.js')) ? readFileSync(join(RACINE, 'sw.js'), 'utf8') : '';
+  if (actuel !== sw) { console.error('sw.js n’est pas à jour : lancez « npm run build » puis commitez sw.js.'); process.exit(1); }
+  console.log(`sw.js à jour (version ${version})`);
+} else {
+  writeFileSync(join(RACINE, 'sw.js'), sw);
+  console.log(`sw.js : ${fichiers.length} fichiers, version ${version}`);
+}

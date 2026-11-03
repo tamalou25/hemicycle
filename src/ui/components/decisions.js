@@ -4,6 +4,8 @@ import { reactionProbable } from './relations.js';
 import { catalogueDecisions, filtrerDecisions, compterDecisions, CATEGORIES, SECTEURS_DECISION } from '../../engine/index.js';
 
 export const STATUTS = [['disponible', 'Disponibles'], ['en_cours', 'En cours'], ['bloque', 'Bloquées'], ['fait', 'Faites']];
+/** Au-delà, une catégorie se replie derrière « Afficher les N autres » (lisibilité sur mobile). */
+const LIMITE_PAR_CATEGORIE = 6;
 const STATUT_LIB = { disponible: 'Disponible', en_cours: 'En cours', bloque: 'Bloquée', fait: 'Faite', urgent: 'Urgent' };
 const STATUT_CLS = {
   disponible: 'bg-[#DCEBDD] text-[#1F6E43] border-[#1F6E43]', en_cours: 'bg-[#DDE7F7] text-bleu border-bleu',
@@ -52,7 +54,7 @@ function carte(x, i, etat, ctx) {
     <p class="text-sm text-doux line-clamp-1 mt-1" title="${esc(x.resume)}">${esc(x.resume)}</p>
     ${meta.length ? `<p class="text-xs mt-1">${meta.map(esc).join(' · ')}</p>` : ''}
     ${x.contrepartie ? `<p class="text-xs text-doux mt-1"><strong>Contrepartie :</strong> ${esc(x.contrepartie)}</p>` : ''}
-    ${reactionDe(x, etat, ctx)}
+    ${(() => { const r = reactionDe(x, etat, ctx); return r ? `<details class="mt-1 text-xs"><summary class="cursor-pointer text-bleu underline min-h-[32px] flex items-center">Réaction probable des partis</summary>${r}</details>` : ''; })()}
     ${afficheBouton ? `<div class="mt-2"><button type="button" id="dec-${i}" data-decision="${i}" class="btn ${urgent ? 'btn-p' : 'btn-s'}" ${bloque ? `disabled aria-describedby="${rid}"` : ''}>${esc(bouton)}</button>
       ${bloque ? `<p id="${rid}" class="text-xs text-doux mt-1">${esc(x.raison)}</p>` : ''}</div>` : ''}
   </li>`;
@@ -88,18 +90,23 @@ export function ongletDecisions(etat, ctx) {
   const groupes = Object.entries(CATEGORIES).map(([cat, titre]) => {
     const liste = affichees.filter((x) => x.categorie === cat);
     if (!liste.length) return '';
+    const tout = ctx.decisionsEtendues?.[cat] || liste.length <= LIMITE_PAR_CATEGORIE;
+    const visibles = tout ? liste : liste.slice(0, LIMITE_PAR_CATEGORIE);
+    const cartes = visibles.map((x) => carte(x, idx++, etat, ctx)).join('');
+    idx += liste.length - visibles.length; // décisions masquées : on garde l'alignement des index
+    const plus = tout ? '' : `<button type="button" class="btn btn-s mt-3 w-full sm:w-auto" data-etendre="${cat}">Afficher les ${liste.length - visibles.length} autres</button>`;
     return `<section aria-labelledby="h-cat-${cat}" class="mb-6"><h3 id="h-cat-${cat}" class="font-serif font-bold text-lg border-b border-bord pb-1 mb-2">${esc(titre)} <span class="text-sm font-normal text-doux">(${liste.length})</span></h3>
-      <ul class="grid md:grid-cols-2 gap-3">${liste.map((x) => carte(x, idx++, etat, ctx)).join('')}</ul></section>`;
+      <ul class="grid md:grid-cols-2 gap-3">${cartes}</ul>${plus}</section>`;
   }).join('');
   const vide = !affichees.length ? '<p class="p-4 border border-bord bg-carte rounded-lg text-doux" role="status">Aucune décision ne correspond à ces filtres.</p>' : '';
 
   return `<section aria-labelledby="h-dec">
     <h2 id="h-dec" class="font-serif font-bold text-xl mb-1">Décisions</h2>
     <p class="text-sm text-doux mb-3">Toutes vos actions au même endroit : lois, programmes, projets en région, négociations. Capital politique : <strong>${etat.joueur.capital}</strong>/10.</p>
-    ${urgentes.length ? `<ul class="mb-4 space-y-3" role="alert" aria-label="Décision urgente">${urgentes.map((x, i) => carte(x, i, etat, ctx)).join('')}</ul>` : ''}
+    ${urgentes.length ? `<div role="alert" aria-label="Décision urgente" class="mb-4"><ul class="space-y-3">${urgentes.map((x, i) => carte(x, i, etat, ctx)).join('')}</ul></div>` : ''}
     <div class="mb-4 space-y-2" role="group" aria-label="Filtres des décisions">
-      <div role="group" aria-label="Catégorie" class="flex flex-wrap gap-2">${pCat}</div>
-      <div role="group" aria-label="Statut" class="flex flex-wrap gap-2 items-center">${pStat}</div>
+      <div role="group" aria-label="Catégorie" class="flex gap-2 overflow-x-auto sm:flex-wrap pb-1 [&>*]:shrink-0">${pCat}</div>
+      <div role="group" aria-label="Statut" class="flex gap-2 items-center overflow-x-auto sm:flex-wrap pb-1 [&>*]:shrink-0">${pStat}</div>
       <div><label for="f-secteur" class="text-sm mr-2">Secteur</label>
         <select id="f-secteur" class="champ !w-auto max-w-full"><option value="">Tous les secteurs</option>${options}</select></div>
     </div>
@@ -115,6 +122,7 @@ export function brancherDecisions(racine, dispatch, ctx) {
   racine.querySelectorAll('[data-f-cat]').forEach((b) => b.addEventListener('click', () => maj({ categorie: b.dataset.fCat })));
   racine.querySelectorAll('[data-f-stat]').forEach((b) => b.addEventListener('click', () => maj({ statut: filtres(ctx).statut === b.dataset.fStat ? '' : b.dataset.fStat })));
   racine.querySelector('#f-secteur').addEventListener('change', (e) => maj({ secteur: e.target.value }));
+  racine.querySelectorAll('[data-etendre]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'ui', patch: { decisionsEtendues: { ...(ctx.decisionsEtendues ?? {}), [b.dataset.etendre]: true } } })));
   const dlg = racine.querySelector('#dlg-decision');
   racine.querySelectorAll('[data-decision]').forEach((b) => b.addEventListener('click', () => {
     const x = ctx.decisionsAffichees[Number(b.dataset.decision)];

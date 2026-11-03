@@ -11,3 +11,12 @@ export async function ouvrirOnglet(page, nom) {
 
 /** Premier texte visible correspondant (la date apparaît dans plusieurs barres, une seule est visible selon l'écran). */
 export const texteVisible = (page, motif) => page.getByText(motif).locator('visible=true').first();
+
+/** Déplie toutes les catégories de l'onglet Décisions (6 décisions affichées par défaut). */
+export async function toutAfficherDecisions(page) {
+  for (let i = 0; i < 6; i++) {
+    const b = page.locator('[data-etendre]').first();
+    if (!(await b.count())) return;
+    await b.click();
+  }
+}
