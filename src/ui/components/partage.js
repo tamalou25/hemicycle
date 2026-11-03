@@ -1,3 +1,5 @@
+/** Adresse publique du jeu (GitHub Pages), utilisée pour les liens partagés depuis l'application mobile. */
+export const URL_PUBLIQUE = 'https://tamalou25.github.io/hemicycle/';
 // Partage d'un défi (graine + personnage) par lien, sans serveur.
 import { encoderDefi } from '../../engine/index.js';
 import { esc } from '../util.js';
@@ -9,7 +11,10 @@ export const TEXTE_PARTAGE = 'Même départ, même hasard : saurez-vous faire mi
 export function lienDefi(etat) {
   if (!etat || etat.graineInitiale == null) return null;
   try {
-    return `${location.origin}${location.pathname}#defi=${encoderDefi({ graine: etat.graineInitiale, joueur: etat.joueur })}`;
+    // Dans l'application mobile (Capacitor), l'adresse locale n'est pas partageable : on renvoie vers le site public
+    const natif = globalThis.Capacitor?.isNativePlatform?.() === true;
+    const base = natif ? URL_PUBLIQUE : `${location.origin}${location.pathname}`;
+    return `${base}#defi=${encoderDefi({ graine: etat.graineInitiale, joueur: etat.joueur })}`;
   } catch { return null; }
 }
 

@@ -54,3 +54,21 @@ describe('relations avec les partis (E5)', () => {
     expect(importerPartie(exporterPartie(e))).toEqual(e);
   });
 });
+
+describe('corrections (revue sur E5)', () => {
+  it('le seuil d’accord affiché inclut la relation', async () => {
+    const { catalogueDecisions } = await import('../src/engine/index.js');
+    const e = partie();
+    const seuil = (rel) => Number(catalogueDecisions({ ...e, relations: { ...e.relations, rn: rel } }, donnees).find((x) => x.id === 'accord:rn').resume.match(/jusqu’à (\d+)/)[1]);
+    expect(seuil(100) - seuil(50)).toBe(25);
+  });
+  it('la réaction suit l’orientation du texte promulgué (amendé), pas celle du catalogue', () => {
+    const loi = lois.find((l) => l.id === 'fiscalite-baisse-impots');
+    const e = { ...partie(), texte: { loiId: loi.id, etape: 'conseil', orientation: 37, facteur: 0.64, recours493: false, amendements: 2 }, graine: 999 };
+    const apres = tourSuivant(e, donnees);
+    if (apres.loisAdoptees.includes(loi.id)) {
+      const x = apres.explications.find((y) => y.type === 'relation' && y.parti === 'rn' && y.source === loi.id);
+      expect(x.delta).toBeCloseTo(reactionParti(P('rn'), 'fiscalite', 37), 1);
+    }
+  });
+});
