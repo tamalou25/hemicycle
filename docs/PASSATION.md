@@ -4,7 +4,8 @@
 - **Branche de référence** : `main`, au commit `687caa0` (merge de la PR #15). Toutes les étapes E0 à E7 et les correctifs de revue y sont intégrés.
 - **En ligne** : https://tamalou25.github.io/hemicycle/ (PWA installable, jouable hors ligne). Un APK Android de test est produit par la CI (workflow « Application Android »).
 - **Tests exécutés sur `687caa0`** : Vitest 130/130 (13 fichiers) ; Playwright 14/14 (ordinateur et mobile). La CI est verte sur les jobs `test`, `e2e` et `apk`.
-- **Interface (Claude), chantier 1** : branche `ui-design`. Navigation mobile en bas, Bureau réorganisé (voir `docs/DESIGN-UI.md`). Aucun changement du moteur, des données ni de `tests/`.
+- **Interface (Claude), chantier 1 : mergé** (PR #17, `main` = `41b77b6`). Navigation mobile en bas avec « Mois suivant » toujours visible ; Bureau réorganisé (État du pays, À traiter avec actions, Ce mois-ci). Hauteur mobile environ 1 600 à 1 700 px, contre 2 393 avant. Tests : Vitest 130/130, Playwright 22/22. Aucun changement du moteur, des données ni de `tests/`. La branche `ui-design` continue à partir de `main` pour le chantier 2.
+- **Prochain chantier d'interface** : compacter la carte d'événement (environ 900 px) ; audit de contraste automatisé ; onglets Décisions, Carte et Budget sur mobile.
 - **Branche Codex `phase-E3-population`** : jamais mergée, devenue obsolète (voir la section E3).
 
 ## Travail en parallèle (Claude + Codex)
