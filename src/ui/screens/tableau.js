@@ -2,6 +2,7 @@ import { esc, fmt, MOIS } from '../util.js';
 import { dateDuTour } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { blocVote, blocSondage } from '../components/vote.js';
+import { sectionRelations } from '../components/relations.js';
 import { sectionReactions } from '../components/reactions.js';
 import { sectionElections, brancherElections } from '../components/elections.js';
 import { sectionEvenement, brancherEvenement } from '../components/evenement.js';
@@ -79,7 +80,8 @@ function ongletBureau(etat, ctx, donnees, points) {
 
 function ongletParlement(etat, ctx) {
   const { lois, partis } = ctx;
-  return `${sectionParlement(etat, ctx)}
+  return `${sectionRelations(etat, ctx)}
+    ${sectionParlement(etat, ctx)}
     ${sectionReactions(etat, ctx)}
     <div class="grid gap-6 mb-6">
       <section aria-labelledby="h-vote" class="bg-carte border border-bord rounded-lg p-4">
