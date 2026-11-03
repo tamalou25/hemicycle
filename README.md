@@ -28,6 +28,11 @@ npm test
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
+### Phase 3 : Politiciens réels
+- Mode « jouer un élu » : 15 personnalités actuelles, avec leur fonction sourcée et des avatars à initiales (aucune photo)
+- Réactions probables au texte en cours, sans guillemets et avec un badge **SIMULATION**
+- Section prévue pour les citations vérifiées : aucune n'a pu être sourcée à l'identique, donc aucune n'est incluse
+
 ### Phase 2 : Institutions
 - Rôle au choix : député·e, ou Premier ministre (fictif)
 - Navette parlementaire : Assemblée, Sénat, CMP, lecture définitive, Conseil constitutionnel
@@ -43,4 +48,4 @@ npm test
 - Sondage mensuel
 - Sauvegarde automatique, plus export et import d'un fichier JSON
 
-Roadmap : politiciens réels, élections, profondeur, et enfin le volet social. Voir `CLAUDE.md`.
+Roadmap : élections, profondeur, et enfin le volet social. Voir `CLAUDE.md`.
