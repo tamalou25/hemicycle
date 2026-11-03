@@ -44,3 +44,16 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 ## Calendrier électoral (collecte 2026-11-03)
 - Échéances déduites de la Constitution (art. 6, 7, 12) et du code électoral, à partir des scrutins de 2022 et 2024 : Légifrance (https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000571356) et Conseil constitutionnel.
 - Résultats électoraux du jeu : **entièrement simulés**, exprimés par parti.
+
+## Fond de carte
+- Fichier : `src/data/carte-regions.json` (13 régions métropolitaines + 5 DROM, chemins SVG, ~45 Ko).
+- Source : dépôt gregoiredavid/france-geojson (`regions-avec-outre-mer.geojson`) — https://github.com/gregoiredavid/france-geojson . Tracés : IGN, ADMIN EXPRESS COG (édition 2018) ; noms et codes : INSEE, Code officiel géographique (millésime 2018).
+- Licence : Licence Ouverte / Open Licence (Etalab), conditions d'ADMIN EXPRESS, comme indiqué par le README du dépôt (le dépôt n'a pas de fichier LICENSE propre). Exigence : mentionner la paternité (producteur IGN/INSEE) et la date/source des données.
+- Attribution affichée : « Contours : IGN, ADMIN EXPRESS COG 2018 ; noms et codes : INSEE (COG 2018) ; via gregoiredavid/france-geojson ; données simplifiées et reprojetées par le projet. Licence Ouverte / Open Licence (Etalab). »
+- Traitements (mapshaper, hors projet) : métropole reprojetée en conique conforme (Lambert, parallèles 44°/49°, centre 46,5°N 3°E, proche du Lambert 93) puis simplifiée (Visvalingam pondéré, 3 %) ; DROM simplifiés (12 %), projetés en équirectangulaire locale (cos de la latitude), mis à l'échelle dans cinq encarts cadrés en bas à gauche (clé `encarts`) ; coordonnées arrondies à 0,1 ; points de label au centroïde du plus grand polygone.
+
+## Régions (collecte 2026-11-03)
+- Population au 1er janvier 2026 (provisoire), 18 régions : Insee, estimations de population, séries par région — https://www.insee.fr/fr/statistiques/8721456 (fichier estim-pop-nreg-sexe-gca-1975-2026.xlsx, onglet 2026) ; synthèse : https://www.insee.fr/fr/statistiques/2012692
+- Taux de chômage localisé, T2 2026 (CVS, provisoire, publié le 18/09/2026) : Insee — https://www.insee.fr/fr/statistiques/2012804 (valeurs lues via WebFetch ; Mayotte hors champ, donc null).
+- APL médecins généralistes (DREES, data.drees jeu 530, niveau communal, millésimes 2023/2024) : https://data.drees.solidarites-sante.gouv.fr/explore/dataset/530_l-accessibilite-potentielle-localisee-apl/ — aucune moyenne régionale lue, valeur null pour toutes les régions.
+- Densité de médecins généralistes pour 100 000 habitants, 1er janvier 2025 (Insee/Drees, RPPS ; publié 25/09/2025), 18 régions, colonne « dont généralistes » : https://www.insee.fr/fr/statistiques/2012677 (fichier TCRD_068.xlsx, feuille régionale, vérifié) ; médecins en activité, tous modes d'exercice.

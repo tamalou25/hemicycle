@@ -117,7 +117,7 @@ describe('migration', () => {
     const v1 = { ...partie('ps'), version: 1 };
     delete v1.texte; delete v1.accords; delete v1.joueur.role;
     const e = importerPartie(JSON.stringify(v1));
-    expect(e.version).toBe(4);
+    expect(e.version).toBe(5);
     expect(e.joueur.role).toBe('depute');
     expect(e.accords).toEqual([]);
   });

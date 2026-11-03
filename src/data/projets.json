@@ -1,0 +1,166 @@
+{
+  "note": "Contenu de jeu : coûts, délais et effets sont des PARAMÈTRES D'ÉQUILIBRAGE en ordres de grandeur plausibles, pas des données observées.",
+  "pib_md": 2900,
+  "enveloppe_annuelle_md": 4,
+  "enveloppe_initiale_md": 1.5,
+  "projets": [
+    {
+      "id": "centres-sante",
+      "titre": "Centres de santé",
+      "secteur": "sante",
+      "description": "Ouvrir des centres de santé pluriprofessionnels dans les zones sous-dotées.",
+      "cout_md": 0.3,
+      "cout_annuel_md": 0.04,
+      "delai_mois": 8,
+      "montee_mois": 6,
+      "effets": {
+        "sante": 15
+      },
+      "beneficiaires": "Habitants des zones rurales et périurbaines",
+      "risque": {
+        "proba": 0.2,
+        "type": "retard",
+        "mois": 4,
+        "texte": "Recrutement des soignants plus lent que prévu"
+      }
+    },
+    {
+      "id": "recrutement-soignants",
+      "titre": "Recrutement de soignants",
+      "secteur": "sante",
+      "description": "Primes d'installation et postes hospitaliers supplémentaires.",
+      "cout_md": 0.15,
+      "cout_annuel_md": 0.12,
+      "delai_mois": 3,
+      "montee_mois": 12,
+      "effets": {
+        "sante": 9
+      },
+      "beneficiaires": "Patients et personnels hospitaliers",
+      "risque": {
+        "proba": 0.3,
+        "type": "efficacite",
+        "facteur": 0.5,
+        "texte": "Une partie des postes reste non pourvue"
+      }
+    },
+    {
+      "id": "renovation-ter",
+      "titre": "Rénovation de lignes TER",
+      "secteur": "transports",
+      "description": "Remettre à niveau voies et gares sur les lignes régionales les plus dégradées.",
+      "cout_md": 1.2,
+      "cout_annuel_md": 0.05,
+      "delai_mois": 18,
+      "montee_mois": 3,
+      "effets": {
+        "transports": 22
+      },
+      "beneficiaires": "Usagers du quotidien, territoires peu desservis",
+      "risque": {
+        "proba": 0.25,
+        "type": "retard",
+        "mois": 6,
+        "texte": "Aléas de chantier"
+      }
+    },
+    {
+      "id": "plan-mobilite",
+      "titre": "Plan de mobilité (cars express, transport à la demande)",
+      "secteur": "transports",
+      "description": "Lignes de cars express et transport à la demande là où le rail ne va pas.",
+      "cout_md": 0.25,
+      "cout_annuel_md": 0.06,
+      "delai_mois": 6,
+      "montee_mois": 6,
+      "effets": {
+        "transports": 10
+      },
+      "beneficiaires": "Habitants sans voiture, zones rurales",
+      "risque": {
+        "proba": 0.1,
+        "type": "efficacite",
+        "facteur": 0.6,
+        "texte": "Fréquentation plus faible qu'espéré"
+      }
+    },
+    {
+      "id": "zone-activite",
+      "titre": "Zone d'activité et réindustrialisation",
+      "secteur": "emploi",
+      "description": "Aménager du foncier industriel et accompagner l'implantation d'entreprises.",
+      "cout_md": 0.5,
+      "cout_annuel_md": 0.01,
+      "delai_mois": 12,
+      "montee_mois": 12,
+      "effets": {
+        "emploi": 12
+      },
+      "effets_nationaux": [
+        {
+          "indicateur": "chomage",
+          "valeur": -0.02
+        }
+      ],
+      "beneficiaires": "Demandeurs d'emploi, sous-traitants locaux",
+      "risque": {
+        "proba": 0.3,
+        "type": "efficacite",
+        "facteur": 0.5,
+        "texte": "Moins d'entreprises s'installent que prévu"
+      }
+    },
+    {
+      "id": "formation-emploi",
+      "titre": "Programme de formation aux métiers en tension",
+      "secteur": "emploi",
+      "description": "Formations qualifiantes financées, en lien avec les employeurs du territoire.",
+      "cout_md": 0.2,
+      "cout_annuel_md": 0.08,
+      "delai_mois": 4,
+      "montee_mois": 9,
+      "effets": {
+        "emploi": 8
+      },
+      "effets_nationaux": [
+        {
+          "indicateur": "chomage",
+          "valeur": -0.01
+        }
+      ],
+      "beneficiaires": "Jeunes et demandeurs d'emploi de longue durée",
+      "risque": {
+        "proba": 0.15,
+        "type": "efficacite",
+        "facteur": 0.5,
+        "texte": "Abandons en cours de formation"
+      }
+    }
+  ],
+  "indices_par_defaut": {
+    "mayotte": {
+      "emploi": 15
+    }
+  },
+  "indices_par_defaut_note": "Mayotte : taux de chômage localisé hors champ Insee ; indice emploi fixé par équilibrage (chômage très élevé selon l’enquête emploi Mayotte).",
+  "transports_initial": {
+    "ile-de-france": 70,
+    "auvergne-rhone-alpes": 55,
+    "provence-alpes-cote-d-azur": 52,
+    "hauts-de-france": 52,
+    "grand-est": 50,
+    "occitanie": 45,
+    "nouvelle-aquitaine": 44,
+    "pays-de-la-loire": 50,
+    "bretagne": 48,
+    "normandie": 47,
+    "bourgogne-franche-comte": 42,
+    "centre-val-de-loire": 43,
+    "corse": 32,
+    "guadeloupe": 35,
+    "martinique": 36,
+    "guyane": 22,
+    "la-reunion": 38,
+    "mayotte": 18
+  }
+}

@@ -11,6 +11,7 @@ export function importerPartie(texte) {
   if (etat.version === 1) etat = migrerV1(etat);
   if (etat.version === 2) etat = migrerV2(etat);
   if (etat.version === 3) etat = { ...etat, version: 4, evenement: null, evenementsPasses: [], dernierBudget: null };
+  if (etat.version === 4) etat = { ...etat, version: 5, territoires: null, projets: [], finances: null, satisfactionInitiale: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -89,8 +90,20 @@ function assainir(e) {
     evenement: chOuNull(e.evenement, 100),
     evenementsPasses: liste(e.evenementsPasses, (x) => ({ id: ch(x.id, 100), tour: nb(x.tour), choix: nb(x.choix) })),
     dernierBudget: nbOuNull(e.dernierBudget),
+    territoires: e.territoires && typeof e.territoires === 'object' && !Array.isArray(e.territoires)
+      ? Object.fromEntries(Object.entries(e.territoires).slice(0, 40).map(([id, t]) => [id.slice(0, 50), {
+        emploi: nb(t?.emploi, 50), sante: nb(t?.sante, 50), transports: nb(t?.transports, 50), satisfaction: nb(t?.satisfaction, 50) }]))
+      : null,
+    projets: liste(e.projets, (x) => ({
+      uid: ch(x.uid, 150), projetId: ch(x.projetId, 60), region: ch(x.region, 60), lance: nb(x.lance),
+      statut: ['chantier', 'montee', 'service'].includes(x.statut) ? x.statut : 'service', service: nb(x.service),
+      retard: nb(x.retard), efficacite: nb(x.efficacite, 1), facteur: nb(x.facteur, 1), alea: chOuNull(x.alea, 200),
+    })),
+    finances: e.finances && typeof e.finances === 'object' ? { enveloppe: nb(e.finances.enveloppe), recurrent: nb(e.finances.recurrent), annee: nb(e.finances.annee) } : null,
+    satisfactionInitiale: nbOuNull(e.satisfactionInitiale),
     explications: liste(e.explications, (x) => ({
-      tour: nb(x.tour), indicateur: INDICATEURS.includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
+      ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),

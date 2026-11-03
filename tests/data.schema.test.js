@@ -121,3 +121,23 @@ describe('events.json', () => {
     }
   });
 });
+
+describe('régions, carte et projets (E1)', () => {
+  const regions = lire('regions.json'), carte = lire('carte-regions.json'), projets = lire('projets.json');
+  it('18 régions, ids identiques entre données et carte', () => {
+    expect(regions.regions).toHaveLength(18);
+    expect(new Set(carte.regions.map((r) => r.id))).toEqual(new Set(regions.regions.map((r) => r.id)));
+    for (const r of regions.regions) expect(r.population).toBeGreaterThan(100_000);
+    for (const c of carte.regions) expect(c.d.length).toBeGreaterThan(20);
+    expect(carte.attribution.length).toBeGreaterThan(0);
+  });
+  it('projets : coûts positifs, effets sur des indices connus, risque borné', () => {
+    for (const p of projets.projets) {
+      expect(p.cout_md).toBeGreaterThan(0);
+      expect(p.delai_mois).toBeGreaterThan(0);
+      for (const i of Object.keys(p.effets)) expect(['emploi', 'sante', 'transports']).toContain(i);
+      expect(p.risque.proba).toBeLessThan(1);
+    }
+    for (const id of Object.keys(projets.transports_initial)) expect(regions.regions.some((r) => r.id === id)).toBe(true);
+  });
+});

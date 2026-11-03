@@ -50,3 +50,11 @@ describe('registre des causes', () => {
     expect(r[0].delta).toBeCloseTo(-0.15);
   });
 });
+
+describe('phrases', () => {
+  it('jamais « undefined » (usure, entrées sans durée)', () => {
+    const p = phraseExplication({ tour: 1, region: 'x', indicateur: 'sante', delta: -0.08, source: 'usure', type: 'usure', nature: 'observe' }, { regions: { regions: [{ id: 'x', nom: 'Xland' }] } });
+    expect(p).not.toMatch(/undefined/);
+    expect(p).toMatch(/usure.*Xland/);
+  });
+});
