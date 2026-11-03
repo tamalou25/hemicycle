@@ -7,6 +7,7 @@ import { sectionReactions } from '../components/reactions.js';
 import { sectionElections, brancherElections } from '../components/elections.js';
 import { sectionEvenement, brancherEvenement } from '../components/evenement.js';
 import { sectionBudget, brancherBudget } from '../components/budget.js';
+import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
@@ -42,7 +43,9 @@ export function render(racine, etat, dispatch, ctx) {
         <button type="button" id="export" class="btn btn-s">Exporter</button>
         <label for="import" class="btn btn-s cursor-pointer">Importer</label>
         <input type="file" id="import" accept="application/json,.json" class="sr-only">
+        ${boutonPartage(etat, 'btn btn-s text-sm')}
       </div>
+      ${zonePartage(etat)}
     </header>
 
     <section aria-labelledby="h-ind" class="mb-6">
@@ -83,6 +86,7 @@ export function render(racine, etat, dispatch, ctx) {
       <section aria-labelledby="h-jou" class="bg-carte border border-bord rounded-lg p-4"><h2 id="h-jou" class="font-serif font-bold text-xl mb-2">Journal</h2><ul>${journal}</ul></section>
     </div>`;
 
+  brancherPartage(racine, etat);
   racine.querySelector('#suivant').addEventListener('click', () => dispatch({ type: 'suivant' }));
   racine.querySelector('#export').addEventListener('click', () => dispatch({ type: 'exporter' }));
   racine.querySelector('#import').addEventListener('change', async (e) => {

@@ -1,4 +1,5 @@
 import { esc, fmt, MOIS } from '../util.js';
+import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { dateDuTour, evaluerFin } from '../../engine/index.js';
 
 const evo = (etat, id, unite) => {
@@ -41,8 +42,11 @@ export function render(racine, etat, dispatch) {
     <div class="mt-6 flex gap-3 flex-wrap">
       <button type="button" id="rejouer" class="btn btn-p">Rejouer</button>
       <button type="button" id="export" class="btn btn-s">Exporter la partie</button>
+      ${boutonPartage(etat)}
     </div>
+    ${zonePartage(etat)}
   </section>`;
+  brancherPartage(racine, etat);
   racine.querySelector('#rejouer').addEventListener('click', () => dispatch({ type: 'rejouer' }));
   racine.querySelector('#export').addEventListener('click', () => dispatch({ type: 'exporter' }));
 }

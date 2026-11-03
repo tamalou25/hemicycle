@@ -1,18 +1,34 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, exporterPartie, importerPartie, resoudreEvenement, voterBudget } from './engine/index.js';
+import { creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, voterBudget } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
 import { render as tableau } from './ui/screens/tableau.js';
 import { render as fin } from './ui/screens/fin.js';
+import { render as defi } from './ui/screens/defi.js';
+import { render as classement } from './ui/screens/classement.js';
 import { toast } from './ui/components/toast.js';
 
 const CLE = 'hemicycle.save';
 const CLE_ACCORD = 'hemicycle.accord';
-const ECRANS = { accueil, creation, choixElu, tableau, fin };
+const CLE_CLASSEMENT = 'hemicycle.classement';
+const CLE_IDS = 'hemicycle.classement.ids';
+const ECRANS = { accueil, creation, choixElu, tableau, fin, defi, classement };
 
 const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const ecrire = (k, v) => { try { localStorage.setItem(k, v); } catch { /* stockage indisponible */ } };
+
+const lireJson = (k) => { try { const v = JSON.parse(lire(k)); return Array.isArray(v) ? v : []; } catch { return []; } };
+
+// Enregistre une partie terminée au classement local, une seule fois par partie.
+function enregistrerClassement(e) {
+  const id = `${e.graineInitiale ?? 'x'}:${e.joueur.nom}:${e.tour}:${e.fin?.type ?? ''}`;
+  const ids = lireJson(CLE_IDS).filter((x) => typeof x === 'string');
+  if (ids.includes(id)) return;
+  const entree = entreeClassement(e, evaluerFin(e), new Date().toISOString().slice(0, 10));
+  ecrire(CLE_CLASSEMENT, JSON.stringify(ajouterAuClassement(lireJson(CLE_CLASSEMENT), entree)));
+  ecrire(CLE_IDS, JSON.stringify([...ids, id].slice(-50)));
+}
 
 async function chargerJson(chemin) {
   const r = await fetch(new URL(chemin, import.meta.url));
@@ -56,6 +72,16 @@ export function dispatch(action) {
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
+      case 'classement': ctx.classement = lireJson(CLE_CLASSEMENT); ctx.confirmEffacer = false; return aller('classement');
+      case 'effacerClassement':
+        if (action.etape === 'confirme') { ecrire(CLE_CLASSEMENT, '[]'); ctx.classement = []; toast('Classement effacé.', 'info'); }
+        ctx.confirmEffacer = action.etape === 'demande';
+        return afficher({ focus: false });
+      case 'relever': {
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation });
+        ctx.defi = null; ctx.brouillon = null; break;
+      }
+      case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
         etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
@@ -82,8 +108,9 @@ export function dispatch(action) {
       default: throw new Error(`Action inconnue : ${action.type}`);
     }
     if (etat) ecrire(CLE, JSON.stringify(etat));
+    if (etat?.fin) enregistrerClassement(etat);
     const cible = !etat ? 'accueil' : etat.fin ? 'fin' : 'tableau';
-    if (cible !== ecran || action.type === 'nouvelle' || action.type === 'reprendre' || action.type === 'importer') aller(cible);
+    if (cible !== ecran || action.type === 'nouvelle' || action.type === 'relever' || action.type === 'reprendre' || action.type === 'importer') aller(cible);
     else afficher({ focus: false });
   } catch (e) {
     toast(e.message || String(e));
@@ -98,6 +125,12 @@ async function init() {
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';
     return;
+  }
+  // Défi reçu par lien (#defi=...) : écran d'accueil du défi, puis hash nettoyé.
+  const code = location.hash.slice(1).split('&').find((p) => p.startsWith('defi='));
+  if (code !== undefined) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch { /* ignoré */ }
+    try { ctx.defi = decoderDefi(decodeURIComponent(code.slice(5))); ecran = 'defi'; } catch (e) { toast(e.message || 'Défi invalide.'); }
   }
   afficher({ focus: false });
 }
