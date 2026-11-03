@@ -1,6 +1,6 @@
 // Objectifs du mandat : sélection à la création (3 cases à cocher) et suivi au Bureau.
 import { esc, fmt } from '../util.js';
-import { evaluerObjectifs, objectifPossible } from '../../engine/index.js';
+import { evaluerObjectifs, objectifPossible, INDICES } from '../../engine/index.js';
 
 /** Fieldset de sélection : exactement `nombre_a_choisir` objectifs. `st.objectifs` = ids cochés (modifié sur place). */
 export function fieldsetObjectifs(catalogue, st) {
@@ -60,11 +60,17 @@ function piste(id, etat) {
   const finances = pm
     ? { texte: 'Dépenses et recettes de l’année.', aller: { onglet: 'budget' } }
     : { texte: 'Budget du gouvernement ; vous, par les lois.', aller: { onglet: 'decisions', decisions: { secteur: 'finances' } } };
-  // Indice régional le plus faible, pour ouvrir la carte sur la bonne vue
-  const indiceMin = () => {
+  // Région et indice les plus faibles. Égalités départagées de façon déterministe :
+  // ordre des indices (emploi, santé, transports), puis identifiant de région (ordre alphabétique).
+  const plusFaible = () => {
     let min = null;
-    for (const t of Object.values(etat.territoires ?? {})) for (const i of ['emploi', 'sante', 'transports']) if (min == null || t[i] < min.v) min = { i, v: t[i] };
-    return min?.i ?? 'satisfaction';
+    for (const id of Object.keys(etat.territoires ?? {}).sort()) {
+      for (const i of INDICES) {
+        const v = etat.territoires[id][i];
+        if (min == null || v < min.v) min = { region: id, vue: i, v };
+      }
+    }
+    return min ?? { region: null, vue: 'satisfaction' };
   };
   switch (id) {
     case 'chomage': return { texte: 'Secteur Emploi et économie.', aller: { onglet: 'decisions', decisions: { secteur: 'emploi' } } };
@@ -72,10 +78,10 @@ function piste(id, etat) {
     case 'popularite': return { texte: 'Vos décisions et réponses aux événements.', aller: { onglet: 'decisions', decisions: {} } };
     case 'apaisement': return { texte: 'Secteur Social ; réponses aux événements.', aller: { onglet: 'decisions', decisions: { secteur: 'social' } } };
     case 'territoires': return { texte: 'Un projet en service améliore sa région.', aller: { onglet: 'carte', vue: 'satisfaction' } };
-    case 'aucun-abandon': return { texte: 'Ciblez la région la plus faible.', aller: { onglet: 'carte', vue: indiceMin() } };
+    case 'aucun-abandon': { const m = plusFaible(); return { texte: 'Ciblez la région la plus faible.', aller: { onglet: 'carte', vue: m.vue, region: m.region } }; }
     case 'confiance': return { texte: 'Un projet mis en service la renforce.', aller: { onglet: 'carte', vue: 'confiance' } };
-    case 'reformes': return { texte: 'Déposez une loi (une étape par mois).', aller: { onglet: 'decisions', decisions: { categorie: 'nationale' } } };
-    case 'programmes': return { texte: 'Engagez des programmes nationaux.', aller: { onglet: 'decisions', decisions: { categorie: 'nationale' } } };
+    case 'reformes': return { texte: 'Déposez une loi (une étape par mois).', aller: { onglet: 'decisions', decisions: { categorie: 'nationale', type: 'loi' } }, quoi: 'loi' };
+    case 'programmes': return { texte: 'Engagez des programmes nationaux.', aller: { onglet: 'decisions', decisions: { categorie: 'nationale', type: 'programme' } }, quoi: 'programme' };
     default: return { texte: 'Consultez les décisions disponibles.', aller: { onglet: 'decisions', decisions: {} } };
   }
 }
@@ -86,9 +92,10 @@ const NOM_ONGLET = { decisions: 'Décisions', carte: 'Carte', budget: 'Budget' }
 function disponibilite(aller, liste, etat, refusPLF) {
   if (aller.onglet === 'budget') return refusPLF ? refusPLF : 'Budget modifiable ce mois-ci.';
   const filtre = aller.onglet === 'carte' ? { categorie: 'territoriale' } : aller.decisions;
-  const n = liste.filter((x) => x.statut === 'disponible' && (!filtre.categorie || x.categorie === filtre.categorie) && (!filtre.secteur || x.secteur === filtre.secteur)).length;
-  const quoi = aller.onglet === 'carte' ? 'projet' : 'décision';
-  return n ? `${n} ${quoi}${n > 1 ? 's' : ''} disponible${n > 1 ? 's' : ''}.` : `Aucun${aller.onglet === 'carte' ? '' : 'e'} ${quoi} disponible ce mois-ci.`;
+  const n = liste.filter((x) => x.statut === 'disponible' && (!filtre.categorie || x.categorie === filtre.categorie) && (!filtre.secteur || x.secteur === filtre.secteur) && (!filtre.type || x.type === filtre.type)).length;
+  const quoi = aller.onglet === 'carte' ? 'projet' : filtre.type ?? 'décision';
+  const fem = quoi === 'décision' || quoi === 'loi';
+  return n ? `${n} ${quoi}${n > 1 ? 's' : ''} disponible${n > 1 ? 's' : ''}.` : `Aucun${fem ? 'e' : ''} ${quoi} disponible ce mois-ci.`;
 }
 
 /**
@@ -111,7 +118,7 @@ export function briefMandat(etat, donnees, leviers) {
   const deroule = `<details class="ml-auto open:basis-full"><summary class="min-h-[44px] flex items-center justify-end cursor-pointer text-sm font-semibold text-bleu underline">Comment jouer un mois</summary>
       <ol class="list-decimal pl-5 text-sm space-y-0.5 pb-1">
         <li>Lisez une piste ci-dessous et ouvrez le levier proposé.</li>
-        <li>Choisissez vous-même une action (loi, projet, budget, accord…).</li>
+        <li>Choisissez vos actions du mois (loi, projet, budget, accord…).</li>
         <li>Passez au mois suivant.</li>
         <li>Lisez « Ce mois-ci » au Bureau : ce qui a bougé et pourquoi.</li>
       </ol>

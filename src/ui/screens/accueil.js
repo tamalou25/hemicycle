@@ -12,7 +12,7 @@ export function render(racine, etat, dispatch, ctx) {
         <h2 id="h-but" class="font-serif font-bold text-lg">Le but</h2>
         <ul class="list-disc pl-5 mt-1 space-y-0.5">
           <li>Vous choisissez <strong>3 objectifs de mandat</strong> (chômage, déficit, territoires…).</li>
-          <li>Chaque mois : une action, puis « Mois suivant »&nbsp;; le Bureau explique ce qui a changé.</li>
+          <li>Choisissez vos actions du mois, puis passez au mois suivant&nbsp;; le Bureau explique ce qui a changé.</li>
           <li>Au bout de <strong>5 ans (60 mois)</strong>, un bilan note votre mandat ; chaque objectif atteint ajoute des points.</li>
           <li>La partie peut s’arrêter plus tôt : popularité sous 8 %, censure (si vous êtes Premier ministre) ou victoire à la présidentielle.</li>
         </ul>

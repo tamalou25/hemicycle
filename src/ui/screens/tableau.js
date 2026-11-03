@@ -138,9 +138,9 @@ export function render(racine, etat, dispatch, ctx) {
     // Pistes du mandat : simple navigation (aucune décision exécutée). Le filtre de Décisions est remplacé
     // pour qu'un ancien filtre (statut, secteur) ne masque pas le levier proposé.
     racine.querySelectorAll('[data-piste]').forEach((b) => b.addEventListener('click', () => {
-      const { onglet: o, decisions, vue } = brief.pistes[Number(b.dataset.piste)].aller;
-      if (o === 'decisions') dispatch({ type: 'onglet', onglet: o, decisions: { categorie: '', secteur: '', statut: '', ...decisions }, haut: true });
-      else dispatch({ type: 'onglet', onglet: o, vue, haut: true });
+      const { onglet: o, decisions, vue, region } = brief.pistes[Number(b.dataset.piste)].aller;
+      if (o === 'decisions') dispatch({ type: 'onglet', onglet: o, decisions: { categorie: '', secteur: '', statut: '', type: '', ...decisions }, haut: true });
+      else dispatch({ type: 'onglet', onglet: o, vue, region, haut: true });
     }));
     racine.querySelector('[data-aller-budget]')?.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'budget', haut: true }));
     racine.querySelectorAll('[data-brief]').forEach((b) => b.addEventListener('click', () => {

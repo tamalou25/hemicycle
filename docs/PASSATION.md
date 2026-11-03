@@ -30,6 +30,10 @@
   - une ancienne partie sans objectifs affiche une explication et des repères. Rien n'est attribué ni modifié.
 - **Moteur, données, migrations** : inchangés. Seul `main.js` change (l'action `onglet` accepte un filtre de Décisions).
 - **Tests** : nouveau `e2e/cap-mandat.spec.js` ; `objectifs.spec.js` adapté. La hauteur mobile du Bureau reste sous la limite existante.
+- **Relecture Codex (commit `6dec15b`), corrigée** :
+  - « Investir dans l'avenir » ouvre Décisions filtré sur les programmes. Le filtre « Programmes uniquement » est visible et se retire. Le compteur ne compte que les programmes disponibles ; même logique pour « Réformer » avec les lois ;
+  - « Aucun territoire abandonné » ouvre la région de l'indice minimal avec la vue correspondante. En cas d'égalité : ordre emploi, santé, transports, puis identifiant de région ;
+  - accueil : « Choisissez vos actions du mois, puis passez au mois suivant ».
 - **À confirmer** : la compréhension par un vrai débutant.
 
 ## Travail en parallèle (Claude + Codex)

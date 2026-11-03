@@ -1,6 +1,6 @@
 // Cap du mandat : brief en tête du Bureau, pistes vers les leviers, ancienne partie sans objectifs.
 import { test, expect } from '@playwright/test';
-import { ouvrirOnglet } from './aide.js';
+import { ouvrirOnglet, toutAfficherDecisions as ouvrirTout } from './aide.js';
 
 const CLE = 'hemicycle.save';
 
@@ -8,6 +8,7 @@ async function nouvellePartie(page, role) {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
   await expect(page.getByRole('region', { name: 'Le but' })).toContainText('60 mois');
+  await expect(page.getByRole('region', { name: 'Le but' })).toContainText('Choisissez vos actions du mois, puis passez au mois suivant');
   await page.getByRole('button', { name: 'Créer mon personnage' }).click();
   await page.getByLabel(/^Nom/).fill('Cap');
   await page.getByLabel(role === 'pm' ? /Premier ministre/ : /Député/).check();
@@ -105,4 +106,59 @@ test('brief : clavier, cibles de 44 px, pas de débordement', async ({ page }) =
   await expect(page.locator('#panneau')).toHaveAttribute('aria-labelledby', 'tab-decisions');
   const deborde = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(deborde).toBe(false);
+});
+
+/** Nouvelle partie avec des objectifs choisis (décoche les défauts). */
+async function partieAvecObjectifs(page, role, ids) {
+  await page.goto('/');
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByLabel(/^Nom/).fill('Cap');
+  await page.getByLabel(role === 'pm' ? /Premier ministre/ : /Député/).check();
+  for (const v of await page.locator('input[name=objectif]:checked').evaluateAll((l) => l.map((c) => c.value))) await page.locator(`input[name=objectif][value=${v}]`).uncheck();
+  for (const id of ids) await page.locator(`input[name=objectif][value=${id}]`).check();
+  await page.getByRole('button', { name: 'Commencer' }).click();
+  return page.getByRole('region', { name: 'Votre mandat' });
+}
+
+test('« Investir dans l’avenir » : arrivée sur les programmes, compteur exact, programme engageable', async ({ page }) => {
+  const brief = await partieAvecObjectifs(page, 'pm', ['programmes', 'chomage', 'deficit']);
+  const avant = await etatSauve(page);
+  const ligne = brief.locator('[data-objectif=programmes]');
+  const n = Number((await ligne.textContent()).match(/(\d+) programmes? disponibles?/)[1]);
+  expect(n).toBeGreaterThan(0);
+  await ligne.getByRole('button').click();
+  await expect(page.getByRole('button', { name: /Programmes uniquement : retirer ce filtre/ })).toBeVisible();
+  // Toutes les cartes affichées sont des programmes ; le premier « Engager » est visible sans dépliage
+  const engager = page.locator('#panneau [data-decision]').filter({ hasText: 'Engager' });
+  await expect(engager.first()).toBeVisible();
+  await expect(engager.first()).toBeEnabled();
+  await expect(page.locator('#panneau [data-decision]').filter({ hasText: 'Proposer' })).toHaveCount(0);
+  // Le compteur du brief correspond aux programmes réellement engageables
+  await ouvrirTout(page);
+  expect(await engager.evaluateAll((l) => l.filter((b) => !b.disabled).length)).toBe(n);
+  expect(await etatSauve(page)).toBe(avant);
+  // Le filtre se retire
+  await page.locator('#f-type').click();
+  await expect(page.locator('#f-type')).toHaveCount(0);
+});
+
+test('« Aucun territoire abandonné » : ouvre la région la plus faible même après une autre sélection', async ({ page }) => {
+  const brief = await partieAvecObjectifs(page, 'depute', ['aucun-abandon', 'chomage', 'deficit']);
+  // Région et indice attendus, avec la même règle d'égalité (ordre des indices, puis identifiant)
+  const attendu = await page.evaluate((c) => {
+    const t = JSON.parse(localStorage.getItem(c)).territoires; let m = null;
+    for (const id of Object.keys(t).sort()) for (const i of ['emploi', 'sante', 'transports']) if (!m || t[id][i] < m.v) m = { id, i, v: t[id][i] };
+    return m;
+  }, CLE);
+  expect(attendu.id).not.toBe('bretagne');
+  // Sélection préalable de la Bretagne sur la carte
+  await ouvrirOnglet(page, 'Carte');
+  await page.locator('[data-region=bretagne]').first().click();
+  await expect(page.locator('[data-region=bretagne]').first()).toHaveAttribute('aria-pressed', 'true');
+  await ouvrirOnglet(page, 'Bureau');
+  await page.getByRole('region', { name: 'Votre mandat' }).locator('[data-objectif=aucun-abandon]').getByRole('button').click();
+  await expect(page.locator(`#vue-${attendu.i}`)).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator(`[data-region=${attendu.id}]`).first()).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-region=bretagne]').first()).toHaveAttribute('aria-pressed', 'false');
 });
