@@ -76,3 +76,17 @@ describe('budget de l’État', () => {
     expect(importerPartie(exporterPartie(e))).toEqual(e);
   });
 });
+
+describe('vote du budget', () => {
+  it('l’opposition éloignée vote contre par principe ; un accord peut la retourner', async () => {
+    const { voterBudgetAssemblee } = await import('../src/engine/index.js');
+    const { groupesAssemblee } = await import('../src/engine/parliament.js');
+    const e = partie('epr');
+    const plf = normaliserPLF({});
+    const v = voterBudgetAssemblee(e, groupesAssemblee(partis, null), plf);
+    expect(v.detail.find((d) => d.groupe === 'lfi').vote).toBe('contre');
+    expect(v.detail.find((d) => d.groupe === 'lfi').opposition).toBe(true);
+    const avecAccord = voterBudgetAssemblee({ ...e, accords: [{ parti: 'dr', jusqua: 99 }] }, groupesAssemblee(partis, null), plf);
+    expect(avecAccord.pour).toBeGreaterThanOrEqual(v.pour);
+  });
+});

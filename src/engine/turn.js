@@ -49,7 +49,8 @@ export function tourSuivant(etatInitial, donnees) {
   // Loi d'Okun simplifiée : croissance faible → chômage qui monte
   [n, g] = bruit(g, 0.04); ind.chomage = borner('chomage', ind.chomage - (ind.croissance - 1.2) * 0.03 + n);
   [n, g] = bruit(g, 0.05); ind.deficit = borner('deficit', ind.deficit - (ind.croissance - 1) * 0.02 + n);
-  ind.dette = borner('dette', ind.dette + ind.deficit / 12 - ind.croissance / 12);
+  // Dette en % du PIB : + déficit, − effet de la croissance nominale (réelle + inflation) sur le ratio
+  ind.dette = borner('dette', ind.dette + ind.deficit / 12 - ((ind.croissance + ind.inflation) / 1200) * ind.dette);
   [n, g] = bruit(g, 1.5); ind.tensions = borner('tensions', ind.tensions + (EQUILIBRE.tensions - ind.tensions) * 0.05 + n);
 
   // 2 bis. Territoires et projets (E1) : usure, emploi régional, chantiers, mises en service

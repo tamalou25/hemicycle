@@ -2,7 +2,8 @@
 // annuel voté au Parlement, charge de la dette. Montants initiaux = données observées (src/data/finances.json) ;
 // sensibilités par Md€ = PARAMÈTRES D'ÉQUILIBRAGE (SENSIBILITES ci-dessous).
 import { planifierEffets } from './effects.js';
-import { groupesAssemblee, voterChambre, voterCensure } from './parliament.js';
+import { groupesAssemblee, voterChambre, voterCensure, ecartIdeologique, accordActif } from './parliament.js';
+import { SEUIL_OPPOSITION } from './constants.js';
 
 export const SECTEURS = ['protection_sociale', 'sante', 'education', 'defense_securite', 'infrastructures_environnement', 'recherche', 'administration_autres'];
 export const RECETTES = ['impots_menages', 'impots_entreprises', 'tva_consommation', 'cotisations_sociales'];
@@ -118,6 +119,23 @@ function appliquerPLF(etat, plf) {
   };
 }
 
+/**
+ * Vote d'un budget à l'Assemblée : comme un texte ordinaire, mais les groupes d'opposition
+ * (écart idéologique > SEUIL_OPPOSITION, sans accord) votent contre par principe.
+ */
+export function voterBudgetAssemblee(etat, groupes, plf) {
+  const v = voterChambre(etat, groupes, 'fiscalite', orientationPLF(plf));
+  let pour = 0, contre = 0;
+  const detail = v.detail.map((d) => {
+    const g = groupes.find((x) => x.id === d.groupe);
+    const opposition = g.parti !== etat.joueur.parti && !(g.parti && accordActif(etat, g.parti)) && ecartIdeologique(etat.joueur.ideologie, g.positions) > SEUIL_OPPOSITION;
+    const vote = opposition ? 'contre' : d.vote;
+    if (vote === 'pour') pour += d.sieges; else contre += d.sieges;
+    return { ...d, vote, opposition };
+  });
+  return { pour, contre, adoptee: pour > contre, detail };
+}
+
 /** Vote du PLF en fin de mois (appelé par tourSuivant). Rejet → loi spéciale (budget reconduit). */
 export function voterPLF(etat, { partis }) {
   if (!etat.plf) return etat;
@@ -134,7 +152,7 @@ export function voterPLF(etat, { partis }) {
     journal.push({ tour: etat.tour, type: 'censure', texte: `Motion de censure rejetée (${c.pour} voix) : le budget est adopté.` });
     adopte = true;
   } else {
-    const v = voterChambre(etat, AN, 'fiscalite', orientationPLF(plf));
+    const v = voterBudgetAssemblee(etat, AN, plf);
     adopte = v.adoptee;
     journal.push({ tour: etat.tour, type: 'vote', texte: `Assemblée : budget ${adopte ? 'adopté' : 'rejeté'} (${v.pour}–${v.contre}).` });
     etat = { ...etat, dernierVote: { loi: 'budget', chambre: 'assemblee', ...v } };

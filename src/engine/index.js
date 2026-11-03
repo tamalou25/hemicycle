@@ -26,7 +26,7 @@ export { lancerProjet, raisonRefusProjet, prevoirProjets, facteurTaille } from '
 export { briefing, SEUIL_CRITIQUE } from './briefing.js';
 export {
   SECTEURS, RECETTES, VARIATION_MAX, solde, chiffrerPLF, orientationPLF, normaliserPLF,
-  deposerPLF, recourir493PLF, raisonRefusPLF, budgetInitial,
+  deposerPLF, recourir493PLF, raisonRefusPLF, budgetInitial, voterBudgetAssemblee,
 } from './budgetEtat.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
