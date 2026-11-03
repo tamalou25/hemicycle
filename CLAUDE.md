@@ -3,7 +3,7 @@
 Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans le navigateur, déployée sur GitHub Pages.
 
 ## Stack
-- HTML + Tailwind (CDN) + JavaScript vanilla, modules ES, sans build ni framework
+- HTML + JavaScript vanilla, modules ES, sans framework. Tailwind **compilé localement** : `npm run build:css` → `assets/app.css` (à commiter ; la CI vérifie). Aucun CDN (jeu jouable hors ligne).
 - Données JSON dans `src/data/`, séparées du moteur
 - Sauvegarde : `localStorage`, plus export et import d'un fichier JSON
 - Tests : Vitest (moteur uniquement)
@@ -49,5 +49,6 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 - Actions du mois : 1 action parlementaire (déposer, amender ou 49.3) et 1 négociation d'accord
 - À chaque changement de structure de l'état : incrémenter `VERSION_SAUVEGARDE` et ajouter une migration dans `save.js`
 
-## Roadmap
-1. MVP · 2. Institutions · 3. Politiciens réels · 4. Élections · 5. Profondeur · 6. Social / multijoueur
+## Roadmap v2 (validée le 03/11/2026)
+E0 Fondations · E1 Carte et territoires · E2 Finances (Md€) · E3 Population · E4 Secteurs · E5 Politique reliée · E6 PWA · E7 Mobile.
+Décisions et état : `docs/PASSATION.md`. Toute variation d'indicateur doit passer par le registre `explications.js`.
