@@ -53,7 +53,17 @@ function afficher({ focus = true } = {}) {
   else if (focus) racine.focus({ preventScroll: true });
 }
 
-function telecharger(texte, nom) {
+async function telecharger(texte, nom) {
+  // Application mobile (Capacitor) : la WebView ne gère pas les téléchargements `blob:`.
+  // On écrit le fichier dans le cache de l'application puis on ouvre la feuille de partage du système.
+  const P = globalThis.Capacitor?.isNativePlatform?.() ? globalThis.Capacitor.Plugins : null;
+  if (P?.Filesystem && P?.Share) {
+    try {
+      const { uri } = await P.Filesystem.writeFile({ path: nom, data: texte, directory: 'CACHE', encoding: 'utf8' });
+      await P.Share.share({ title: 'Sauvegarde Hémicycle', files: [uri] });
+    } catch (e) { toast(`Export impossible : ${e.message ?? e}`); }
+    return;
+  }
   const url = URL.createObjectURL(new Blob([texte], { type: 'application/json' }));
   const a = Object.assign(document.createElement('a'), { href: url, download: nom });
   document.body.appendChild(a); a.click(); a.remove();
