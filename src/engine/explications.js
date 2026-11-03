@@ -9,6 +9,7 @@ export function typeSource(source = '') {
   if (source === 'budget') return 'budget';
   if (source.startsWith('evenement:')) return 'evenement';
   if (source.startsWith('projet:')) return 'projet';
+  if (source.startsWith('politique:')) return 'politique';
   if (source === 'interets') return 'interets';
   return 'loi';
 }
@@ -75,7 +76,8 @@ const LIBELLES_SECTEURS = { sante: 'santé', infrastructures_environnement: 'inf
 const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`;
 
 /** Nom lisible de la cause. */
-export function nomCause(entree, { lois = [], evenements = [], projets } = {}) {
+export function nomCause(entree, { lois = [], evenements = [], projets, politiques } = {}) {
+  if (entree.type === 'politique') return `le programme « ${politiques?.politiques?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
   if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
   if (entree.type === 'loi') return `la loi « ${lois.find((l) => l.id === entree.source)?.titre ?? entree.source} »`;
@@ -88,7 +90,7 @@ export function nomCause(entree, { lois = [], evenements = [], projets } = {}) {
 
 /** Phrase explicative, au présent pour l'observé, au futur pour la prévision. */
 export function phraseExplication(entree, donnees) {
-  const [nom, unite] = LIBELLES[entree.indicateur] ?? [entree.indicateur, ''];
+  const [nom, unite] = LIBELLES[entree.indicateur] ?? (entree.indicateur?.startsWith('secteur:') ? [`le niveau « ${donnees?.politiques?.secteurs?.[entree.secteur]?.nom ?? entree.secteur} »`, 'pt'] : [entree.indicateur, '']);
   const cause = nomCause(entree, donnees);
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
