@@ -82,3 +82,15 @@ describe('catalogue des décisions', () => {
     expect(catalogueDecisions(partie('depute'), donnees).some((x) => x.type === 'dissolution')).toBe(false);
   });
 });
+
+describe('corrections (revue sur E4)', () => {
+  it('prérequis : un programme encore en montée en charge ne suffit pas', () => {
+    const e = { ...partie(), politiques: [{ id: 'programme-recherche-fondamentale', statut: 'montee' }], secteurs: { ...partie().secteurs, recherche: 70 } };
+    expect(raisonRefusPolitique(e, def('transfert-innovation'), politiques)).toMatch(/en œuvre/);
+  });
+  it('négociations : seuls les partis ayant des sièges dans l’Assemblée actuelle', () => {
+    const e = { ...partie(), sieges: { epr: 300, rn: 277 } };
+    const accords = catalogueDecisions(e, donnees).filter((x) => x.type === 'accord');
+    expect(accords.map((x) => x.id)).toEqual(['accord:rn']);
+  });
+});

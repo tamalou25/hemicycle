@@ -1,5 +1,6 @@
 // Onglet « Décisions » : un seul endroit pour toutes les actions du joueur (lois, programmes, projets, négociations, 49.3…).
 import { esc, fmt } from '../util.js';
+import { reactionProbable } from './relations.js';
 import { catalogueDecisions, filtrerDecisions, compterDecisions, CATEGORIES, SECTEURS_DECISION } from '../../engine/index.js';
 
 export const STATUTS = [['disponible', 'Disponibles'], ['en_cours', 'En cours'], ['bloque', 'Bloquées'], ['fait', 'Faites']];
@@ -35,7 +36,7 @@ function couts(x) {
   return l.join(' · ');
 }
 
-function carte(x, i) {
+function carte(x, i, etat, ctx) {
   const bouton = libelleBouton(x);
   const afficheBouton = bouton && !(['loi', 'programme', 'accord'].includes(x.type) && ['en_cours', 'fait'].includes(x.statut));
   const bloque = !!x.raison;
@@ -51,9 +52,16 @@ function carte(x, i) {
     <p class="text-sm text-doux line-clamp-1 mt-1" title="${esc(x.resume)}">${esc(x.resume)}</p>
     ${meta.length ? `<p class="text-xs mt-1">${meta.map(esc).join(' · ')}</p>` : ''}
     ${x.contrepartie ? `<p class="text-xs text-doux mt-1"><strong>Contrepartie :</strong> ${esc(x.contrepartie)}</p>` : ''}
+    ${reactionDe(x, etat, ctx)}
     ${afficheBouton ? `<div class="mt-2"><button type="button" id="dec-${i}" data-decision="${i}" class="btn ${urgent ? 'btn-p' : 'btn-s'}" ${bloque ? `disabled aria-describedby="${rid}"` : ''}>${esc(bouton)}</button>
       ${bloque ? `<p id="${rid}" class="text-xs text-doux mt-1">${esc(x.raison)}</p>` : ''}</div>` : ''}
   </li>`;
+}
+
+function reactionDe(x, etat, ctx) {
+  const src = x.type === 'loi' ? ctx.lois?.find((l) => `loi:${l.id}` === x.id)
+    : x.type === 'programme' ? ctx.politiques?.politiques?.find((p) => `programme:${p.id}` === x.id) : null;
+  return src ? reactionProbable(etat, ctx, src.theme, src.orientation) : '';
 }
 
 const pastille = (id, libelle, nombre, actif, attr) => `<button type="button" id="${id}" ${attr} aria-pressed="${actif}"
@@ -81,14 +89,14 @@ export function ongletDecisions(etat, ctx) {
     const liste = affichees.filter((x) => x.categorie === cat);
     if (!liste.length) return '';
     return `<section aria-labelledby="h-cat-${cat}" class="mb-6"><h3 id="h-cat-${cat}" class="font-serif font-bold text-lg border-b border-bord pb-1 mb-2">${esc(titre)} <span class="text-sm font-normal text-doux">(${liste.length})</span></h3>
-      <ul class="grid md:grid-cols-2 gap-3">${liste.map((x) => carte(x, idx++)).join('')}</ul></section>`;
+      <ul class="grid md:grid-cols-2 gap-3">${liste.map((x) => carte(x, idx++, etat, ctx)).join('')}</ul></section>`;
   }).join('');
   const vide = !affichees.length ? '<p class="p-4 border border-bord bg-carte rounded-lg text-doux" role="status">Aucune décision ne correspond à ces filtres.</p>' : '';
 
   return `<section aria-labelledby="h-dec">
     <h2 id="h-dec" class="font-serif font-bold text-xl mb-1">Décisions</h2>
     <p class="text-sm text-doux mb-3">Toutes vos actions au même endroit : lois, programmes, projets en région, négociations. Capital politique : <strong>${etat.joueur.capital}</strong>/10.</p>
-    ${urgentes.length ? `<ul class="mb-4 space-y-3" role="alert" aria-label="Décision urgente">${urgentes.map((x, i) => carte(x, i)).join('')}</ul>` : ''}
+    ${urgentes.length ? `<ul class="mb-4 space-y-3" role="alert" aria-label="Décision urgente">${urgentes.map((x, i) => carte(x, i, etat, ctx)).join('')}</ul>` : ''}
     <div class="mb-4 space-y-2" role="group" aria-label="Filtres des décisions">
       <div role="group" aria-label="Catégorie" class="flex flex-wrap gap-2">${pCat}</div>
       <div role="group" aria-label="Statut" class="flex flex-wrap gap-2 items-center">${pStat}</div>

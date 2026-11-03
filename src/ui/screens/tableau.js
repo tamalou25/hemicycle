@@ -2,6 +2,7 @@ import { esc, fmt, MOIS } from '../util.js';
 import { dateDuTour } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { blocVote, blocSondage } from '../components/vote.js';
+import { sectionRelations } from '../components/relations.js';
 import { sectionReactions } from '../components/reactions.js';
 import { sectionElections, brancherElections } from '../components/elections.js';
 import { sectionEvenement, brancherEvenement } from '../components/evenement.js';
@@ -79,7 +80,8 @@ function ongletBureau(etat, ctx, donnees, points) {
 
 function ongletParlement(etat, ctx) {
   const { lois, partis } = ctx;
-  return `${sectionParlement(etat, ctx)}
+  return `${sectionRelations(etat, ctx)}
+    ${sectionParlement(etat, ctx)}
     ${sectionReactions(etat, ctx)}
     <div class="grid gap-6 mb-6">
       <section aria-labelledby="h-vote" class="bg-carte border border-bord rounded-lg p-4">
@@ -117,7 +119,8 @@ export function render(racine, etat, dispatch, ctx) {
   const d = dateDuTour(etat);
   const parti = partis.find((p) => p.id === etat.joueur.parti);
   const onglet = ONGLETS.some(([id]) => id === ctx.onglet) ? ctx.onglet : 'bureau';
-  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
+  // Toutes les définitions nécessaires aux phrases d'explication (programmes, partis…)
+  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)

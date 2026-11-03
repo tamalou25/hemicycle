@@ -82,13 +82,13 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques });
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {

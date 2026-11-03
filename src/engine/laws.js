@@ -2,6 +2,7 @@
 // La navette elle-même (votes mois par mois) est dans navette.js.
 import { CAPITAL_MAX, DELAI_493, DUREE_ACCORD, borner } from './constants.js';
 import { ecartIdeologique, accordActif } from './parliament.js';
+import { bonusTolerance, reagir } from './relations.js';
 
 export { SEUIL_SOUTIEN } from './parliament.js';
 
@@ -98,7 +99,7 @@ export function negocierAccord(etat, partiId, { partis }) {
   const refus = raisonRefusAccord(etat, partiId);
   if (refus) throw new Error(refus);
   const ecart = ecartIdeologique(etat.joueur.ideologie, parti.positions);
-  const reussi = ecart <= toleranceAccord(etat);
+  const reussi = ecart <= toleranceAccord(etat) + bonusTolerance(etat, partiId);
   return {
     ...etat,
     negoCeMois: true,

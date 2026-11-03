@@ -67,7 +67,9 @@ export function catalogueDecisions(etat, d) {
   }
   // Négociations
   for (const p of d.partis ?? []) {
-    if (p.id === etat.joueur.parti || !p.sieges_assemblee) continue;
+    // Sièges effectifs : après des législatives simulées, un parti sans député n'est plus un partenaire
+    const sieges = etat.sieges ? (etat.sieges[p.id] ?? 0) : (p.sieges_assemblee ?? 0);
+    if (p.id === etat.joueur.parti || !sieges) continue;
     const ecart = Math.round(ecartIdeologique(etat.joueur.ideologie, p.positions));
     res.push(item({ id: `accord:${p.id}`, categorie: 'negociation', type: 'accord', secteur: 'institutions', titre: `Accord avec ${p.sigle}`, resume: `Écart idéologique ${ecart} (accepté jusqu’à ${Math.round(toleranceAccord(etat))}).`,
       cout: { capital: 2 }, delai: '6 mois', statut: (etat.accords ?? []).some((a) => a.parti === p.id && a.jusqua >= etat.tour) ? 'en_cours' : undefined,

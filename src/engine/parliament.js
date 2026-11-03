@@ -1,5 +1,6 @@
 // Institutions : groupes, votes des chambres, accords, censure.
 import { AXES, BONUS_ACCORD, MAJORITE_CENSURE, SEUIL_OPPOSITION } from './constants.js';
+import { bonusVote, attitudeCensure } from './relations.js';
 
 /** Seuil de score pour qu'un groupe vote pour un texte. */
 export const SEUIL_SOUTIEN = 0.72;
@@ -34,7 +35,7 @@ export function scoreGroupe(etat, groupe, theme, orientation) {
   if (groupe.parti && groupe.parti === etat.joueur.parti) return 1;
   const proximite = 1 - Math.abs((groupe.positions[theme] ?? 0) - orientation) / 200;
   const nego = (etat.joueur.competences.negociation / 100) * 0.08;
-  return proximite + nego + (groupe.parti && accordActif(etat, groupe.parti) ? BONUS_ACCORD : 0);
+  return proximite + nego + (groupe.parti && accordActif(etat, groupe.parti) ? BONUS_ACCORD : 0) + (groupe.parti ? bonusVote(etat, groupe.parti) : 0);
 }
 
 /** Vote d'une chambre. */
@@ -58,7 +59,9 @@ export function voterCensure(etat, groupes) {
   const detail = groupes.map((g) => {
     const allie = g.parti === etat.joueur.parti || (g.parti && accordActif(etat, g.parti));
     const ecart = ecartIdeologique(etat.joueur.ideologie, g.positions);
-    const vote = !allie && ecart > SEUIL_OPPOSITION ? 'pour' : 'contre';
+    const attitude = g.parti ? attitudeCensure(etat, g.parti) : 'neutre';
+    // Relation (E5) : un parti très proche protège le gouvernement, un parti hostile censure plus facilement
+    const vote = !allie && attitude !== 'protege' && (ecart > SEUIL_OPPOSITION || (attitude === 'hostile' && ecart > SEUIL_OPPOSITION / 2)) ? 'pour' : 'contre';
     if (vote === 'pour') pour += g.sieges;
     return { groupe: g.id, sigle: g.sigle, sieges: g.sieges, vote, ecart: Math.round(ecart) };
   });
