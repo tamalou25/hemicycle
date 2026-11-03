@@ -1,0 +1,1468 @@
+[
+  {
+    "id": "greve-transports",
+    "titre": "Grève dans les transports",
+    "theme": "social",
+    "description": "Un préavis de grève paralyse les trains et les transports urbains. Les usagers attendent une réaction du gouvernement.",
+    "conditions": {},
+    "poids": 4,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Ouvrir la négociation",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -8,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Imposer un service minimum",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 9,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 5,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crise-energetique",
+    "titre": "Grève et tensions dans l'énergie",
+    "theme": "economie",
+    "description": "Un mouvement social dans le secteur de l'énergie perturbe l'approvisionnement et fait grimper les prix.",
+    "conditions": {
+      "inflation": {
+        "min": 1.5
+      }
+    },
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Débloquer des aides ciblées",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "inflation",
+            "valeur": -0.3,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Négocier un accord salarial",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -7,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": 0.2,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "inflation",
+            "valeur": 0.4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "manifestation-retraites",
+    "titre": "Manifestation sur les retraites",
+    "theme": "social",
+    "description": "Des cortèges rassemblent des centaines de milliers de personnes contre une évolution du système de retraites.",
+    "conditions": {
+      "popularite": {
+        "max": 55
+      }
+    },
+    "poids": 4,
+    "role": "premier_ministre",
+    "choix": [
+      {
+        "libelle": "Suspendre la mesure",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.4,
+            "delaiMois": 2,
+            "duree": 5
+          },
+          {
+            "indicateur": "dette",
+            "valeur": 0.8,
+            "delaiMois": 3,
+            "duree": 4
+          }
+        ]
+      },
+      {
+        "libelle": "Ouvrir une concertation",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -6,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 2,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Maintenir le cap",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 12,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -5,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": -0.2,
+            "delaiMois": 3,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "colere-agriculteurs",
+    "titre": "Colère des agriculteurs",
+    "theme": "social",
+    "description": "Des tracteurs bloquent des axes routiers pour protester contre les normes et la baisse des revenus agricoles.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Accorder une aide d'urgence",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -8,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Alléger certaines normes",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -5,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -2,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 8,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crise-internationale",
+    "titre": "Crise internationale",
+    "theme": "international",
+    "description": "Un conflit éclate dans une région voisine de l'Europe et menace les échanges et la sécurité du continent.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Mener une initiative diplomatique",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -5,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Renforcer la posture de défense",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.4,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "dette",
+            "valeur": 0.8,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 5,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tensions-commerciales",
+    "titre": "Tensions commerciales",
+    "theme": "international",
+    "description": "Un partenaire commercial majeur annonce des droits de douane qui menacent nos exportations.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Riposter par des mesures équivalentes",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "inflation",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 6,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Négocier au niveau européen",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": -0.1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -4,
+            "delaiMois": 2,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 2,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": -0.4,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "chomage",
+            "valeur": 0.2,
+            "delaiMois": 2,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "catastrophe-climatique",
+    "titre": "Inondations et canicule",
+    "theme": "climat",
+    "description": "Des inondations puis une canicule frappent plusieurs régions, avec des dégâts matériels et des tensions sanitaires.",
+    "conditions": {},
+    "poids": 4,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Déclencher un plan d'urgence",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "dette",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 4,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Aider via les collectivités",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -6,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 8,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cyberattaque-hopital",
+    "titre": "Cyberattaque d'un hôpital",
+    "theme": "securite",
+    "description": "Un grand centre hospitalier est paralysé par une attaque informatique. Les soins sont retardés et les patients transférés.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Lancer un plan de cybersécurité",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -4,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Envoyer des renforts techniques",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 0,
+            "duree": 1
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -5,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 6,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sommet-europeen",
+    "titre": "Sommet européen et accord",
+    "theme": "europe",
+    "description": "Un sommet européen s'ouvre sur un projet d'accord de relance. La France peut peser sur son contenu.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Porter une position ambitieuse",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": 0.3,
+            "delaiMois": 2,
+            "duree": 4
+          },
+          {
+            "indicateur": "dette",
+            "valeur": 0.5,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Rechercher un compromis rapide",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -3,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas s'engager",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.1,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 3,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "procedure-deficit-excessif",
+    "titre": "Procédure pour déficit excessif",
+    "theme": "europe",
+    "description": "La Commission européenne ouvre une procédure pour déficit excessif et demande un plan de redressement.",
+    "conditions": {
+      "deficit": {
+        "min": 4.5
+      }
+    },
+    "poids": 4,
+    "role": "premier_ministre",
+    "choix": [
+      {
+        "libelle": "Adopter un plan d'économies",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": -0.5,
+            "delaiMois": 1,
+            "duree": 5
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Négocier un délai",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": -0.2,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "dette",
+            "valeur": 0.5,
+            "delaiMois": 2,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "dette",
+            "valeur": 1,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "degradation-note",
+    "titre": "Dégradation de la note souveraine",
+    "theme": "economie",
+    "description": "Une agence de notation abaisse la note de la dette française, ce qui renchérit le coût des emprunts.",
+    "conditions": {
+      "dette": {
+        "min": 120
+      }
+    },
+    "poids": 3,
+    "role": "premier_ministre",
+    "choix": [
+      {
+        "libelle": "Annoncer un plan de désendettement",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "dette",
+            "valeur": -1,
+            "delaiMois": 2,
+            "duree": 5
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Rassurer les marchés",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "dette",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "dette",
+            "valeur": 1.5,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scandale-entourage",
+    "titre": "Affaire dans votre entourage",
+    "theme": "scandale",
+    "description": "Un de vos collaborateurs est mis en cause dans une affaire d'emplois présumés fictifs. Les faits restent à établir.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Demander une enquête interne",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -3,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 2,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Écarter le collaborateur",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -6,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 5,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bonne-surprise-economique",
+    "titre": "Bonne surprise économique",
+    "theme": "economie",
+    "description": "Les chiffres de l'activité dépassent les prévisions grâce à une consommation plus dynamique que prévu.",
+    "conditions": {
+      "croissance": {
+        "max": 2
+      }
+    },
+    "poids": 2,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Investir dans la transition",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Réduire le déficit",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": -0.3,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "dette",
+            "valeur": -0.5,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mobilisation-lyceenne",
+    "titre": "Mobilisation lycéenne",
+    "theme": "social",
+    "description": "Des lycéens manifestent dans plusieurs villes pour réclamer plus de moyens et une réforme de l'orientation.",
+    "conditions": {},
+    "poids": 2,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Recevoir leurs représentants",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -6,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 2,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Annoncer des moyens supplémentaires",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 1,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -8,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 6,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crise-logement",
+    "titre": "Crise du logement",
+    "theme": "social",
+    "description": "Les loyers et les prix flambent, et les files d'attente pour un logement social s'allongent dans les grandes villes.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Lancer un plan de construction",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.2,
+            "delaiMois": 3,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 2,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Encadrer les loyers",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": -0.1,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": -0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -4,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 6,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "penurie-medicaments",
+    "titre": "Pénurie de médicaments",
+    "theme": "sante",
+    "description": "Plusieurs médicaments courants manquent dans les pharmacies, ce qui inquiète patients et soignants.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Relocaliser la production",
+        "cout_capital": 3,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 3,
+            "delaiMois": 3,
+            "duree": 3
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": 0.2,
+            "delaiMois": 2,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Organiser des achats groupés européens",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -3,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -5,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 6,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "evenement-sportif",
+    "titre": "Grand événement sportif",
+    "theme": "economie",
+    "description": "La France accueille une grande compétition sportive internationale, source de fierté et de retombées touristiques.",
+    "conditions": {},
+    "poids": 2,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Soutenir massivement l'événement",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 5,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.2,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Maîtriser les dépenses",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.05,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "colere-outre-mer",
+    "titre": "Colère dans les territoires d'outre-mer",
+    "theme": "social",
+    "description": "Des habitants d'outre-mer expriment leur inquiétude face à la vie chère et au manque de services publics.",
+    "conditions": {},
+    "poids": 2,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Ouvrir un dialogue sur place",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -9,
+            "delaiMois": 0,
+            "duree": 3
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Engager un plan de rattrapage",
+        "cout_capital": 3,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.4,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "inflation",
+            "valeur": -0.2,
+            "delaiMois": 2,
+            "duree": 3
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -12,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 10,
+            "delaiMois": 0,
+            "duree": 4
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -3,
+            "delaiMois": 0,
+            "duree": 3
+          }
+        ]
+      }
+    ]
+  }
+]

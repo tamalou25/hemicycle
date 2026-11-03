@@ -5,8 +5,12 @@ import { carteLoi } from '../components/carteLoi.js';
 import { blocVote, blocSondage } from '../components/vote.js';
 import { sectionReactions } from '../components/reactions.js';
 import { sectionElections, brancherElections } from '../components/elections.js';
+import { sectionEvenement, brancherEvenement } from '../components/evenement.js';
+import { sectionBudget, brancherBudget } from '../components/budget.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 
+const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
+const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold border rounded-full mr-1 ${p[2]}" title="${p[1]}"><span aria-hidden="true">${p[0]}</span><span class="sr-only">${p[1]} :</span></span>` : ''; };
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
 export function render(racine, etat, dispatch, ctx) {
@@ -22,9 +26,10 @@ export function render(racine, etat, dispatch, ctx) {
     return `<li class="text-sm py-1 border-b border-bord last:border-0">${esc(LIB[e.indicateur] ?? e.indicateur)} ${sens}${fmt(Math.abs(e.parMois), 2)}/mois <span class="text-doux">(${esc(loi?.titre ?? e.source)}, ${statut})</span></li>`;
   }).join('') || '<li class="text-sm text-doux">Aucun effet en cours.</li>';
   const journal = [...etat.journal].reverse().slice(0, 30).map((j) =>
-    `<li class="text-sm py-1 border-b border-bord last:border-0"><span class="text-doux">Mois ${j.tour} :</span> ${esc(j.texte)}</li>`).join('');
+    `<li class="text-sm py-1 border-b border-bord last:border-0">${pastille(j.type)}<span class="text-doux">Mois ${j.tour} :</span> ${esc(j.texte)}</li>`).join('');
 
   racine.innerHTML = `
+    ${sectionEvenement(etat, ctx)}
     <p class="text-xs text-doux mb-3">Situation de départ au ${esc(situation.date_collecte)} : Président ${esc(situation.president)}, Premier ministre ${esc(situation.premier_ministre)}.</p>
     <header class="flex flex-wrap items-end justify-between gap-3 mb-4">
       <div>
@@ -46,6 +51,8 @@ export function render(racine, etat, dispatch, ctx) {
       <p class="mt-3 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
         Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10</p>
     </section>
+
+    ${sectionBudget(etat, ctx)}
 
     ${sectionElections(etat, ctx)}
 
@@ -82,6 +89,8 @@ export function render(racine, etat, dispatch, ctx) {
     const f = e.target.files?.[0];
     if (f) dispatch({ type: 'importer', texte: await f.text() });
   });
+  brancherEvenement(racine, dispatch);
+  brancherBudget(racine, dispatch, ctx);
   brancherElections(racine, dispatch);
   racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
   racine.querySelector('[data-amender]')?.addEventListener('click', () => dispatch({ type: 'amender' }));

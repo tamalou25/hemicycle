@@ -28,6 +28,12 @@ npm test
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
+### Phase 5 : Profondeur
+- 18 événements fictifs (grèves, crises, Europe, climat, santé, scandale dans l'entourage du joueur), chacun avec 2 ou 3 réponses
+- Budget annuel du Premier ministre : leviers dépenses et impôts
+- Bilan noté sur 100 et fins multiples (réformateur, gestionnaire, mandat chaotique, renversé, Élysée…)
+- Non fait : régions (reporté)
+
 ### Phase 4 : Élections
 - Calendrier réel : présidentielle d'avril 2027, européennes et législatives de 2029
 - Campagne : meeting, débat, programme ; élan de campagne ; candidature à partir de 15 % de popularité
@@ -54,4 +60,4 @@ npm test
 - Sondage mensuel
 - Sauvegarde automatique, plus export et import d'un fichier JSON
 
-Roadmap : profondeur, et enfin le volet social. Voir `CLAUDE.md`.
+Roadmap : et enfin le volet social. Voir `CLAUDE.md`.

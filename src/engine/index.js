@@ -16,6 +16,9 @@ export {
   raisonRefusCampagne, raisonRefusDissolution, repartirSieges, secondTour, siegesEffectifs, tourDeDate,
   ACTIONS_CAMPAGNE, MOIS_CAMPAGNE,
 } from './elections.js';
+export { tirerEvenement, resoudreEvenement, eligible, PROBA_EVENEMENT } from './events.js';
+export { voterBudget, raisonRefusBudget, effetsBudget, LEVIERS } from './budget.js';
+export { scoreBilan, evaluerFin } from './fins.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';
