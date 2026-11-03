@@ -61,6 +61,7 @@ function telecharger(texte, nom) {
 }
 
 function aller(nom) {
+  ctx.groupesAvant = null;
   ecran = nom;
   racine.setAttribute('aria-label', nom);
   afficher();
@@ -71,7 +72,7 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -81,13 +82,13 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances });
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {
@@ -114,7 +115,7 @@ export function dispatch(action) {
       case 'evenement': etat = resoudreEvenement(etat, action.index, donnees); break;
       case 'plf-deposer': etat = deposerPLF(etat, action.plf ?? ctx.brouillonPLF); ctx.brouillonPLF = null; toast('Projet de loi de finances déposé.', 'info'); break;
       case 'plf-493': etat = recourir493PLF(etat); ctx.confirm493 = false; break;
-      case 'suivant': etat = tourSuivant(etat, donnees); break;
+      case 'suivant': ctx.groupesAvant = etat.groupes ?? null; etat = tourSuivant(etat, donnees); break;
       case 'exporter': telecharger(exporterPartie(etat), `hemicycle-mois-${etat.tour}.json`); return;
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
       default: throw new Error(`Action inconnue : ${action.type}`);
@@ -136,8 +137,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

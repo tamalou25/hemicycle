@@ -15,7 +15,79 @@ const classe = (v) => Math.max(0, Math.min(4, Math.floor((v ?? 0) / 20)));
 const LIB_INDICE = { emploi: 'Emploi', sante: 'Accès aux soins', transports: 'Transports' };
 const nf = (n) => Number(n).toLocaleString('fr-FR');
 
-export const vueValide = (v) => (VUES.some((x) => x.id === v) ? v : 'satisfaction');
+const VUE_LEGIS = { id: 'legislatives', nom: 'Législatives', court: 'législatives' };
+// Motifs superposés à la couleur du parti (lisibles sans la couleur)
+const MOTIFS = [null, 'diag', 'points', 'croix', 'horiz', 'vert'];
+
+/** Dernier résultat de législatives détaillé par région, ou null. */
+export const legislativesRegions = (etat) => [...(etat?.resultatsElections ?? [])].reverse().find((r) => r.type === 'legislatives' && r.parRegion) ?? null;
+export const vuesDisponibles = (etat) => (legislativesRegions(etat) ? [...VUES, VUE_LEGIS] : VUES);
+export const vueValide = (v, etat) => (vuesDisponibles(etat).some((x) => x.id === v) ? v : 'satisfaction');
+
+/** Parti arrivé en tête en sièges dans une région (égalité : ordre alphabétique, déterministe). */
+const enTete = (sieges) => Object.entries(sieges ?? {}).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] ?? null;
+function partiDe(ctx, id) { return ctx.partis.find((p) => p.id === id) ?? { id, sigle: id, nom: id, couleur: '#8A8A8A' }; }
+function motifsLegis(res, ctx) {
+  const ids = [...new Set(Object.values(res.parRegion).map((s) => enTete(s)?.[0]).filter(Boolean))].sort();
+  return ids.map((id, i) => ({ p: partiDe(ctx, id), motif: MOTIFS[i % MOTIFS.length], i }));
+}
+const defMotif = (m, id) => ({
+  diag: `<pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="8" fill="#fff" fill-opacity=".55"/></pattern>`,
+  points: `<pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.6" fill="#fff" fill-opacity=".7"/></pattern>`,
+  croix: `<pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 0L8 8M8 0L0 8" stroke="#fff" stroke-opacity=".6" stroke-width="1.2"/></pattern>`,
+  horiz: `<pattern id="${id}" width="8" height="6" patternUnits="userSpaceOnUse"><rect width="8" height="2" fill="#fff" fill-opacity=".55"/></pattern>`,
+  vert: `<pattern id="${id}" width="6" height="8" patternUnits="userSpaceOnUse"><rect width="2" height="8" fill="#fff" fill-opacity=".55"/></pattern>`,
+}[m] ?? '');
+
+export function badgeSimulation() {
+  return '<span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 ml-2 align-middle">Simulation</span>';
+}
+
+export function legendeLegis(res, ctx) {
+  return `<ul class="flex flex-wrap gap-x-3 gap-y-1 text-xs mt-2" aria-label="Légende : parti en tête en sièges">${motifsLegis(res, ctx).map(({ p, motif, i }) =>
+    `<li class="flex items-center gap-1"><svg width="16" height="16" class="border border-encre" aria-hidden="true"><defs>${defMotif(motif, `lg-${i}`)}</defs><rect width="16" height="16" fill="${esc(p.couleur)}"/>${motif ? `<rect width="16" height="16" fill="url(#lg-${i})"/>` : ''}</svg>${esc(p.sigle)}</li>`).join('')}</ul>`;
+}
+
+function svgLegislatives(etat, ctx, res, selection) {
+  const { carte, regions } = ctx;
+  const noms = Object.fromEntries(regions.regions.map((r) => [r.id, r.nom]));
+  const motifs = motifsLegis(res, ctx);
+  const chemin = (r) => {
+    const t = enTete(res.parRegion[r.id]);
+    const m = motifs.find((x) => x.p.id === t?.[0]);
+    const sel = r.id === selection;
+    const lib = t ? `${partiDe(ctx, t[0]).sigle} en tête, ${t[1]} sièges` : 'pas de résultat';
+    return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${esc(m?.p.couleur ?? '#E8E1CD')}" stroke="${sel ? '#8A6A1F' : '#FFFDF7'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
+      tabindex="0" role="button" aria-pressed="${sel}" data-region="${esc(r.id)}" aria-label="${esc(noms[r.id] ?? r.nom)}, législatives : ${esc(lib)}"><title>${esc(noms[r.id] ?? r.nom)} : ${esc(lib)}</title></path>
+      ${m?.motif ? `<path d="${esc(r.d)}" fill="url(#lg-${m.i})" stroke="none" pointer-events="none" aria-hidden="true"/>` : ''}`;
+  };
+  const ordre = [...carte.regions.filter((r) => r.id !== selection), ...carte.regions.filter((r) => r.id === selection)];
+  return `<svg viewBox="${esc(carte.viewBox)}" class="w-full h-auto max-h-[70vh]" role="group" aria-label="Carte des régions de France, parti en tête aux législatives simulées">
+    <defs>${motifs.map(({ motif, i }) => defMotif(motif, `lg-${i}`)).join('')}</defs>
+    ${(carte.encarts ?? []).map((e) => `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" fill="none" stroke="#8A6A1F" stroke-width="1" aria-hidden="true"/>`).join('')}
+    ${ordre.map(chemin).join('')}</svg>`;
+}
+
+function tableLegislatives(res, ctx) {
+  const lignes = ctx.regions.regions.map((r) => {
+    const s = res.parRegion[r.id] ?? {};
+    const tri = Object.entries(s).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    return `<tr class="border-b border-bord"><th scope="row" class="text-left py-1 pr-2 font-semibold">${esc(r.nom)}</th>
+      <td class="py-1 pr-2">${esc(tri[0] ? partiDe(ctx, tri[0][0]).sigle : '—')}</td>
+      <td class="py-1 text-xs">${esc(tri.map(([id, v]) => `${partiDe(ctx, id).sigle} ${v}`).join(', '))}</td></tr>`;
+  }).join('');
+  return `<div class="overflow-x-auto"><table class="w-full text-sm"><caption class="text-left text-doux text-xs mb-1">Législatives simulées : sièges par région</caption>
+    <thead><tr class="border-b-2 border-encre text-left"><th scope="col" class="py-1 pr-2">Région</th><th scope="col" class="pr-2">En tête</th><th scope="col">Sièges</th></tr></thead><tbody>${lignes}</tbody></table></div>`;
+}
+
+function siegesRegion(res, ctx, r) {
+  const s = Object.entries(res.parRegion[r.id] ?? {}).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  if (!s.length) return '';
+  const total = s.reduce((t, [, v]) => t + v, 0);
+  return `<h3 class="font-serif font-bold text-lg mt-3">Législatives simulées${badgeSimulation()}</h3>
+    <div class="h-3 flex rounded overflow-hidden mt-1 bg-[#E8E1CD]" aria-hidden="true">${s.map(([id, v]) => `<div style="width:${(v / total) * 100}%;background:${esc(partiDe(ctx, id).couleur)}"></div>`).join('')}</div>
+    <ul class="text-sm mt-1">${s.map(([id, v]) => `<li class="flex justify-between gap-2 py-0.5 border-b border-bord last:border-0"><span><span class="inline-block w-3 h-3 rounded-sm align-middle mr-1" style="background:${esc(partiDe(ctx, id).couleur)}" aria-hidden="true"></span>${esc(partiDe(ctx, id).sigle)}</span><span class="tabular-nums font-semibold">${v} sièges</span></li>`).join('')}</ul>`;
+}
 
 export function legende() {
   return `<ul class="flex flex-wrap gap-x-3 gap-y-1 text-xs mt-2" aria-label="Légende : valeur de 0 à 100">${COULEURS.map((c, i) =>
@@ -23,6 +95,7 @@ export function legende() {
 }
 
 export function svgCarte(etat, ctx, vue, selection) {
+  if (vue === 'legislatives') { const res = legislativesRegions(etat); if (res) return svgLegislatives(etat, ctx, res, selection); }
   const { carte, regions } = ctx;
   const noms = Object.fromEntries(regions.regions.map((r) => [r.id, r.nom]));
   const v = VUES.find((x) => x.id === vue);
@@ -103,6 +176,7 @@ export function ficheRegion(etat, ctx, regionId) {
     <p class="text-sm text-doux">Population : ${nf(r.population)} habitants (Insee, 2026)<br>
     ${r.chomage != null ? `Chômage observé : ${fmt(r.chomage)} % (Insee, T2 2026)` : 'Chômage observé : non disponible (Insee)'}</p>
     <div class="mt-3">${barre('Satisfaction', t.satisfaction, true)}${barre('Emploi', t.emploi)}${barre('Accès aux soins', t.sante)}${barre('Transports', t.transports)}</div>
+    ${legislativesRegions(etat) && ctx.vue === 'legislatives' ? siegesRegion(legislativesRegions(etat), ctx, r) : ''}
     <h3 class="font-serif font-bold text-lg mt-3">Projets de la région</h3>${projetsRegion(etat, ctx, r)}
     <h3 class="font-serif font-bold text-lg mt-3">Ce qui a changé ce mois-ci</h3>
     ${expl.length ? `<ul class="text-sm">${expl.map((e) => `<li class="py-1 border-b border-bord last:border-0">${esc(phraseExplication(e, donnees))}</li>`).join('')}</ul>` : '<p class="text-sm text-doux">Aucune variation attribuée ce mois-ci.</p>'}
@@ -113,14 +187,16 @@ export function ficheRegion(etat, ctx, regionId) {
 }
 
 export function ongletCarte(etat, ctx) {
-  const vue = vueValide(ctx.vue);
+  const vue = vueValide(ctx.vue, etat);
+  const legis = vue === 'legislatives' ? legislativesRegions(etat) : null;
   const sel = ctx.region ?? null;
   const tableau = !!ctx.tableauCarte;
   return `<div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] gap-4 items-start">
     <section aria-labelledby="h-carte" class="min-w-0">
       <h2 id="h-carte" class="font-serif font-bold text-xl mb-2">Carte des territoires</h2>
-      <div role="group" aria-label="Vue de la carte" class="flex flex-wrap gap-2 mb-2">${VUES.map((x) => `<button type="button" id="vue-${x.id}" data-vue="${x.id}" aria-pressed="${x.id === vue}" class="btn ${x.id === vue ? 'btn-p' : 'btn-s'} text-sm">${x.nom}</button>`).join('')}</div>
-      ${tableau ? tableAccessible(etat, ctx) : `<div class="bg-carte border border-bord rounded-lg p-2">${svgCarte(etat, ctx, vue, sel)}</div>${legende()}`}
+      <div role="group" aria-label="Vue de la carte" class="flex flex-wrap gap-2 mb-2">${vuesDisponibles(etat).map((x) => `<button type="button" id="vue-${x.id}" data-vue="${x.id}" aria-pressed="${x.id === vue}" class="btn ${x.id === vue ? 'btn-p' : 'btn-s'} text-sm">${x.nom}</button>`).join('')}</div>
+      ${legis ? `<p class="text-sm mb-2">Parti arrivé en tête en sièges dans chaque région${badgeSimulation()}</p>` : ''}
+      ${tableau ? (legis ? tableLegislatives(legis, ctx) : tableAccessible(etat, ctx)) : `<div class="bg-carte border border-bord rounded-lg p-2">${svgCarte(etat, ctx, vue, sel)}</div>${legis ? legendeLegis(legis, ctx) : legende()}`}
       <button type="button" id="bascule-tableau" class="btn btn-s text-sm mt-2" aria-pressed="${tableau}">${tableau ? 'Afficher la carte' : 'Afficher en tableau'}</button>
       <p class="text-xs text-doux mt-2">${esc(ctx.carte.attribution)}</p>
     </section>

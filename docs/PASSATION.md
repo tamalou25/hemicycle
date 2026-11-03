@@ -1,7 +1,8 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e2-finances`. E0 et E1 sont mergés dans `main`.
+- **Branche en cours** : `e3-population` (PR à ouvrir ou à finir). E0, E1 et E2 sont mergés dans `main`.
+- **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
 - **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
 
@@ -55,7 +56,8 @@
 - Ordre de livraison : web, puis PWA, puis Capacitor (à évaluer en E7, rien d'installé). Multijoueur, comptes et opérations militaires sont hors périmètre.
 
 ## Tests exécutés (sur cette branche)
-- **Vitest, E2** : 98 tests passent. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
+- **Vitest, E3** : 111 tests passent. Playwright : 4 tests passent (ordinateur et mobile).
+- **Vitest, E2** : 98 tests passaient. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
 - **Vitest, E1** : 87 tests passaient (E1 : territoires, projets, briefing, migration v5, schémas des régions, de la carte et des projets).
 - **Playwright, E1** : sélection de Mayotte au clavier, projet lancé puis mis en service, effet expliqué dans la fiche. Aucune erreur console et pas de scroll horizontal à 390 px.
 - **Vitest, E0** : 71 tests passaient, dont 5 sur le registre. Par exemple : la somme des causes égale la variation réelle de chaque indicateur.
@@ -93,8 +95,24 @@
 - Interface : onglet Budget avec le tableau des finances, le PLF à curseurs et un aperçu en direct (solde, orientation, vote probable « estimation »), bannière dans Bureau. Les anciens leviers ±2 pt sont retirés.
 - **Équilibrage** : la dette progresse d'environ 2 points par an sans action. Un budget neutre d'un PM EPR est rejeté 271–292 sans accord : il faut négocier ou utiliser le 49.3.
 
-## Prochaine étape : E3 « Population »
-Groupes sociaux agrégés, satisfaction ≠ confiance ≠ vote, élections calculées par région.
+### E3 Population (en cours sur `e3-population`)
+- **Fait et testé (moteur)** :
+  - `groupes.json` : 6 groupes avec leurs parts (Insee RP 2023) ;
+  - `groupes-equilibrage.json` : des priorités seulement, **aucune orientation politique attribuée aux groupes** ;
+  - `groupes.js` : satisfaction, confiance et vote distincts ; chocs de confiance (49.3 −3, loi spéciale −1,5) ; sondage avec `parGroupe` ;
+  - législatives par région (`siegesParRegion`) ;
+  - sauvegarde v7.
+- **Corrigé** (4 remarques de revue sur E2) : PIB nominal, précision de `borner` portée à 4 décimales, mois de départ de la révision des intérêts, vote de censure enregistré.
+- **Playwright** : en place (`e2e/`, configurations ordinateur et mobile, job `e2e` dans la CI). Voir le README.
+- **Interface E3** : écrite par un sous-agent (onglet Opinion `src/ui/components/opinion.js`, vue « Législatives » sur la carte). Elle est commitée **sans relecture finale** : vérifier visuellement l'onglet Opinion et la vue Législatives, puis ajouter un test e2e pour l'onglet Opinion.
+- **Avant de merger** : `npm test`, `npm run test:e2e`, `npm run build:css` (la CI vérifie que le CSS compilé est commité), mise à jour du README.
+
+## Étapes suivantes (non commencées)
+- **E4 Secteurs** : social et logement, éducation, énergie, sécurité et justice, défense (moyens et préparation uniquement), recherche avec prérequis et durée. Au moins 2 actions par secteur, avec des contreparties testées.
+- **E5 Politique reliée** : les groupes parlementaires réagissent aux résultats ; réintégrer le mode élu réel (règles de contenu dans CLAUDE.md).
+- **E6 PWA** : manifest, service worker, partie jouable hors ligne (aucun CDN, déjà le cas).
+- **E7 Mobile** : évaluer Capacitor (ne rien publier automatiquement sur les stores).
+- **Méthode** : une branche et une PR par étape, toute variation d'indicateur passe par `explications.js`, chaque nouveau champ d'état est ajouté à `save.js` (nettoyage strict) avec une migration de version.
 
 ## (Archive) Plan E1 initial
 1. Sourcer les données régionales :
