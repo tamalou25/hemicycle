@@ -19,6 +19,7 @@
     "cap:ios": "npm run cap:sync && npx cap open ios"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@capacitor/cli": "^8.6.0",
     "@fontsource/source-serif-4": "^5.1.1",
     "@playwright/test": "^1.63.0",

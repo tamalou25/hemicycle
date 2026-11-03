@@ -1,6 +1,6 @@
 // Politique reliée (E5) : relations avec les partis, réactions du mois, mode élu réel.
 import { test, expect } from '@playwright/test';
-import { ouvrirOnglet } from './aide.js';
+import { ouvrirOnglet, toutAfficherDecisions } from './aide.js';
 
 const surveiller = (page) => {
   const erreurs = [];
@@ -19,8 +19,11 @@ test('relations : engager un programme modifie les relations et liste les réact
   await page.getByRole('button', { name: 'Commencer' }).click();
 
   await ouvrirOnglet(page, 'Décisions');
+  await toutAfficherDecisions(page); // 6 décisions par catégorie sont affichées par défaut
   const carte = page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Effectifs de police et gendarmerie de proximité' }) });
-  await expect(carte.getByText(/Réaction probable/)).toBeVisible();
+  // La réaction probable est repliée : on l'ouvre et on vérifie son contenu
+  await carte.getByText('Réaction probable des partis').click();
+  await expect(carte.getByText(/approuvent/).first()).toBeVisible();
   await carte.getByRole('button', { name: 'Engager' }).click();
 
   await ouvrirOnglet(page, 'Parlement');

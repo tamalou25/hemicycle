@@ -1,6 +1,6 @@
 // Onglet Décisions : filtres, engagement d'un programme, raison d'un blocage.
 import { test, expect } from '@playwright/test';
-import { ouvrirOnglet } from './aide.js';
+import { ouvrirOnglet, toutAfficherDecisions } from './aide.js';
 
 async function nouvellePartie(page) {
   await page.goto('/');
@@ -23,6 +23,7 @@ test('décisions : filtrer, engager un programme, voir une raison de blocage', a
   await nationales.click();
   await expect(nationales).toHaveAttribute('aria-pressed', 'true');
 
+  await toutAfficherDecisions(page); // 6 décisions par catégorie sont affichées par défaut
   const carte = page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: "Aide à l'apprentissage" }) });
   await expect(carte).toBeVisible();
   await carte.getByRole('button', { name: 'Engager' }).click();
