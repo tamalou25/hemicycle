@@ -1,7 +1,6 @@
-import { esc, fmt, MOIS, THEMES } from '../util.js';
-import { dateDuTour, raisonRefus } from '../../engine/index.js';
+import { esc, fmt, MOIS } from '../util.js';
+import { dateDuTour } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
-import { carteLoi } from '../components/carteLoi.js';
 import { blocVote, blocSondage } from '../components/vote.js';
 import { sectionReactions } from '../components/reactions.js';
 import { sectionElections, brancherElections } from '../components/elections.js';
@@ -11,7 +10,9 @@ import { boutonPartage, zonePartage, brancherPartage } from '../components/parta
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 import { ongletOpinion } from '../components/opinion.js';
 import { sectionBilan } from '../components/bilan.js';
-import { briefing, satisfactionNationale } from '../../engine/index.js';
+import { briefing, satisfactionNationale, compterDecisions } from '../../engine/index.js';
+import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
+import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { raisonRefusPLF } from '../../engine/index.js';
 
@@ -20,7 +21,7 @@ const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inlin
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
 
-export const ONGLETS = [['bureau', 'Bureau'], ['carte', 'Carte'], ['budget', 'Budget'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+export const ONGLETS = [['bureau', 'Bureau'], ['decisions', 'Décisions'], ['carte', 'Carte'], ['budget', 'Budget'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
 function barreOnglets(actif) {
@@ -48,6 +49,13 @@ function carteBriefing(pt, i) {
     <span class="block text-sm text-doux">${esc(pt.texte)}</span></button></li>`;
 }
 
+function lienDecisions(etat, ctx) {
+  const c = compterDecisions(catalogue(etat, ctx)).parStatut;
+  const dispo = (c.disponible ?? 0) + (c.urgent ?? 0), cours = c.en_cours ?? 0;
+  return `<p class="mb-4 text-sm"><strong>${dispo}</strong> décision${dispo > 1 ? 's' : ''} disponible${dispo > 1 ? 's' : ''} · <strong>${cours}</strong> en cours
+    <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
+}
+
 function ongletBureau(etat, ctx, donnees, points) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
@@ -57,6 +65,7 @@ function ongletBureau(etat, ctx, donnees, points) {
       <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Briefing du mois</h2>
       <ul class="grid md:grid-cols-3 gap-3">${points.map(carteBriefing).join('')}</ul>
     </section>
+    ${lienDecisions(etat, ctx)}
     ${sectionBilan(etat, donnees)}
     <section aria-labelledby="h-ind" class="mb-6">
       <h2 id="h-ind" class="font-serif font-bold text-xl mb-2">Indicateurs nationaux</h2>
@@ -64,29 +73,20 @@ function ongletBureau(etat, ctx, donnees, points) {
       <p class="mt-3 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
         Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10${sat != null ? ` · Satisfaction territoriale : <strong>${fmt(sat, 0)}</strong>/100` : ''}</p>
     </section>
+    ${panneauSecteurs(etat, ctx)}
     <p class="text-xs text-doux">Situation de départ au ${esc(ctx.situation.date_collecte)} : Président ${esc(ctx.situation.president)}, Premier ministre ${esc(ctx.situation.premier_ministre)}.</p>`;
 }
 
 function ongletParlement(etat, ctx) {
   const { lois, partis } = ctx;
-  const filtre = ctx.filtreTheme ?? '';
-  const loisAff = lois.filter((l) => !filtre || l.theme === filtre);
   return `${sectionParlement(etat, ctx)}
     ${sectionReactions(etat, ctx)}
     <div class="grid gap-6 mb-6">
       <section aria-labelledby="h-vote" class="bg-carte border border-bord rounded-lg p-4">
         <h2 id="h-vote" class="font-serif font-bold text-xl mb-2">Dernier vote</h2>${blocVote(etat, lois, partis, ctx.senat)}</section>
     </div>
-    <section aria-labelledby="h-lois" class="mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <h2 id="h-lois" class="font-serif font-bold text-xl">Lois</h2>
-        <div><label for="theme" class="text-sm mr-2">Thème</label>
-          <select id="theme" class="champ !w-auto"><option value="">Tous</option>
-          ${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${k === filtre ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
-      </div>
-      <p class="text-sm text-doux mb-2">Un seul texte à la fois en navette ; une action au Parlement par mois.</p>
-      <div class="grid md:grid-cols-2 gap-3">${loisAff.map((l) => carteLoi(l, etat, raisonRefus(etat, l))).join('')}</div>
-    </section>
+    <p class="mb-6 text-sm"><button type="button" class="underline text-bleu min-h-[44px] font-semibold" data-aller-decisions>Voir les lois dans Décisions</button>
+      <span class="text-doux">(lois, 49.3, négociations et dissolution s’y trouvent).</span></p>
     ${sectionElections(etat, ctx)}`;
 }
 
@@ -121,6 +121,7 @@ export function render(racine, etat, dispatch, ctx) {
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)
+    : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
     : onglet === 'opinion' ? ongletOpinion(etat, ctx)
@@ -146,6 +147,7 @@ export function render(racine, etat, dispatch, ctx) {
   const actif = racine.querySelector('[role=tab][aria-selected=true]');
   if (barre && actif) barre.scrollLeft = Math.max(0, actif.offsetLeft - 16);
 
+  racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
   racine.querySelector('#suivant')?.addEventListener('click', () => dispatch({ type: 'suivant' }));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
@@ -157,16 +159,13 @@ export function render(racine, etat, dispatch, ctx) {
       else if (pt.type === 'budget') dispatch({ type: 'onglet', onglet: 'budget', haut: true });
       else racine.querySelector('[data-evenement]')?.focus();
     }));
-  } else if (onglet === 'carte') brancherCarte(racine, dispatch);
+  } else if (onglet === 'decisions') brancherDecisions(racine, dispatch, ctx);
+  else if (onglet === 'carte') brancherCarte(racine, dispatch);
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
   else if (onglet === 'opinion') { /* contenu en lecture seule */ }
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);
-    racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
     racine.querySelector('[data-amender]')?.addEventListener('click', () => dispatch({ type: 'amender' }));
-    racine.querySelector('[data-493]')?.addEventListener('click', () => dispatch({ type: '493' }));
-    racine.querySelectorAll('[data-negocier]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'negocier', parti: b.dataset.negocier })));
-    racine.querySelectorAll('[data-proposer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'proposer', loi: b.dataset.proposer })));
   } else {
     brancherPartage(racine, etat);
     racine.querySelector('#export').addEventListener('click', () => dispatch({ type: 'exporter' }));

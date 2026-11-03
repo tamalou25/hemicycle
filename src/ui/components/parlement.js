@@ -1,8 +1,5 @@
-import { esc, fmt } from '../util.js';
-import {
-  ETAPES, groupesAssemblee, groupesSenat, accordActif, ecartIdeologique, toleranceAccord,
-  raisonRefus493, raisonRefusAccord,
-} from '../../engine/index.js';
+import { esc } from '../util.js';
+import { ETAPES, groupesAssemblee, groupesSenat, accordActif } from '../../engine/index.js';
 
 const ETAPES_LIB = { assemblee: 'Assemblée', senat: 'Sénat', cmp: 'CMP', lecture_definitive: 'Lecture définitive', conseil: 'Conseil constitutionnel' };
 const OPTIONNELLES = ['cmp', 'lecture_definitive'];
@@ -25,7 +22,7 @@ function frise(texte) {
 
 function texteEnCours(etat, lois) {
   const t = etat.texte;
-  if (!t) return '<p class="text-sm text-doux">Aucun texte en cours. Proposez une loi ci-dessous.</p>';
+  if (!t) return '<p class="text-sm text-doux">Aucun texte en cours. Proposez une loi depuis l’onglet Décisions.</p>';
   const loi = lois.find((l) => l.id === t.loiId);
   const peutAmender = !etat.fin && !etat.actionCeMois && t.etape !== 'conseil' && t.amendements < 2 && etat.joueur.capital >= 1;
   const refusAmend = etat.fin ? 'La partie est terminée.'
@@ -33,9 +30,6 @@ function texteEnCours(etat, lois) {
       : etat.actionCeMois ? 'Vous avez déjà agi au Parlement ce mois-ci.'
         : t.amendements >= 2 ? 'Le texte a déjà été amendé deux fois.'
           : etat.joueur.capital < 1 ? 'Capital politique insuffisant.' : null;
-  const r493 = etat.joueur.role === 'premier_ministre' ? raisonRefus493(etat) : null;
-  const bouton493 = etat.joueur.role === 'premier_ministre'
-    ? `<button type="button" class="btn btn-s" id="btn-493" data-493 ${r493 ? 'disabled aria-describedby="r-493"' : ''}>49.3</button>` : '';
   return `<h3 class="font-serif font-bold text-lg">${esc(loi?.titre ?? t.loiId)}</h3>
     ${frise(t)}
     <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
@@ -45,10 +39,9 @@ function texteEnCours(etat, lois) {
     </dl>
     <div class="flex gap-2 flex-wrap mt-3">
       <button type="button" class="btn btn-s" id="btn-amender" data-amender ${peutAmender ? '' : 'disabled aria-describedby="r-amender"'}>Amender (1 capital)</button>
-      ${bouton493}
     </div>
     ${peutAmender ? '' : raison('r-amender', refusAmend)}${raison('r-493', r493)}
-    <p class="text-xs text-doux mt-2">Le vote a lieu en fin de mois, au passage au mois suivant.</p>`;
+    <p class="text-xs text-doux mt-2">Le 49.3 se trouve dans l’onglet Décisions. Le vote a lieu en fin de mois, au passage au mois suivant.</p>`;
 }
 
 /** Barre empilée de l'hémicycle d'une chambre. */
@@ -69,28 +62,13 @@ function hemicycle(titre, groupes, couleurDe, estAllie, joueurParti) {
 }
 
 function accords(etat, partis) {
-  const groupes = groupesAssemblee(partis, etat.sieges);
-  const tol = toleranceAccord(etat);
   const actifs = (etat.accords ?? []).filter((a) => a.jusqua >= etat.tour);
   const liste = actifs.map((a) => {
     const p = partis.find((x) => x.id === a.parti);
     return `<li class="text-sm">${esc(p?.sigle ?? a.parti)} : encore <strong>${a.jusqua - etat.tour}</strong> mois</li>`;
   }).join('') || '<li class="text-sm text-doux">Aucun accord en vigueur.</li>';
-  const lignes = [...groupes].sort((a, b) => b.sieges - a.sieges).map((g) => {
-    const ecart = ecartIdeologique(etat.joueur.ideologie, g.positions);
-    const refus = raisonRefusAccord(etat, g.id);
-    const rid = `r-acc-${esc(g.id)}`;
-    const trop = ecart > tol;
-    return `<li class="py-2 border-b border-bord last:border-0">
-      <div class="flex items-center justify-between gap-2 flex-wrap">
-        <span class="text-sm"><strong>${esc(g.sigle)}</strong> <span class="text-doux">(${g.sieges} sièges)</span><br>
-          <span class="text-xs ${trop ? 'text-rouge' : 'text-[#1F6E43]'}">Écart ${fmt(ecart, 0)} / tolérance ${fmt(tol, 0)}${trop ? ' : peu probable' : ''}</span></span>
-        <button type="button" class="btn btn-s" data-negocier="${esc(g.id)}" id="btn-nego-${esc(g.id)}" ${refus ? `disabled aria-describedby="${rid}"` : ''}>Négocier (2 capital)</button>
-      </div>${refus ? `<p id="${rid}" class="text-xs text-doux mt-1">${esc(refus)}</p>` : ''}</li>`;
-  }).join('');
-  return `<h3 class="font-semibold mb-1">Accords actifs</h3><ul class="mb-3 space-y-1">${liste}</ul>
-    <h3 class="font-semibold mb-1">Groupes de l’Assemblée</h3>
-    <p class="text-xs text-doux mb-1">Un accord dure 6 mois. Un échec coûte 1 capital. Une négociation par mois.</p><ul>${lignes}</ul>`;
+  return `<ul class="mb-2 space-y-1">${liste}</ul>
+    <p class="text-xs text-doux">Un accord dure 6 mois. Pour en négocier un, voir l’onglet Décisions.</p>`;
 }
 
 export function sectionParlement(etat, ctx) {

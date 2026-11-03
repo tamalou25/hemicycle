@@ -1,7 +1,7 @@
 // Section « Élections » du tableau de bord : échéances, campagne, candidature, dissolution, résultats simulés.
 import { esc, fmt, MOIS } from '../util.js';
 import {
-  prochainesElections, enCampagne, ACTIONS_CAMPAGNE, raisonRefusCampagne, raisonRefusDissolution,
+  prochainesElections, enCampagne, ACTIONS_CAMPAGNE, raisonRefusCampagne,
   dateDuTour,
 } from '../../engine/index.js';
 import { TOTAL_DEPUTES } from '../../engine/elections.js';
@@ -49,18 +49,6 @@ function blocCandidature(etat, ctx) {
   if (prochainesElections(etat, ctx.calendrier)[0]?.type !== 'presidentielle') return '';
   return `<div class="mt-3"><button type="button" class="btn btn-p" id="btn-candidat" data-candidat>Se déclarer candidat·e</button>
     <p class="text-xs text-doux mt-1">Popularité d’au moins 15 % requise pour réunir les parrainages.</p></div>`;
-}
-
-function blocDissolution(etat) {
-  if (etat.joueur.role !== 'premier_ministre') return '';
-  const refus = raisonRefusDissolution(etat);
-  return `<div class="mt-3"><button type="button" class="btn btn-s" id="btn-dissolution" data-dissolution ${refus ? 'disabled aria-describedby="r-dissolution"' : ''}>Proposer une dissolution au Président</button>${raison('r-dissolution', refus)}</div>
-    <dialog id="dlg-dissolution" aria-labelledby="dlg-titre" aria-describedby="dlg-desc" class="rounded-lg border border-bord bg-carte p-4 w-[calc(100%-2rem)] max-w-md text-encre">
-      <h3 id="dlg-titre" class="font-serif font-bold text-lg">Proposer une dissolution ?</h3>
-      <p id="dlg-desc" class="text-sm mt-2">Le Président peut refuser (vous perdriez 2 capital). S’il accepte, des législatives anticipées auront lieu dans deux mois et le texte en cours tombera.</p>
-      <div class="flex gap-2 justify-end flex-wrap mt-4">
-        <button type="button" class="btn btn-s" id="dlg-annuler">Annuler</button>
-        <button type="button" class="btn btn-p" id="dlg-confirmer">Confirmer</button></div></dialog>`;
 }
 
 // ---------- Résultats ----------
@@ -118,7 +106,7 @@ export function sectionElections(etat, ctx) {
   return `<section aria-labelledby="h-elec" class="mb-6">
     <h2 id="h-elec" class="font-serif font-bold text-xl mb-2">Élections</h2>
     <div class="bg-carte border border-bord rounded-lg p-4">
-      ${blocProchaines(etat, ctx)}${blocCampagne(etat, ctx)}${blocCandidature(etat, ctx)}${blocDissolution(etat)}${blocResultats(etat, ctx)}
+      ${blocProchaines(etat, ctx)}${blocCampagne(etat, ctx)}${blocCandidature(etat, ctx)}${blocResultats(etat, ctx)}
     </div></section>`;
 }
 
@@ -126,11 +114,4 @@ export function sectionElections(etat, ctx) {
 export function brancherElections(racine, dispatch) {
   racine.querySelectorAll('[data-campagne]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'campagne', action: b.dataset.campagne })));
   racine.querySelector('[data-candidat]')?.addEventListener('click', () => dispatch({ type: 'candidat' }));
-  const dlg = racine.querySelector('#dlg-dissolution');
-  const ouvrir = racine.querySelector('[data-dissolution]');
-  if (dlg && ouvrir) {
-    ouvrir.addEventListener('click', () => { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); dlg.querySelector('#dlg-annuler').focus(); });
-    dlg.querySelector('#dlg-annuler').addEventListener('click', () => { dlg.close(); ouvrir.focus(); });
-    dlg.querySelector('#dlg-confirmer').addEventListener('click', () => { dlg.close(); dispatch({ type: 'dissolution' }); });
-  }
 }
