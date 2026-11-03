@@ -92,9 +92,13 @@ export function sectionTousIndicateurs(etat, sat) {
   const cases = INDICATEURS_JAUGE.map((id) => `<li class="bg-carte border border-bord rounded-lg px-2 py-1.5">
       <div class="flex justify-between items-baseline gap-1"><span class="text-sm text-doux">${esc(META[id].label)}</span><span class="font-semibold tabular-nums text-sm">${fmt(etat.indicateurs[id])}${esc(META[id].unite)}</span></div>
       <p>${variation(id, evo)}</p><div class="[&_svg]:h-3 mt-0.5">${sparkline(hist(id), coulSpark(id, etat))}</div></li>`).join('');
+  // Mobile : la grille complète est repliée (4 des 6 indicateurs sont déjà dans « État du pays ») ; ouverte sur ordinateur
+  const ouvert = globalThis.matchMedia?.('(min-width: 640px)').matches ? ' open' : '';
   return `<section aria-labelledby="h-ind" class="mb-4">
-    <h2 id="h-ind" class="font-serif font-bold text-xl mb-2">Tous les indicateurs</h2>
-    <ul class="grid grid-cols-2 lg:grid-cols-3 gap-2">${cases}</ul>
-    <p class="mt-3 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
+    <details id="tous-indicateurs"${ouvert}>
+      <summary class="min-h-[44px] flex items-center justify-between gap-2 cursor-pointer"><h2 id="h-ind" class="font-serif font-bold text-xl">Tous les indicateurs</h2><span class="text-sm text-bleu underline">Afficher</span></summary>
+      <ul class="grid grid-cols-2 lg:grid-cols-3 gap-2 mt-1">${cases}</ul>
+    </details>
+    <p class="mt-2 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
       Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10${sat != null ? ` · Satisfaction territoriale : <strong>${fmt(sat, 0)}</strong>/100` : ''}</p></section>`;
 }

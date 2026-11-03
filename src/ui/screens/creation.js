@@ -1,4 +1,5 @@
 import { esc } from '../util.js';
+import { fieldsetObjectifs, brancherObjectifs } from '../components/objectifs.js';
 import { AXES, COMPETENCES } from '../../engine/index.js';
 
 const AXE_LIBELLES = {
@@ -50,7 +51,8 @@ export function render(racine, etat, dispatch, ctx) {
       <p class="text-sm text-doux mb-3">Positions de −100 à +100 sur six axes, comme pour les partis.</p>${axes}</fieldset>
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Compétences</legend>
       <p class="text-sm mb-3" aria-live="polite">Points restants : <strong id="reste"></strong> sur ${BUDGET}</p>${comps}</fieldset>
-    <div class="flex gap-3 flex-wrap"><button type="submit" class="btn btn-p">Commencer</button>
+    ${fieldsetObjectifs(ctx.objectifs, brouillon)}
+    <div class="flex gap-3 flex-wrap"><button type="submit" id="go" class="btn btn-p">Commencer</button>
       <button type="button" id="retour" class="btn btn-s">Retour</button></div>
   </form>`;
 
@@ -72,6 +74,7 @@ export function render(racine, etat, dispatch, ctx) {
     el.value = v; brouillon.competences[c] = v;
     racine.querySelector(`#o-cp-${c}`).textContent = v; maj();
   }));
+  brancherObjectifs(racine, ctx.objectifs, brouillon);
   racine.querySelector('#retour').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'accueil' }));
   racine.querySelector('#form').addEventListener('submit', (e) => {
     e.preventDefault();

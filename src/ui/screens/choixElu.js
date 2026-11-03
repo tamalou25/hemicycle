@@ -1,5 +1,6 @@
 import { esc } from '../util.js';
 import { joueurDepuisPoliticien } from '../../engine/index.js';
+import { fieldsetObjectifs, brancherObjectifs } from '../components/objectifs.js';
 import { avatar } from '../components/avatar.js';
 
 export function render(racine, etat, dispatch, ctx) {
@@ -35,20 +36,22 @@ export function render(racine, etat, dispatch, ctx) {
       <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="role" value="premier_ministre" class="mt-1" ${st.role === 'premier_ministre' ? 'checked' : ''}>
         <span><strong>Premier ministre (fictif)</strong><br><span class="text-sm text-doux">49.3 possible et +1 capital politique par mois, mais vous êtes exposé·e aux motions de censure.</span></span></label>
     </fieldset>
-    <div class="flex gap-3 flex-wrap"><button type="submit" class="btn btn-p" id="go" ${st.id ? '' : 'disabled'}>Commencer</button>
+    ${fieldsetObjectifs(ctx.objectifs, st)}
+    <div class="flex gap-3 flex-wrap"><button type="submit" class="btn btn-p" id="go" data-elu="1" ${st.id ? '' : 'disabled'}>Commencer</button>
       <button type="button" id="retour" class="btn btn-s">Retour</button></div>
   </form>`;
   racine.querySelector('#fp').addEventListener('change', (e) => { st.parti = e.target.value; dispatch({ type: 'filtre', theme: ctx.filtreTheme }); });
   racine.querySelectorAll('[name=elu]').forEach((el) => el.addEventListener('change', () => {
     st.id = el.value;
-    racine.querySelector('#go').disabled = false;
+    racine.querySelector('#go').disabled = (st.objectifs?.length ?? 0) !== (ctx.objectifs?.nombre_a_choisir ?? 0) && !!ctx.objectifs;
     racine.querySelectorAll('li.border-2').forEach((li) => { const on = li.contains(el); li.classList.toggle('border-encre', on); li.classList.toggle('border-bord', !on); });
   }));
   racine.querySelectorAll('[name=role]').forEach((el) => el.addEventListener('change', () => { if (el.checked) st.role = el.value; }));
+  brancherObjectifs(racine, ctx.objectifs, st);
   racine.querySelector('#retour').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'accueil' }));
   racine.querySelector('#form').addEventListener('submit', (e) => {
     e.preventDefault();
     const p = politiciens.find((x) => x.id === st.id);
-    if (p) dispatch({ type: 'nouvelle', joueur: joueurDepuisPoliticien(p, partis, st.role) });
+    if (p) dispatch({ type: 'nouvelle', joueur: { ...joueurDepuisPoliticien(p, partis, st.role), objectifs: [...(st.objectifs ?? [])] } });
   });
 }
