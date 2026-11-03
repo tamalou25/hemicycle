@@ -1,7 +1,7 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e4-secteurs` (E4). E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
+- **Branche en cours** : `e5-politique` (E5). E0 à E4 sont mergés. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
 - **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
 - **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
@@ -57,7 +57,8 @@
 - Ordre de livraison : web, puis PWA, puis Capacitor (à évaluer en E7, rien d'installé). Multijoueur, comptes et opérations militaires sont hors périmètre.
 
 ## Tests exécutés (sur cette branche)
-- **Vitest, E4** : 120 tests passent. Playwright : 6 tests passent (dont `decisions.spec.js`).
+- **Vitest, E5** : 126 tests passent. Playwright : 10 tests passent (dont `politique.spec.js`).
+- **Vitest, E4** : 120 tests passaient. Playwright : 6 tests passent (dont `decisions.spec.js`).
 - **Vitest, E3** : 111 tests passaient. Playwright : 4 tests passent (ordinateur et mobile).
 - **Vitest, E2** : 98 tests passaient. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
 - **Vitest, E1** : 87 tests passaient (E1 : territoires, projets, briefing, migration v5, schémas des régions, de la carte et des projets).
@@ -117,8 +118,15 @@
 - Interface : **onglet Décisions** (filtres par catégorie, statut et secteur ; cartes compactes avec un seul bouton). Les doublons ont été retirés de l'onglet Parlement. Le Bureau affiche le nombre de décisions et un panneau Secteurs.
 - À corriger : les compteurs de catégorie dépendent du filtre de statut.
 
+### E5 Politique reliée
+- `relations.js` : une relation de 0 à 100 par parti, à 50 au départ pour tous.
+- Réaction aux lois promulguées, aux programmes engagés et aux budgets adoptés, selon les **positions publiques** du parti sur le thème. Neutre à 60 points d'écart, entre −4 et +4. La relation revient de 5 % par mois vers 50.
+- Effets : bonus de vote de ±0,125, tolérance d'accord de ±25, censure (« Soutien » ≥ 75 : jamais ; « Hostile » ≤ 25 : censure facilitée).
+- Registre : entrées « X approuve / désapprouve … (simulation) », exclues du bilan national. Sauvegarde v9.
+- Interface : relations et réactions du mois dans Parlement, réaction probable sur les cartes de Décisions. Le mode élu réel a été vérifié (e2e).
+- Corrigé : `partis` n'était pas passé à `creerPartie` lors d'une nouvelle partie.
+
 ## Étapes suivantes (non commencées)
-- **E5 Politique reliée** : les groupes parlementaires réagissent aux résultats ; réintégrer le mode élu réel (règles de contenu dans CLAUDE.md).
 - **E6 PWA** : manifest, service worker, partie jouable hors ligne (aucun CDN, déjà le cas).
 - **E7 Mobile** : évaluer Capacitor (ne rien publier automatiquement sur les stores).
 - **Méthode** : une branche et une PR par étape, toute variation d'indicateur passe par `explications.js`, chaque nouveau champ d'état est ajouté à `save.js` (nettoyage strict) avec une migration de version.
