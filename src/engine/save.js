@@ -1,4 +1,5 @@
 // Sérialisation / validation des sauvegardes (indépendant du stockage).
+import { GROUPES_SOCIAUX, bornerOpinion } from './population.js';
 import { VERSION_SAUVEGARDE, INDICATEURS, AXES, COMPETENCES, ROLES, ETAPES } from './constants.js';
 
 export const exporterPartie = (etat) => JSON.stringify(etat);
@@ -13,6 +14,7 @@ export function importerPartie(texte) {
   if (etat.version === 3) etat = { ...etat, version: 4, evenement: null, evenementsPasses: [], dernierBudget: null };
   if (etat.version === 4) etat = { ...etat, version: 5, territoires: null, projets: [], finances: null, satisfactionInitiale: null };
   if (etat.version === 5) etat = { ...etat, version: 6, budget: null, plf: null, dernierPLF: null };
+  if (etat.version === 6) etat = { ...etat, version: 7, population: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -78,6 +80,9 @@ function assainir(e) {
     resultatsElections: liste(e.resultatsElections, (x) => ({
       id: ch(x.id, 100), type: ch(x.type, 30), tour: nb(x.tour), simulation: true,
       scores: nombres(x.scores) ?? {},
+      ...(x.regions && typeof x.regions === 'object' && !Array.isArray(x.regions) ? {
+        regions: Object.fromEntries(Object.entries(x.regions).slice(0, 40).map(([id, scores]) => [id.slice(0, 50), nombres(scores) ?? {}])),
+      } : {}),
       ...(Array.isArray(x.finalistes) ? { finalistes: chaines(x.finalistes).slice(0, 2) } : {}),
       ...(x.secondTour ? { secondTour: nombres(x.secondTour) ?? {} } : {}),
       ...(typeof x.vainqueur === 'string' ? { vainqueur: ch(x.vainqueur, 50) } : {}),
@@ -91,6 +96,7 @@ function assainir(e) {
     evenement: chOuNull(e.evenement, 100),
     evenementsPasses: liste(e.evenementsPasses, (x) => ({ id: ch(x.id, 100), tour: nb(x.tour), choix: nb(x.choix) })),
     dernierBudget: nbOuNull(e.dernierBudget),
+    population: assainirPopulation(e.population, e.territoires),
     territoires: e.territoires && typeof e.territoires === 'object' && !Array.isArray(e.territoires)
       ? Object.fromEntries(Object.entries(e.territoires).slice(0, 40).map(([id, t]) => [id.slice(0, 50), {
         emploi: nb(t?.emploi, 50), sante: nb(t?.sante, 50), transports: nb(t?.transports, 50), satisfaction: nb(t?.satisfaction, 50) }]))
@@ -112,7 +118,8 @@ function assainir(e) {
     dernierPLF: nbOuNull(e.dernierPLF),
     explications: liste(e.explications, (x) => ({
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
+      ...(GROUPES_SOCIAUX.some((g) => g.id === x.groupe) ? { groupe: x.groupe } : {}),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'satisfaction', 'confiance'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),
@@ -133,4 +140,15 @@ function migrerV2(e) {
     ...e, version: 3, sieges: null, resultatsElections: [], electionsAnticipees: [],
     derniereDissolution: null, candidat: false, elan: 0, campagneCeMois: false,
   };
+}
+
+/** Profils en liste blanche ; une structure incomplète est reconstruite au chargement. */
+function assainirPopulation(population, territoires) {
+  if (!population || !territoires || typeof population !== 'object' || Array.isArray(population)) return null;
+  const ids = Object.keys(territoires).slice(0, 40);
+  if (ids.some((id) => GROUPES_SOCIAUX.some((g) => !population[id]?.[g.id]))) return null;
+  return Object.fromEntries(ids.map((id) => [id.slice(0, 50), Object.fromEntries(GROUPES_SOCIAUX.map((g) => {
+    const p = population[id][g.id];
+    return [g.id, { satisfaction: bornerOpinion(nb(p.satisfaction, 50)), reference: bornerOpinion(nb(p.reference, 50)), confiance: bornerOpinion(nb(p.confiance, 30)) }];
+  }))]));
 }

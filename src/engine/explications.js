@@ -2,6 +2,8 @@
 // Le moteur produit des données structurées ; les phrases sont générées par phraseExplication().
 // nature : 'observe' (appliqué ce mois-ci) ou 'prevision' (effet programmé, non encore réalisé).
 
+import { GROUPES_SOCIAUX } from './population.js';
+
 export const MOIS_CONSERVES = 12;
 
 /** Type de cause d'après la source d'un effet planifié. */
@@ -69,6 +71,7 @@ const LIBELLES = {
   chomage: ['le chômage', 'pt'], croissance: ['la croissance', 'pt'], deficit: ['le déficit', 'pt de PIB'],
   dette: ['la dette', 'pt de PIB'], inflation: ['l’inflation', 'pt'], popularite: ['votre popularité', 'pt'],
   tensions: ['les tensions sociales', 'pt'],
+  satisfaction: ['la satisfaction', 'pt'], confiance: ['la confiance dans le gouvernement', 'pt'],
   emploi: ['l’indice emploi', 'pt'], sante: ['l’accès aux soins', 'pt'], transports: ['l’indice transports', 'pt'],
 };
 const LIBELLES_SECTEURS = { sante: 'santé', infrastructures_environnement: 'infrastructures et environnement' };
@@ -76,6 +79,7 @@ const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', 
 
 /** Nom lisible de la cause. */
 export function nomCause(entree, { lois = [], evenements = [], projets } = {}) {
+  if (entree.type === 'population') return entree.source === 'conditions-vie' ? 'les services locaux, le pouvoir d’achat et le budget' : 'le bilan vécu et le climat politique';
   if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
   if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
   if (entree.type === 'loi') return `la loi « ${lois.find((l) => l.id === entree.source)?.titre ?? entree.source} »`;
@@ -91,7 +95,7 @@ export function phraseExplication(entree, donnees) {
   const [nom, unite] = LIBELLES[entree.indicateur] ?? [entree.indicateur, ''];
   const cause = nomCause(entree, donnees);
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
-  const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
+  const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion}${entree.groupe ? ` · ${GROUPES_SOCIAUX.find((g) => g.id === entree.groupe)?.nom ?? entree.groupe}` : ''})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
   if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'interets' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;

@@ -65,6 +65,17 @@ function blocDissolution(etat) {
 
 // ---------- Résultats ----------
 
+function resultatsRegions(r, ctx) {
+  if (!r.regions) return '';
+  return `<details class="mt-3"><summary class="cursor-pointer py-2 font-semibold">Résultats par région · ${r.type === 'presidentielle' ? '1er tour' : 'scores simulés'}</summary>
+    <p class="text-xs text-doux mb-2">Agrégation pondérée par la population, approximation des électeurs ; pas de scrutin par circonscription. Les sièges législatifs restent une conversion nationale simplifiée.</p>
+    <ul class="space-y-1">${Object.entries(r.regions).map(([id, scores]) => {
+      const premier = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+      return `<li class="text-sm border-b border-bord py-1"><strong>${esc(ctx.regions?.regions?.find((x) => x.id === id)?.nom ?? id)}</strong> : ${premier ? `${esc(sigle(ctx, premier[0]))} en tête (${fmt(premier[1])} %)` : 'Aucun résultat'} · votre parti : ${fmt(scores[ctx.partiJoueur] ?? 0)} %</li>`;
+    }).join('')}</ul></details>`;
+}
+
+
 const sigle = (ctx, id) => ctx.partis.find((p) => p.id === id)?.sigle ?? id;
 const couleur = (ctx, id) => ctx.partis.find((p) => p.id === id)?.couleur ?? '#8A8A8A';
 
@@ -109,7 +120,7 @@ function blocResultats(etat, ctx) {
       : r.type === 'legislatives' ? resultatLegislatives(r, ctx) : resultatEuropeennes(r, ctx);
     return `<article class="bg-white border border-bord rounded-lg p-3" aria-label="Résultats : ${esc(titre)}">
       <div class="flex flex-wrap items-center gap-2"><h3 class="font-serif font-bold text-lg">${esc(titre)}</h3>${BADGE_SIM}
-        <span class="text-xs text-doux">${esc(dateLib(etat, r.tour))}</span></div>${corps}</article>`;
+        <span class="text-xs text-doux">${esc(dateLib(etat, r.tour))}</span></div>${corps}${resultatsRegions(r, { ...ctx, partiJoueur: etat.joueur.parti })}</article>`;
   }).join('');
   return `<div class="mt-4"><h3 class="font-semibold mb-2">Résultats des scrutins simulés</h3><div class="grid lg:grid-cols-2 gap-3">${cartes}</div></div>`;
 }

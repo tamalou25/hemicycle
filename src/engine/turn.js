@@ -11,6 +11,7 @@ import { evoluerTerritoires, satisfactionNationale } from './territoires.js';
 import { avancerProjets } from './projets.js';
 import { renouvelerEnveloppe } from './finances.js';
 import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
+import { evoluerPopulation, intentionsRegionales, agregerRegions } from './population.js';
 import { dateDuTour } from './state.js';
 
 /**
@@ -75,11 +76,18 @@ export function tourSuivant(etatInitial, donnees) {
   [n, g] = bruit(g, 1);
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
+  // E3 : conditions de vie et confiance par profil, après les effets territoriaux.
+  const pop = evoluerPopulation({ ...etat, indicateurs: ind }, tour);
+  etat = { ...etat, population: pop.population };
+
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...pop.entrees], tour);
 
   // 4. Sondage
-  const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
+  const regions = intentionsRegionales(etat, partis);
+  const national = agregerRegions(regions, donnees.regions?.regions);
+  const sondage = { tour, popularite: ind.popularite,
+    intentions: Object.keys(national).length ? national : intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
 
   // 6. Fin de partie
   let fin = null;

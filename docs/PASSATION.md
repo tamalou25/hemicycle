@@ -1,7 +1,7 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e2-finances`. E0 et E1 sont mergés dans `main`.
+- **Branche en cours** : `phase-E3-population`. E0, E1 et E2 sont intégrés dans `main` (base : `79d3c5e`).
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
 - **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
 
@@ -69,9 +69,9 @@
 ## Problèmes connus et points ouverts
 - **Pas encore fait dans E0** : `docs/VISION.md` (la vision complète est dans le prompt de cadrage). La CI de cette branche n'a pas encore tourné.
 - **Lighthouse** n'a audité que l'accueil, pas le tableau de bord.
-- **Le tableau de bord reste une longue page** (environ 7 000 px sur mobile). La refonte en onglets est prévue en E1.
+- Refonte en onglets livrée en E1 ; audit Lighthouse complet du jeu toujours à faire.
 - **Données de départ** : les indicateurs viennent de la presse et de l'OFCE, pas de l'Insee. La dette n'est pas sourcée (valeur par défaut). Les fonctions des élus viennent de Wikipédia et sont à recouper.
-- **Régions** absentes, **0 citation** vérifiée.
+- Régions livrées en E1 ; **0 citation** vérifiée.
 - **Polices** : seul le sous-ensemble latin est embarqué. Les caractères hors latin utiliseront la police de secours (Georgia).
 
 ### E2 Finances réelles
@@ -93,8 +93,18 @@
 - Interface : onglet Budget avec le tableau des finances, le PLF à curseurs et un aperçu en direct (solde, orientation, vote probable « estimation »), bannière dans Bureau. Les anciens leviers ±2 pt sont retirés.
 - **Équilibrage** : la dette progresse d'environ 2 points par an sans action. Un budget neutre d'un PM EPR est rejeté 271–292 sans accord : il faut négocier ou utiliser le 49.3.
 
-## Prochaine étape : E3 « Population »
-Groupes sociaux agrégés, satisfaction ≠ confiance ≠ vote, élections calculées par région.
+## E3 « Population » — reprise Codex
+- Quatre profils agrégés par région, paramètres explicitement fictifs dans `population.js`. Pas de nouvelle collecte démographique.
+- Satisfaction distincte de la confiance ; confiance progressive, effets locaux et budgétaires ; intentions de vote par groupe et région, sans stéréotype partisan.
+- Scores électoraux régionaux agrégés par population ; détail par région dans Parlement. Second tour présidentiel et conversion en sièges nationaux inchangés.
+- Nouvel onglet Population : synthèse, profils, trois territoires prioritaires, comparaison repliable des autres et liens vers les projets. Profils aussi consultables dans les fiches régionales.
+- Variations des profils dans le registre des causes ; sauvegarde v7, migration v6 et assainissement des nouveaux champs.
+- Playwright installé et configuré de façon reproductible (`npm run test:e2e`), Chromium système utilisé ici. Navigation clavier des onglets corrigée après échec du test navigateur.
+- Validation : 108 tests Vitest et 4 parcours Playwright (ordinateur 1440 px / mobile 390 px). Captures dans `docs/captures/population-*.png`. Aucun déploiement de cette branche effectué pendant la reprise.
+- Limites : proportions identiques dans toutes les régions, pas de géographie partisane observée, de participation ni de scrutin par circonscription. Le modèle électoral reste une abstraction de gameplay.
+
+## Prochaine étape : E4 « Secteurs »
+Décliner progressivement santé/éducation, social, recherche, défense et infrastructures en actions utiles, avec coûts récurrents, délais et effets reliés aux profils. Définir une tranche limitée avant d’étendre tous les secteurs. E5 politique reliée, E6 PWA et E7 mobile restent à venir.
 
 ## (Archive) Plan E1 initial
 1. Sourcer les données régionales :

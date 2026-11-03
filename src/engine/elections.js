@@ -1,5 +1,6 @@
 // Élections : calendrier, campagne, scrutins (présidentielle, législatives, européennes), dissolution.
 // Les résultats sont SIMULÉS et exprimés par parti, jamais au nom d'une personne réelle.
+import { intentionsRegionales, agregerRegions, normaliserScores } from './population.js';
 import { aleatoire, bruit } from './rng.js';
 import { AXES, borner } from './constants.js';
 import { ecartIdeologique } from './parliament.js';
@@ -128,14 +129,24 @@ export function repartirSieges(scores) {
  * Organise l'élection prévue ce tour (s'il y en a une). Appelé par tourSuivant.
  * @returns {{ etat, graine }}
  */
-export function tenirElections(etat, { partis, calendrier }, intentions, graine) {
+export function tenirElections(etat, { partis, calendrier, regions }, intentions, graine) {
   const e = prochainesElections(etat, calendrier).find((x) => x.tour === etat.tour);
   if (!e) return { etat, graine };
-  let { scores, graine: g } = scoresPremierTour(etat, partis, intentions, graine);
+  let scores, g = graine;
+  const regionaux = {};
+  const intentionsLocales = intentionsRegionales(etat, partis);
+  for (const r of regions?.regions ?? []) {
+    if (!intentionsLocales[r.id] || !(r.population > 0)) continue;
+    const resultat = scoresPremierTour(etat, partis, intentionsLocales[r.id], g);
+    regionaux[r.id] = normaliserScores(resultat.scores);
+    g = resultat.graine;
+  }
+  if (Object.keys(regionaux).length) scores = agregerRegions(regionaux, regions.regions);
+  else ({ scores, graine: g } = scoresPremierTour(etat, partis, intentions, g));
   const j = etat.joueur.parti;
   const sigle = (id) => partis.find((p) => p.id === id)?.sigle ?? id;
   const journal = [...etat.journal];
-  const resultat = { id: e.id, type: e.type, tour: etat.tour, scores, simulation: true };
+  const resultat = { id: e.id, type: e.type, tour: etat.tour, scores, simulation: true, ...(Object.keys(regionaux).length ? { regions: regionaux } : {}) };
   let suite = {};
 
   if (e.type === 'presidentielle') {

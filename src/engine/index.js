@@ -31,3 +31,5 @@ export {
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';
+
+export { GROUPES_SOCIAUX, resumeRegion, resumePopulation, intentionsRegionales, agregerRegions } from './population.js';

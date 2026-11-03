@@ -67,3 +67,15 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Dépenses COFOG : dernier millésime publié = 2024 (tableau 3.301, https://www.insee.fr/fr/statistiques/8574707) ; le millésime 2025 est annoncé pour décembre 2026. Les dépenses par fonction du fichier sont donc une **estimation** : structure 2024 mise à l'échelle du total de dépenses 2025 hors intérêts (coefficient 1,0227), intérêts 2025 réels.
 - Regroupements et approximations (détail dans le champ `notes` du JSON) : taxe foncière classée en totalité chez les ménages ; « recherche » = lignes COFOG R&D (01.4, 01.5, 02.4, 04.8, 05.5, 07.5), retranchées des autres postes, sous-estime la R&D universitaire ; « autres » recettes = solde pour atteindre le total des recettes.
 - Contrôle : recettes − dépenses = −151,6 Md€ contre −152,5 Md€ attendus (écart 0,6 %, différence B9NF / Maastricht). Non consultés : Cour des comptes, PLF 2027, Agence France Trésor, Eurostat (non nécessaires, les chiffres Insee suffisent).
+
+
+## E3 — Population : hypothèses de simulation
+
+Aucune nouvelle donnée démographique observée n’a été ajoutée. `src/engine/population.js` définit quatre profils abstraits : jeunes en formation (20 %), salariés et demandeurs d’emploi (45 %), retraités (25 %), indépendants (10 %). Ces parts, communes à toutes les régions, sont des paramètres d’équilibrage, non une partition statistique de la population française.
+
+- Satisfaction : pondération des indices locaux emploi/soins/transports, pénalité d’inflation au-delà de 2 %, perception des écarts budgétaires sociaux/éducatifs et fiscaux. Convergence mensuelle de 25 % vers la cible. L’indice de satisfaction territoriale E1 reste la qualité synthétique des services ; les conditions de vie E3 ajoutent les besoins des profils, le budget et l’inflation.
+- Confiance : initialisée à la popularité au début de la partie (ou à la migration), converge de 12 % par mois vers une cible ancrée à 30, influencée par les changements de satisfaction depuis cette référence, la popularité et les tensions. Une dégradation des services agit davantage sur les profils qui en dépendent. Aucun groupe n’est affecté à une idéologie prédéfinie.
+- Vote : base nationale du module `polls.js`, ajustée par la confiance de chaque profil puis pondérée par leurs parts. Pas de sondage régional réel ni de variation démographique entre régions. Les premières différences locales viennent du bilan des décisions.
+- Scrutins : aléas reproductibles par région, élan de campagne national, agrégation pondérée par la population Insee déjà utilisée en E1. La population totale est une approximation du poids électoral ; ni les inscrits ni l’abstention régionale ne sont modélisés. Les résultats régionaux sont les scores du premier tour pour la présidentielle ; le second tour et la conversion en sièges restent nationaux et simplifiés.
+
+Ces coefficients sont des règles de jeu explicables, pas des estimations économétriques ou des prévisions électorales.

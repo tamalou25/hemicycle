@@ -1,3 +1,4 @@
+import { ongletPopulation } from '../components/population.js';
 import { esc, fmt, MOIS, THEMES } from '../util.js';
 import { dateDuTour, raisonRefus } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
@@ -19,7 +20,7 @@ const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inlin
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
 
-export const ONGLETS = [['bureau', 'Bureau'], ['carte', 'Carte'], ['budget', 'Budget'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+export const ONGLETS = [['bureau', 'Bureau'], ['carte', 'Carte'], ['population', 'Population'], ['budget', 'Budget'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
 function barreOnglets(actif) {
@@ -123,6 +124,7 @@ export function render(racine, etat, dispatch, ctx) {
   ctx.vue = vueValide(ctx.vue);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
+    : onglet === 'population' ? ongletPopulation(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
@@ -140,7 +142,9 @@ export function render(racine, etat, dispatch, ctx) {
       const k = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
       if (k === undefined) return;
       e.preventDefault();
-      dispatch({ type: 'onglet', onglet: tabs[(k + tabs.length) % tabs.length].dataset.onglet });
+      const cible = tabs[(k + tabs.length) % tabs.length].dataset.onglet;
+      dispatch({ type: 'onglet', onglet: cible });
+      racine.querySelector(`#tab-${cible}`)?.focus();
     });
   });
   const actif = racine.querySelector('[role=tab][aria-selected=true]');
@@ -158,6 +162,9 @@ export function render(racine, etat, dispatch, ctx) {
       else racine.querySelector('[data-evenement]')?.focus();
     }));
   } else if (onglet === 'carte') brancherCarte(racine, dispatch);
+  else if (onglet === 'population') {
+    racine.querySelectorAll('[data-pop-region]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'carte', region: b.dataset.popRegion, haut: true })));
+  }
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);

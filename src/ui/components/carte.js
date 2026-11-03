@@ -1,4 +1,5 @@
 // Carte des régions (SVG inline), fiche région, lancement de projets, table accessible.
+import { populationRegion } from './population.js';
 import { esc, fmt } from '../util.js';
 import { raisonRefusProjet, facteurTaille, phraseExplication } from '../../engine/index.js';
 
@@ -103,6 +104,7 @@ export function ficheRegion(etat, ctx, regionId) {
     <p class="text-sm text-doux">Population : ${nf(r.population)} habitants (Insee, 2026)<br>
     ${r.chomage != null ? `Chômage observé : ${fmt(r.chomage)} % (Insee, T2 2026)` : 'Chômage observé : non disponible (Insee)'}</p>
     <div class="mt-3">${barre('Satisfaction', t.satisfaction, true)}${barre('Emploi', t.emploi)}${barre('Accès aux soins', t.sante)}${barre('Transports', t.transports)}</div>
+    ${populationRegion(etat, r.id)}
     <h3 class="font-serif font-bold text-lg mt-3">Projets de la région</h3>${projetsRegion(etat, ctx, r)}
     <h3 class="font-serif font-bold text-lg mt-3">Ce qui a changé ce mois-ci</h3>
     ${expl.length ? `<ul class="text-sm">${expl.map((e) => `<li class="py-1 border-b border-bord last:border-0">${esc(phraseExplication(e, donnees))}</li>`).join('')}</ul>` : '<p class="text-sm text-doux">Aucune variation attribuée ce mois-ci.</p>'}

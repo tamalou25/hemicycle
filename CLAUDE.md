@@ -52,3 +52,9 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 ## Roadmap v2 (validée le 03/11/2026)
 E0 Fondations · E1 Carte et territoires · E2 Finances (Md€) · E3 Population · E4 Secteurs · E5 Politique reliée · E6 PWA · E7 Mobile.
 Décisions et état : `docs/PASSATION.md`. Toute variation d'indicateur doit passer par le registre `explications.js`.
+
+## Population (E3)
+- `population.js` : profils agrégés par région, parts fictives identiques partout ; ne pas les présenter comme des données observées.
+- Conditions de vie, confiance et vote sont distincts. Les variations par profil sont enregistrées avec `region` et `groupe`.
+- Scrutins régionaux pondérés par population (approximation), sans circonscriptions ni abstention régionale ; sauvegarde v7.
+- `npm run test:e2e` : Playwright, Chromium, serveur Python automatique ; parcours à 390 et 1440 px.
