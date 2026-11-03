@@ -1464,5 +1464,297 @@
         ]
       }
     ]
+  },
+  {
+    "id": "fermeture-maternite",
+    "titre": "Menace de fermeture d'une maternité",
+    "theme": "sante",
+    "region_cible": {
+      "indice": "sante"
+    },
+    "description": "Faute de personnel, l'hôpital principal d'un territoire déjà sous-doté annonce la fermeture de sa maternité.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Financer des postes et garder la maternité ouverte",
+        "cout_capital": 1,
+        "cout_md": 0.15,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.01,
+            "delaiMois": 0,
+            "duree": 1
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": 4
+          },
+          {
+            "indice": "confiance",
+            "valeur": 4
+          }
+        ]
+      },
+      {
+        "libelle": "Organiser des transferts vers l'hôpital voisin",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": -2
+          },
+          {
+            "indice": "confiance",
+            "valeur": -2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser l'agence régionale décider",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": -5
+          },
+          {
+            "indice": "confiance",
+            "valeur": -5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fermeture-usine",
+    "titre": "Fermeture d'une usine",
+    "theme": "economie",
+    "region_cible": {
+      "indice": "emploi"
+    },
+    "description": "Un site industriel employant plusieurs centaines de personnes annonce sa fermeture dans un territoire déjà fragile.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Soutenir un repreneur avec un fonds public",
+        "cout_capital": 1,
+        "cout_md": 0.2,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.01,
+            "delaiMois": 0,
+            "duree": 1
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "emploi",
+            "valeur": 3
+          },
+          {
+            "indice": "confiance",
+            "valeur": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Financer la reconversion des salariés",
+        "cout_capital": 0,
+        "cout_md": 0.05,
+        "effets": [],
+        "effets_region": [
+          {
+            "indice": "emploi",
+            "valeur": -1
+          },
+          {
+            "indice": "confiance",
+            "valeur": 1
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire le marché",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "emploi",
+            "valeur": -4
+          },
+          {
+            "indice": "confiance",
+            "valeur": -4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ligne-suspendue",
+    "titre": "Suspension d'une ligne ferroviaire",
+    "theme": "transports",
+    "region_cible": {
+      "indice": "transports"
+    },
+    "description": "Pour raison de sécurité, une ligne régionale vétuste est suspendue ; des milliers d'usagers perdent leur train quotidien.",
+    "conditions": {},
+    "poids": 3,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Financer des travaux d'urgence",
+        "cout_capital": 1,
+        "cout_md": 0.25,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.01,
+            "delaiMois": 0,
+            "duree": 1
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "transports",
+            "valeur": 3
+          },
+          {
+            "indice": "confiance",
+            "valeur": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Mettre en place des cars de substitution",
+        "cout_capital": 0,
+        "cout_md": 0.03,
+        "effets": [],
+        "effets_region": [
+          {
+            "indice": "transports",
+            "valeur": -1
+          },
+          {
+            "indice": "confiance",
+            "valeur": -1
+          }
+        ]
+      },
+      {
+        "libelle": "Attendre le plan de rénovation régional",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "transports",
+            "valeur": -4
+          },
+          {
+            "indice": "confiance",
+            "valeur": -3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "desert-medical",
+    "titre": "Départ en retraite des derniers médecins d'un canton",
+    "theme": "sante",
+    "region_cible": {
+      "indice": "sante"
+    },
+    "description": "Plusieurs communes se retrouvent sans médecin généraliste ; les élus locaux interpellent le gouvernement.",
+    "conditions": {},
+    "poids": 2,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Ouvrir un centre de santé avec des médecins salariés",
+        "cout_capital": 1,
+        "cout_md": 0.05,
+        "effets": [],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": 2
+          },
+          {
+            "indice": "confiance",
+            "valeur": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Développer la téléconsultation",
+        "cout_capital": 0,
+        "cout_md": 0.01,
+        "effets": [],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": 0.5
+          },
+          {
+            "indice": "confiance",
+            "valeur": -1
+          }
+        ]
+      },
+      {
+        "libelle": "Renvoyer au prochain plan national",
+        "cout_capital": 0,
+        "effets": [],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": -2
+          },
+          {
+            "indice": "confiance",
+            "valeur": -3
+          }
+        ]
+      }
+    ]
   }
 ]
