@@ -70,6 +70,7 @@ const LIBELLES = {
   chomage: ['le chômage', 'pt'], croissance: ['la croissance', 'pt'], deficit: ['le déficit', 'pt de PIB'],
   dette: ['la dette', 'pt de PIB'], inflation: ['l’inflation', 'pt'], popularite: ['votre popularité', 'pt'],
   tensions: ['les tensions sociales', 'pt'],
+  confiance: ['la confiance envers le gouvernement', 'pt'],
   emploi: ['l’indice emploi', 'pt'], sante: ['l’accès aux soins', 'pt'], transports: ['l’indice transports', 'pt'],
 };
 const LIBELLES_SECTEURS = { sante: 'santé', infrastructures_environnement: 'infrastructures et environnement' };
@@ -79,6 +80,8 @@ const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', 
 export function nomCause(entree, { lois = [], evenements = [], projets, politiques } = {}) {
   if (entree.type === 'politique') return `le programme « ${politiques?.politiques?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
+  if (entree.type === 'mise-en-service') return 'la mise en service d’un projet dans la région';
+  if (entree.type === 'choc') return entree.source?.includes('49.3') ? 'le recours au 49.3' : entree.source?.includes('loi-speciale') ? 'l’absence de budget voté (loi spéciale)' : 'un choc politique';
   if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
   if (entree.type === 'loi') return `la loi « ${lois.find((l) => l.id === entree.source)?.titre ?? entree.source} »`;
   if (entree.type === 'evenement') return `votre réponse à « ${evenements.find((e) => `evenement:${e.id}` === entree.source)?.titre ?? 'un événement'} »`;
