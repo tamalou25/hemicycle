@@ -26,10 +26,17 @@
 5. **Secteurs** : repliés par défaut.
 
 ### Décisions
-- Les compteurs des pastilles de catégorie ne dépendent plus du filtre de statut, et inversement.
+- Les compteurs suivent le principe des **filtres par facettes** : chaque groupe de pastilles ignore son propre filtre mais tient compte des autres. Par exemple, les catégories comptent les décisions du statut choisi. C'était déjà le cas : ce n'était pas un bug.
 
 ## Critères d'acceptation
 - À 412 px, le Bureau tient en **2 écrans au plus**. Les 7 sections sont atteignables en 2 touches au maximum.
 - « Mois suivant » est toujours visible.
 - Aucune régression : Vitest et Playwright verts (les tests existants sont adaptés seulement si un libellé ou un parcours change légitimement).
 - Contraste AA ; navigation au clavier sur ordinateur ; lecteur d'écran : `nav` étiquetée, `aria-current` sur l'entrée active.
+
+## État du chantier 1 (fait)
+- **Navigation mobile** : barre du bas à 5 entrées, panneau « Plus » (Échap ferme, le focus revient au bouton), barre fixe « Mois suivant » avec une pastille si un événement attend. Composant `navigation.js`.
+- **Bureau** : composants `etatPays.js` (synthèse et 4 indicateurs clés avec « mieux / moins bien ») et `ceMois.js` (bonnes nouvelles et points de vigilance, sans l'usure récurrente, détail repliable), grille compacte, secteurs repliés.
+- **Hauteur du Bureau à 412 px après 3 mois** : environ 1 700 à 1 800 px, contre 2 393 avant, soit moins de 2 écrans. Une vérification e2e l'impose.
+- **Tests** : `e2e/navigation.spec.js` et l'aide `e2e/aide.js`. Les captures des tests sont écrites dans `test-results/` (hors dépôt) ; celles de `docs/captures/` sont mises à jour à la main.
+- **Reste** : audit de contraste automatisé ; vérification clavier approfondie du panneau « Plus » ; la carte d'un événement non résolu rallonge le Bureau d'environ 900 px (à compacter au chantier 2).
