@@ -90,7 +90,7 @@ export function phraseExplication(entree, donnees) {
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
-  if (entree.type === 'conjoncture' || entree.type === 'opinion') return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
+  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;
   return `${cause[0].toUpperCase()}${cause.slice(1)} ${etape} : ${nom} ${valeur}.`;
 }
