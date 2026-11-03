@@ -1,0 +1,212 @@
+{
+  "date_collecte": "2026-11-03",
+  "regions": [
+    {
+      "id": "ile-de-france",
+      "nom": "Île-de-France",
+      "code_insee": "11",
+      "outremer": false,
+      "population": 12594502,
+      "chomage": 8.2,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 128
+    },
+    {
+      "id": "centre-val-de-loire",
+      "nom": "Centre-Val de Loire",
+      "code_insee": "24",
+      "outremer": false,
+      "population": 2589286,
+      "chomage": 7.8,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 114
+    },
+    {
+      "id": "bourgogne-franche-comte",
+      "nom": "Bourgogne-Franche-Comté",
+      "code_insee": "27",
+      "outremer": false,
+      "population": 2794043,
+      "chomage": 7.4,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 140
+    },
+    {
+      "id": "normandie",
+      "nom": "Normandie",
+      "code_insee": "28",
+      "outremer": false,
+      "population": 3353726,
+      "chomage": 7.9,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 135
+    },
+    {
+      "id": "hauts-de-france",
+      "nom": "Hauts-de-France",
+      "code_insee": "32",
+      "outremer": false,
+      "population": 5965764,
+      "chomage": 10.0,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 137
+    },
+    {
+      "id": "grand-est",
+      "nom": "Grand Est",
+      "code_insee": "44",
+      "outremer": false,
+      "population": 5544271,
+      "chomage": 7.9,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 144
+    },
+    {
+      "id": "pays-de-la-loire",
+      "nom": "Pays de la Loire",
+      "code_insee": "52",
+      "outremer": false,
+      "population": 3965226,
+      "chomage": 6.8,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 142
+    },
+    {
+      "id": "bretagne",
+      "nom": "Bretagne",
+      "code_insee": "53",
+      "outremer": false,
+      "population": 3510058,
+      "chomage": 6.8,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 170
+    },
+    {
+      "id": "nouvelle-aquitaine",
+      "nom": "Nouvelle-Aquitaine",
+      "code_insee": "75",
+      "outremer": false,
+      "population": 6241784,
+      "chomage": 7.5,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 165
+    },
+    {
+      "id": "occitanie",
+      "nom": "Occitanie",
+      "code_insee": "76",
+      "outremer": false,
+      "population": 6246988,
+      "chomage": 9.7,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 154
+    },
+    {
+      "id": "auvergne-rhone-alpes",
+      "nom": "Auvergne-Rhône-Alpes",
+      "code_insee": "84",
+      "outremer": false,
+      "population": 8303191,
+      "chomage": 7.2,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 153
+    },
+    {
+      "id": "provence-alpes-cote-d-azur",
+      "nom": "Provence-Alpes-Côte d'Azur",
+      "code_insee": "93",
+      "outremer": false,
+      "population": 5318370,
+      "chomage": 8.7,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 169
+    },
+    {
+      "id": "corse",
+      "nom": "Corse",
+      "code_insee": "94",
+      "outremer": false,
+      "population": 365636,
+      "chomage": 6.9,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 160
+    },
+    {
+      "id": "guadeloupe",
+      "nom": "Guadeloupe",
+      "code_insee": "01",
+      "outremer": true,
+      "population": 382586,
+      "chomage": 16.4,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 156
+    },
+    {
+      "id": "martinique",
+      "nom": "Martinique",
+      "code_insee": "02",
+      "outremer": true,
+      "population": 358818,
+      "chomage": 12.8,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 154
+    },
+    {
+      "id": "guyane",
+      "nom": "Guyane",
+      "code_insee": "03",
+      "outremer": true,
+      "population": 298554,
+      "chomage": 20.4,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 111
+    },
+    {
+      "id": "la-reunion",
+      "nom": "La Réunion",
+      "code_insee": "04",
+      "outremer": true,
+      "population": 910985,
+      "chomage": 18.8,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 174
+    },
+    {
+      "id": "mayotte",
+      "nom": "Mayotte",
+      "code_insee": "06",
+      "outremer": true,
+      "population": 338208,
+      "chomage": null,
+      "apl_medecins": null,
+      "medecins_generalistes_100k": 39
+    }
+  ],
+  "sources": [
+    {
+      "donnee": "Population par région au 1er janvier 2026 (provisoire)",
+      "source": "Insee, Estimation de population au 1er janvier 2026, séries par région (fichier estim-pop-nreg-sexe-gca-1975-2026.xlsx, onglet 2026)",
+      "url": "https://www.insee.fr/fr/statistiques/8721456",
+      "date": "2026-01-15"
+    },
+    {
+      "donnee": "Taux de chômage localisé par région, T2 2026 (CVS, provisoire)",
+      "source": "Insee, Taux de chômage localisés par région et département",
+      "url": "https://www.insee.fr/fr/statistiques/2012804",
+      "date": "2026-09-18"
+    },
+    {
+      "donnee": "APL médecins généralistes (non collecté)",
+      "source": "DREES, data.drees, jeu 530 (niveau commune uniquement, millésimes 2023 et 2024)",
+      "url": "https://data.drees.solidarites-sante.gouv.fr/explore/dataset/530_l-accessibilite-potentielle-localisee-apl/",
+      "date": "2024-12-20"
+    },
+    {
+      "donnee": "Densité de médecins généralistes pour 100 000 habitants par région, au 1er janvier 2025",
+      "source": "Insee/Drees, Professionnels de santé au 1er janvier 2025 : comparaisons régionales (Drees RPPS ; Insee estimations de population), feuille régionale, colonne « dont généralistes »",
+      "url": "https://www.insee.fr/fr/statistiques/2012677",
+      "date": "2025-09-25"
+    }
+  ],
+  "notes": "Population : estimation Insee au 1er janvier 2026 (provisoire, résultats précoces fin 2025) ; Mayotte n'intègre pas le recensement fin 2025-janv. 2026. Chômage : taux localisé CVS du 2e trimestre 2026, provisoire, lu sur la page Insee (valeurs arrondies à 0,1) ; Mayotte absente du champ Insee (France hors Mayotte), donc null. APL : null pour les 18 régions. Le jeu DREES (data.drees, millésimes 2023 et 2024) est au niveau communal ; aucune moyenne régionale publiée n'a pu être lue (pages DREES en erreur 503 lors de la collecte, API non accessible) et nous n'avons pas recalculé de moyenne pondérée. Moyenne nationale APL généralistes 2023 : 3,3 consultations/an/habitant (DREES, non utilisée dans le JSON). Codes INSEE région : 11,24,27,28,32,44,52,53,75,76,84,93,94 ; DROM 01,02,03,04,06. Médecins généralistes pour 100 000 habitants (medecins_generalistes_100k) : Insee/Drees, situation au 1er janvier 2025 (publié 25/09/2025), colonne « dont généralistes » de la densité pour 100 000 habitants (médecins en activité, tous modes d'exercice, RPPS) ; même source et même année pour les 18 régions, aucune valeur null ; Mayotte = 39 (valeur très basse, telle que publiée)."
+}

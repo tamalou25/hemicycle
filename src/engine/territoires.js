@@ -9,10 +9,10 @@ export const EROSION_MENSUELLE = { sante: 0.12, transports: 0.12 }; // usure san
 const borne = (v) => Math.round(Math.min(100, Math.max(0, v)) * 100) / 100;
 
 /** Conversions données observées → indices de jeu (documentées dans docs/SOURCES.md). */
-export const indiceEmploi = (chomage) => borne(100 - ((chomage ?? 8) - 4) * 5);
+export const indiceEmploi = (chomage) => borne(100 - ((chomage ?? 8) - 4) * 7);
 export const indiceSante = (apl) => borne(apl == null ? 50 : (apl / 4.5) * 100);
-/** Variante à partir de la densité de médecins généralistes pour 100 000 hab. (≈ 40 → 0, ≈ 120 → 100). */
-export const indiceSanteDensite = (d) => borne(d == null ? 50 : (d - 40) * 1.25);
+/** Variante à partir de la densité de médecins généralistes (tous modes d’exercice) pour 100 000 hab. (40 → 0, ≈ 207 → 100). */
+export const indiceSanteDensite = (d) => borne(d == null ? 50 : (d - 40) * 0.6);
 
 export const satisfactionCible = (t) => INDICES.reduce((s, i) => s + t[i] * POIDS_SATISFACTION[i], 0);
 
