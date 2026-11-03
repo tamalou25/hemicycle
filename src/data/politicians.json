@@ -1,0 +1,182 @@
+[
+  {
+    "id": "jordan-bardella",
+    "nom": "Jordan Bardella",
+    "parti": "rn",
+    "fonction": "Président du Rassemblement national",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Jordan_Bardella",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "sebastien-chenu",
+    "nom": "Sébastien Chenu",
+    "parti": "rn",
+    "fonction": "Président du groupe Rassemblement national à l'Assemblée nationale (depuis fin octobre 2026)",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Sébastien_Chenu",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "gabriel-attal",
+    "nom": "Gabriel Attal",
+    "parti": "epr",
+    "fonction": "Président du groupe Ensemble pour la République à l'Assemblée nationale et secrétaire général de Renaissance",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Gabriel_Attal",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "sebastien-lecornu",
+    "nom": "Sébastien Lecornu",
+    "parti": "epr",
+    "fonction": "Premier ministre, chargé de la Planification écologique et énergétique",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Sébastien_Lecornu",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "laurent-wauquiez",
+    "nom": "Laurent Wauquiez",
+    "parti": "dr",
+    "fonction": "Président du groupe Droite républicaine à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Laurent_Wauquiez",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "bruno-retailleau",
+    "nom": "Bruno Retailleau",
+    "parti": "dr",
+    "fonction": "Président des Républicains et sénateur de la Vendée",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Bruno_Retailleau",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "eric-ciotti",
+    "nom": "Éric Ciotti",
+    "parti": "udr",
+    "fonction": "Président de l'Union des droites pour la République et de son groupe à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Éric_Ciotti",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "edouard-philippe",
+    "nom": "Édouard Philippe",
+    "parti": "horizons",
+    "fonction": "Maire du Havre, candidat déclaré à l'élection présidentielle de 2027",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Édouard_Philippe",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "marc-fesneau",
+    "nom": "Marc Fesneau",
+    "parti": "modem",
+    "fonction": "Président du groupe Les Démocrates à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Marc_Fesneau",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "olivier-faure",
+    "nom": "Olivier Faure",
+    "parti": "ps",
+    "fonction": "Premier secrétaire du Parti socialiste",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Olivier_Faure",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "marine-tondelier",
+    "nom": "Marine Tondelier",
+    "parti": "ecolo",
+    "fonction": "Secrétaire nationale des Écologistes",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Marine_Tondelier",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "mathilde-panot",
+    "nom": "Mathilde Panot",
+    "parti": "lfi",
+    "fonction": "Présidente du groupe LFI à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Mathilde_Panot",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "stephane-peu",
+    "nom": "Stéphane Peu",
+    "parti": "gdr",
+    "fonction": "Président du groupe Gauche démocrate et républicaine à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Stéphane_Peu",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "christophe-naegelen",
+    "nom": "Christophe Naegelen",
+    "parti": "liot",
+    "fonction": "Président du groupe LIOT à l'Assemblée nationale",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Christophe_Naegelen",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  },
+  {
+    "id": "eric-zemmour",
+    "nom": "Éric Zemmour",
+    "parti": "reconquete",
+    "fonction": "Président de Reconquête",
+    "fonction_source": {
+      "source": "Wikipédia (fr)",
+      "url": "https://fr.wikipedia.org/wiki/Éric_Zemmour",
+      "date": "2026-11-03"
+    },
+    "citations": []
+  }
+]
