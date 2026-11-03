@@ -102,3 +102,22 @@ describe('calendrier.json', () => {
     expect(cal.sources.length).toBeGreaterThan(0);
   });
 });
+
+describe('events.json', () => {
+  const evenements = lire('events.json');
+  it('schéma valide', () => {
+    expect(new Set(evenements.map((e) => e.id)).size).toBe(evenements.length);
+    for (const e of evenements) {
+      expect(e.titre && e.theme && e.description).toBeTruthy();
+      expect(e.choix.length).toBeGreaterThanOrEqual(2);
+      for (const c of e.choix) {
+        expect(c.libelle).toBeTruthy();
+        expect(c.cout_capital ?? 0).toBeGreaterThanOrEqual(0);
+        for (const ef of c.effets) {
+          expect(INDICATEURS).toContain(ef.indicateur);
+          expect(Number.isFinite(ef.valeur)).toBe(true);
+        }
+      }
+    }
+  });
+});
