@@ -47,6 +47,14 @@ npm run test:tout
 ```
 Les tests navigateur sont dans `e2e/`, ceux du moteur dans `tests/`. En cas d'échec, le rapport se trouve dans `playwright-report/`.
 
+### Application installable (PWA)
+Le jeu s'installe depuis le navigateur (« Ajouter à l'écran d'accueil ») et se joue **hors ligne** après une première visite.
+Après toute modification de fichiers du jeu, régénérer le CSS et le service worker :
+```bash
+npm run build
+```
+La CI vérifie que `assets/app.css` et `sw.js` commités sont à jour.
+
 ### Feuille de style
 Après toute modification des classes Tailwind :
 ```bash
