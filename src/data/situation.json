@@ -1,0 +1,60 @@
+{
+  "date_collecte": "2026-11-03",
+  "president": "Emmanuel Macron",
+  "premier_ministre": "Sébastien Lecornu",
+  "gouvernement": "Gouvernement Lecornu II, minoritaire (nommé 12/10/2025, ajusté 26/02/2026)",
+  "assemblee_total": 577,
+  "senat_total": 348,
+  "indicateurs": {
+    "chomage": 8.3,
+    "croissance": 0.4,
+    "deficit": 5.1,
+    "dette": null,
+    "inflation": 2.4
+  },
+  "notes": "chomage: T2 2026 (prévision fin 2026: 8,4-8,6) ; croissance: prévision Insee 2026 ; deficit: réalisé 2025 ; dette: ~118 (prévision 2026) non confirmée par source officielle -> null ; inflation: août 2026 (glissement annuel)",
+  "sources": [
+    {
+      "donnee": "Gouvernement Lecornu II, Premier ministre en fonction fin octobre 2026 ; ajustement du 26/02/2026",
+      "source": "franceinfo - Gouvernement de Sébastien Lecornu",
+      "url": "https://www.franceinfo.fr/politique/gouvernement-de-sebastien-lecornu/",
+      "date": "2026-10"
+    },
+    {
+      "donnee": "Remaniement du 26 février 2026",
+      "source": "franceinfo",
+      "url": "https://www.franceinfo.fr/politique/gouvernement-de-sebastien-lecornu/direct-remaniement-du-gouvernement-lecornu-quatre-nouveaux-entrants-dont-catherine-pegard-au-ministere-de-la-culture_7831046.html",
+      "date": "2026-02-26"
+    },
+    {
+      "donnee": "Effectifs des groupes à l'Assemblée (sièges)",
+      "source": "Datan - Les groupes politiques",
+      "url": "https://datan.fr/groupes",
+      "date": "2026 (non daté précisément)"
+    },
+    {
+      "donnee": "Modifications de composition des groupes",
+      "source": "Assemblée nationale",
+      "url": "https://www2.assemblee-nationale.fr/17/les-groupes-politiques/modifications-a-la-composition-des-groupes/2026",
+      "date": "2026-10-30"
+    },
+    {
+      "donnee": "Croissance 2026 (0,4 %), inflation août 2026 (2,4 %), chômage fin 2026 prévu (8,6 %), déficit > 5 %",
+      "source": "La Finance pour tous (note Insee du 10/09/2026)",
+      "url": "https://www.lafinancepourtous.com/2026/09/15/leconomie-francaise-decroche-baisse-de-la-croissance-inflation-en-hausse-et-retour-du-chomage/",
+      "date": "2026-09-15"
+    },
+    {
+      "donnee": "Chômage 8,3 % T2 2026, déficit 2025 5,1 %, dette 2026 prévue ~118 %",
+      "source": "Recherche web (OFCE / Banque de France / Commission européenne, relayés)",
+      "url": "https://ofce.sciences-po.fr/prev/prev2603/tableaux_comptes/tab_compte_france.html",
+      "date": "2026"
+    },
+    {
+      "donnee": "Sondages présidentielle (pas de sondage législatif national récent trouvé)",
+      "source": "Ifop-Fiducial via Sud Radio",
+      "url": "https://www.sudradio.fr/rubrique/ifop",
+      "date": "2026-09-30"
+    }
+  ]
+}

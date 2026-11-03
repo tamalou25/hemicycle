@@ -1,0 +1,70 @@
+[
+{"id":"retraites-age-flexible","titre":"Retraite à la carte","theme":"retraites","description":"Abaisse l'âge légal de départ et améliore les pensions minimales, financé par des cotisations accrues.","orientation":80,"cout_politique":3,"effets":[
+{"indicateur":"popularite","valeur":5,"delaiMois":0,"duree":8},
+{"indicateur":"deficit","valeur":0.5,"delaiMois":4,"duree":12},
+{"indicateur":"dette","valeur":1.5,"delaiMois":6,"duree":12},
+{"indicateur":"croissance","valeur":-0.2,"delaiMois":6,"duree":8}]},
+{"id":"retraites-capitalisation","titre":"Réforme par points et capitalisation","theme":"retraites","description":"Recule l'âge légal et introduit une part de capitalisation pour assurer l'équilibre du système.","orientation":-70,"cout_politique":4,"effets":[
+{"indicateur":"popularite","valeur":-5,"delaiMois":0,"duree":8},
+{"indicateur":"tensions","valeur":10,"delaiMois":1,"duree":6},
+{"indicateur":"deficit","valeur":-0.4,"delaiMois":6,"duree":12},
+{"indicateur":"dette","valeur":-1.5,"delaiMois":9,"duree":12},
+{"indicateur":"chomage","valeur":-0.2,"delaiMois":9,"duree":8}]},
+{"id":"immigration-regularisation","titre":"Régularisation et intégration","theme":"immigration","description":"Facilite la régularisation des travailleurs sans papiers et finance des programmes d'intégration et de langue.","orientation":-75,"cout_politique":4,"effets":[
+{"indicateur":"popularite","valeur":-3,"delaiMois":0,"duree":8},
+{"indicateur":"tensions","valeur":6,"delaiMois":1,"duree":4},
+{"indicateur":"croissance","valeur":0.3,"delaiMois":6,"duree":10},
+{"indicateur":"chomage","valeur":-0.2,"delaiMois":8,"duree":8},
+{"indicateur":"deficit","valeur":0.2,"delaiMois":3,"duree":6}]},
+{"id":"immigration-quotas","titre":"Quotas et contrôle des flux","theme":"immigration","description":"Instaure des quotas annuels, durcit les conditions de séjour et renforce les reconduites aux frontières.","orientation":80,"cout_politique":4,"effets":[
+{"indicateur":"popularite","valeur":3,"delaiMois":0,"duree":6},
+{"indicateur":"tensions","valeur":8,"delaiMois":1,"duree":8},
+{"indicateur":"croissance","valeur":-0.2,"delaiMois":6,"duree":10},
+{"indicateur":"deficit","valeur":0.2,"delaiMois":3,"duree":8}]},
+{"id":"fiscalite-justice-fiscale","titre":"Impôt sur les grandes fortunes","theme":"fiscalite","description":"Crée une contribution sur les patrimoines élevés et les profits exceptionnels pour financer les services publics.","orientation":-80,"cout_politique":3,"effets":[
+{"indicateur":"popularite","valeur":3,"delaiMois":0,"duree":8},
+{"indicateur":"deficit","valeur":-0.5,"delaiMois":4,"duree":12},
+{"indicateur":"dette","valeur":-1.0,"delaiMois":8,"duree":12},
+{"indicateur":"croissance","valeur":-0.3,"delaiMois":6,"duree":10},
+{"indicateur":"tensions","valeur":4,"delaiMois":1,"duree":4}]},
+{"id":"fiscalite-baisse-impots","titre":"Baisse des impôts de production","theme":"fiscalite","description":"Réduit les impôts sur les entreprises et les revenus du travail pour stimuler l'investissement et l'emploi.","orientation":75,"cout_politique":3,"effets":[
+{"indicateur":"popularite","valeur":2,"delaiMois":1,"duree":8},
+{"indicateur":"croissance","valeur":0.4,"delaiMois":4,"duree":12},
+{"indicateur":"chomage","valeur":-0.3,"delaiMois":6,"duree":12},
+{"indicateur":"deficit","valeur":0.6,"delaiMois":3,"duree":12},
+{"indicateur":"dette","valeur":2.0,"delaiMois":8,"duree":12}]},
+{"id":"europe-federalisme","titre":"Approfondissement européen","theme":"europe","description":"Transfère de nouvelles compétences à l'Union et mutualise une partie des investissements et de la dette.","orientation":80,"cout_politique":4,"effets":[
+{"indicateur":"popularite","valeur":-3,"delaiMois":0,"duree":8},
+{"indicateur":"tensions","valeur":5,"delaiMois":1,"duree":5},
+{"indicateur":"croissance","valeur":0.4,"delaiMois":6,"duree":12},
+{"indicateur":"dette","valeur":-1.0,"delaiMois":9,"duree":12},
+{"indicateur":"inflation","valeur":-0.2,"delaiMois":8,"duree":8}]},
+{"id":"europe-souverainete","titre":"Souveraineté nationale renforcée","theme":"europe","description":"Réaffirme la primauté du droit national sur certaines normes européennes et renégocie les contributions au budget de l'Union.","orientation":-75,"cout_politique":4,"effets":[
+{"indicateur":"popularite","valeur":4,"delaiMois":0,"duree":6},
+{"indicateur":"tensions","valeur":6,"delaiMois":1,"duree":6},
+{"indicateur":"croissance","valeur":-0.3,"delaiMois":5,"duree":12},
+{"indicateur":"inflation","valeur":0.3,"delaiMois":6,"duree":8},
+{"indicateur":"deficit","valeur":-0.2,"delaiMois":4,"duree":8}]},
+{"id":"ecologie-plan-transition","titre":"Plan de transition écologique","theme":"ecologie","description":"Lance un programme massif de rénovation, d'énergies renouvelables et de transports bas carbone, financé par la dette.","orientation":85,"cout_politique":3,"effets":[
+{"indicateur":"popularite","valeur":2,"delaiMois":1,"duree":8},
+{"indicateur":"croissance","valeur":0.3,"delaiMois":6,"duree":12},
+{"indicateur":"chomage","valeur":-0.2,"delaiMois":6,"duree":10},
+{"indicateur":"deficit","valeur":0.5,"delaiMois":3,"duree":12},
+{"indicateur":"dette","valeur":2.5,"delaiMois":6,"duree":12}]},
+{"id":"ecologie-pragmatique","titre":"Transition pragmatique et nucléaire","theme":"ecologie","description":"Assouplit les normes environnementales et privilégie l'innovation et le nucléaire plutôt que les contraintes.","orientation":-65,"cout_politique":2,"effets":[
+{"indicateur":"popularite","valeur":-2,"delaiMois":0,"duree":6},
+{"indicateur":"tensions","valeur":4,"delaiMois":1,"duree":5},
+{"indicateur":"croissance","valeur":0.3,"delaiMois":4,"duree":10},
+{"indicateur":"inflation","valeur":-0.2,"delaiMois":6,"duree":8},
+{"indicateur":"deficit","valeur":-0.2,"delaiMois":6,"duree":8}]},
+{"id":"securite-prevention","titre":"Sécurité et prévention de proximité","theme":"securite","description":"Renforce la police de proximité, la prévention et l'accompagnement social plutôt que les peines lourdes.","orientation":-60,"cout_politique":2,"effets":[
+{"indicateur":"popularite","valeur":1,"delaiMois":1,"duree":6},
+{"indicateur":"tensions","valeur":-8,"delaiMois":4,"duree":10},
+{"indicateur":"deficit","valeur":0.3,"delaiMois":2,"duree":8},
+{"indicateur":"dette","valeur":0.5,"delaiMois":6,"duree":10}]},
+{"id":"securite-fermete","titre":"Loi de fermeté pénale","theme":"securite","description":"Alourdit les peines, étend les pouvoirs de surveillance et augmente les effectifs de forces de l'ordre.","orientation":80,"cout_politique":3,"effets":[
+{"indicateur":"popularite","valeur":4,"delaiMois":0,"duree":6},
+{"indicateur":"tensions","valeur":-6,"delaiMois":3,"duree":8},
+{"indicateur":"tensions","valeur":5,"delaiMois":0,"duree":3},
+{"indicateur":"deficit","valeur":0.3,"delaiMois":3,"duree":10}]}
+]
