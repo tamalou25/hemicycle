@@ -159,6 +159,7 @@ export function render(racine, etat, dispatch, ctx) {
     }));
   } else if (onglet === 'carte') brancherCarte(racine, dispatch);
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
+  else if (onglet === 'opinion') { /* contenu en lecture seule */ }
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);
     racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
