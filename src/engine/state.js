@@ -26,6 +26,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
       nom: joueur.nom.trim(), age: borne(joueur.age ?? 40, 18, 99), parti: joueur.parti,
       ideologie, competences, capital: 4,
       role: ROLES.includes(joueur.role) ? joueur.role : 'depute',
+      politicienId: joueur.politicienId ?? null, // mode « jouer un élu »
     },
     indicateurs: {
       chomage: ind.chomage ?? 7.5, croissance: ind.croissance ?? 0.8, deficit: ind.deficit ?? 5.4,
