@@ -7,7 +7,11 @@ export const VUES = [
   { id: 'emploi', nom: 'Emploi', court: 'emploi' },
   { id: 'sante', nom: 'Accès aux soins', court: 'accès aux soins' },
   { id: 'transports', nom: 'Transports', court: 'transports' },
+  { id: 'confiance', nom: 'Confiance', court: 'confiance envers le gouvernement' },
 ];
+
+/** Valeur d'une région pour une vue : la confiance vient de etat.confianceRegions, le reste des territoires. */
+export const valeurRegion = (etat, id, vue) => (vue === 'confiance' ? etat.confianceRegions?.[id] : etat.territoires?.[id]?.[vue]);
 // 5 classes séquentielles ivoire → bleu nuit (lisibles aussi en niveaux de gris)
 const COULEURS = ['#F3ECD3', '#C9D6E8', '#8DAAD2', '#4C74AE', '#14213D'];
 const BORNES = ['0 à 19', '20 à 39', '40 à 59', '60 à 79', '80 à 100'];
@@ -100,7 +104,7 @@ export function svgCarte(etat, ctx, vue, selection) {
   const noms = Object.fromEntries(regions.regions.map((r) => [r.id, r.nom]));
   const v = VUES.find((x) => x.id === vue);
   const chemin = (r) => {
-    const val = etat.territoires?.[r.id]?.[vue];
+    const val = valeurRegion(etat, r.id, vue);
     const sel = r.id === selection;
     return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${COULEURS[classe(val)]}" stroke="${sel ? '#8A6A1F' : '#FFFDF7'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
       tabindex="0" role="button" aria-pressed="${sel}" data-region="${esc(r.id)}" aria-label="${esc(noms[r.id] ?? r.nom)}, ${esc(v.court)} ${Math.round(val ?? 0)} sur 100"><title>${esc(noms[r.id] ?? r.nom)} : ${Math.round(val ?? 0)}</title></path>`;
@@ -118,10 +122,10 @@ function tableAccessible(etat, ctx) {
     return `<tr class="border-b border-bord"><th scope="row" class="text-left py-1 pr-2 font-semibold">${esc(r.nom)}</th>
       <td class="py-1 pr-2 tabular-nums">${nf(r.population)}</td>
       <td class="py-1 pr-2 tabular-nums">${fmt(t.emploi, 0)}</td><td class="py-1 pr-2 tabular-nums">${fmt(t.sante, 0)}</td><td class="py-1 pr-2 tabular-nums">${fmt(t.transports, 0)}</td>
-      <td class="py-1 tabular-nums font-semibold">${fmt(t.satisfaction, 0)}</td></tr>`;
+      <td class="py-1 pr-2 tabular-nums font-semibold">${fmt(t.satisfaction, 0)}</td><td class="py-1 tabular-nums">${fmt(etat.confianceRegions?.[r.id], 0)}</td></tr>`;
   }).join('');
   return `<div class="overflow-x-auto"><table class="w-full text-sm"><caption class="text-left text-doux text-xs mb-1">Indices de jeu de 0 à 100, par région</caption>
-    <thead><tr class="border-b-2 border-encre text-left"><th scope="col" class="py-1 pr-2">Région</th><th scope="col" class="pr-2">Population</th><th scope="col" class="pr-2">Emploi</th><th scope="col" class="pr-2">Soins</th><th scope="col" class="pr-2">Transp.</th><th scope="col">Satisf.</th></tr></thead>
+    <thead><tr class="border-b-2 border-encre text-left"><th scope="col" class="py-1 pr-2">Région</th><th scope="col" class="pr-2">Population</th><th scope="col" class="pr-2">Emploi</th><th scope="col" class="pr-2">Soins</th><th scope="col" class="pr-2">Transp.</th><th scope="col" class="pr-2">Satisf.</th><th scope="col">Confiance</th></tr></thead>
     <tbody>${lignes}</tbody></table></div>`;
 }
 
@@ -169,13 +173,14 @@ export function ficheRegion(etat, ctx, regionId) {
   const r = ctx.regions.regions.find((x) => x.id === regionId);
   if (!r) return '<section class="bg-carte border border-bord rounded-lg p-4 filet-laiton" aria-label="Fiche région"><p class="text-doux">Sélectionnez une région sur la carte pour voir sa fiche et lancer des projets.</p></section>';
   const t = etat.territoires?.[r.id] ?? {};
-  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
+  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis };
   const expl = (etat.explications ?? []).filter((e) => e.region === r.id && e.tour === etat.tour);
   return `<section id="fiche" aria-labelledby="h-fiche" class="bg-carte border border-bord rounded-lg p-4 filet-laiton">
     <h2 id="h-fiche" class="font-serif font-bold text-2xl">${esc(r.nom)}</h2>
     <p class="text-sm text-doux">Population : ${nf(r.population)} habitants (Insee, 2026)<br>
     ${r.chomage != null ? `Chômage observé : ${fmt(r.chomage)} % (Insee, T2 2026)` : 'Chômage observé : non disponible (Insee)'}</p>
-    <div class="mt-3">${barre('Satisfaction', t.satisfaction, true)}${barre('Emploi', t.emploi)}${barre('Accès aux soins', t.sante)}${barre('Transports', t.transports)}</div>
+    <div class="mt-3">${barre('Satisfaction', t.satisfaction, true)}${etat.confianceRegions ? barre('Confiance envers le gouvernement', etat.confianceRegions[r.id]) : ''}${barre('Emploi', t.emploi)}${barre('Accès aux soins', t.sante)}${barre('Transports', t.transports)}</div>
+    <p class="text-xs text-doux mt-1">La satisfaction mesure la situation vécue ; la confiance, le jugement sur le gouvernement : c'est elle qui pèse aux législatives.</p>
     ${legislativesRegions(etat) && ctx.vue === 'legislatives' ? siegesRegion(legislativesRegions(etat), ctx, r) : ''}
     <h3 class="font-serif font-bold text-lg mt-3">Projets de la région</h3>${projetsRegion(etat, ctx, r)}
     <h3 class="font-serif font-bold text-lg mt-3">Ce qui a changé ce mois-ci</h3>
