@@ -1,0 +1,18 @@
+{
+  "note": "PARAMÈTRES D'ÉQUILIBRAGE (non observés). Par neutralité, aucun groupe ne reçoit d'orientation politique : chaque groupe a seulement des priorités (poids, somme = 1) sur les résultats concrets. Les parts de population viennent de groupes.json (Insee).",
+  "priorites": {
+    "classes-populaires":         { "emploi": 0.30, "pouvoir_achat": 0.30, "sante": 0.15, "transports": 0.10, "securite": 0.10, "avenir": 0.05 },
+    "professions-intermediaires": { "emploi": 0.20, "pouvoir_achat": 0.25, "sante": 0.15, "transports": 0.15, "securite": 0.10, "avenir": 0.15 },
+    "cadres":                     { "emploi": 0.15, "pouvoir_achat": 0.15, "sante": 0.10, "transports": 0.15, "securite": 0.10, "avenir": 0.35 },
+    "independants":               { "emploi": 0.25, "pouvoir_achat": 0.25, "sante": 0.10, "transports": 0.10, "securite": 0.15, "avenir": 0.15 },
+    "retraites":                  { "emploi": 0.05, "pouvoir_achat": 0.30, "sante": 0.35, "transports": 0.05, "securite": 0.20, "avenir": 0.05 },
+    "jeunes-inactifs":            { "emploi": 0.30, "pouvoir_achat": 0.15, "sante": 0.05, "transports": 0.15, "securite": 0.05, "avenir": 0.30 }
+  },
+  "fiscalite": {
+    "impots_menages":     { "classes-populaires": 0.3, "professions-intermediaires": 0.8, "cadres": 1.0, "independants": 0.6, "retraites": 0.6, "jeunes-inactifs": 0.1 },
+    "tva_consommation":   { "classes-populaires": 1.0, "professions-intermediaires": 0.7, "cadres": 0.4, "independants": 0.6, "retraites": 0.8, "jeunes-inactifs": 0.8 },
+    "impots_entreprises": { "classes-populaires": 0.1, "professions-intermediaires": 0.2, "cadres": 0.4, "independants": 1.0, "retraites": 0.0, "jeunes-inactifs": 0.0 },
+    "cotisations_sociales": { "classes-populaires": 0.6, "professions-intermediaires": 0.7, "cadres": 0.7, "independants": 0.8, "retraites": 0.1, "jeunes-inactifs": 0.2 }
+  },
+  "fiscalite_note": "Exposition relative de chaque groupe à une hausse de recette (1 = le plus exposé)."
+}

@@ -1,0 +1,66 @@
+{
+  "date_collecte": "2026-11-03",
+  "annee": 2023,
+  "champ": "population de 15 ans ou plus, France entière (recensement de la population 2023, 56 529 157 personnes)",
+  "groupes": [
+    {
+      "id": "classes-populaires",
+      "nom": "Ouvriers et employés",
+      "pcs": [
+        "employés",
+        "ouvriers"
+      ],
+      "part": 26.6
+    },
+    {
+      "id": "professions-intermediaires",
+      "nom": "Professions intermédiaires",
+      "pcs": [
+        "professions intermédiaires"
+      ],
+      "part": 14.2
+    },
+    {
+      "id": "cadres",
+      "nom": "Cadres et professions intellectuelles supérieures",
+      "pcs": [
+        "cadres et professions intellectuelles supérieures"
+      ],
+      "part": 11.1
+    },
+    {
+      "id": "independants",
+      "nom": "Agriculteurs, artisans, commerçants et chefs d'entreprise",
+      "pcs": [
+        "agriculteurs exploitants",
+        "artisans, commerçants, chefs d'entreprise"
+      ],
+      "part": 4.5
+    },
+    {
+      "id": "retraites",
+      "nom": "Retraités",
+      "pcs": [
+        "retraités"
+      ],
+      "part": 27.9
+    },
+    {
+      "id": "jeunes-inactifs",
+      "nom": "Étudiants et autres personnes sans activité professionnelle",
+      "pcs": [
+        "autres personnes sans activité professionnelle"
+      ],
+      "part": 15.7
+    }
+  ],
+  "sources": [
+    {
+      "donnee": "POP6 - Population de 15 ans ou plus selon le groupe socioprofessionnel actuel ou antérieur, le sexe et l'âge en 2023 (RP2023, exploitation complémentaire)",
+      "source": "Insee",
+      "url": "https://www.insee.fr/fr/statistiques/8953987?geo=FE-1",
+      "date": "2026-06-25"
+    }
+  ],
+  "notes": "Parts = effectifs POP6 / 56 529 157, arrondies à 0,1 pt (somme des parts arrondies = 100,0). Effectifs : employés 8 575 402 + ouvriers 6 437 367 ; prof. intermédiaires 8 051 987 ; cadres 6 290 515 ; agriculteurs 384 148 + artisans/commerçants/chefs d'entreprise 2 138 460 ; retraités 15 762 192 ; autres sans activité professionnelle 8 889 086 (inclut étudiants ; pas de ligne étudiants distincte dans POP6). Les groupes d'actifs sont 'actuel ou antérieur' : les chômeurs ayant déjà travaillé et les inactifs non retraités ayant travaillé y sont classés selon leur ancienne profession. Recensement (millésime 2023, publié 25/06/2026) retenu plutôt que l'enquête Emploi 2025 (champ 15-89 ans en logement ordinaire, sans ligne retraités)."
+}

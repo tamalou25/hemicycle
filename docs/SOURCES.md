@@ -67,3 +67,9 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Dépenses COFOG : dernier millésime publié = 2024 (tableau 3.301, https://www.insee.fr/fr/statistiques/8574707) ; le millésime 2025 est annoncé pour décembre 2026. Les dépenses par fonction du fichier sont donc une **estimation** : structure 2024 mise à l'échelle du total de dépenses 2025 hors intérêts (coefficient 1,0227), intérêts 2025 réels.
 - Regroupements et approximations (détail dans le champ `notes` du JSON) : taxe foncière classée en totalité chez les ménages ; « recherche » = lignes COFOG R&D (01.4, 01.5, 02.4, 04.8, 05.5, 07.5), retranchées des autres postes, sous-estime la R&D universitaire ; « autres » recettes = solde pour atteindre le total des recettes.
 - Contrôle : recettes − dépenses = −151,6 Md€ contre −152,5 Md€ attendus (écart 0,6 %, différence B9NF / Maastricht). Non consultés : Cour des comptes, PLF 2027, Agence France Trésor, Eurostat (non nécessaires, les chiffres Insee suffisent).
+
+## Groupes sociaux (collecte 2026-11-03)
+- Fichier : `src/data/groupes.json`. Champ : population de 15 ans ou plus, France entière, recensement 2023 (56 529 157 personnes).
+- Source : Insee, POP6 « Population de 15 ans ou plus selon le groupe socioprofessionnel actuel ou antérieur, le sexe et l'âge en 2023 » (publié le 25/06/2026) — https://www.insee.fr/fr/statistiques/8953987?geo=FE-1
+- Parts calculées sur les effectifs ; arrondi à 0,1 pt, somme = 100,0. « Jeunes inactifs » = colonne « Autres sans activité professionnelle » (étudiants inclus, non isolés). Groupes d'actifs en « actuel ou antérieur ».
+- Écarté : enquête Emploi 2025 (https://www.insee.fr/fr/statistiques/2381478), champ 15-89 ans en logement ordinaire et sans effectif de retraités.
