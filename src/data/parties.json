@@ -1,0 +1,218 @@
+[
+  {
+    "id": "rn",
+    "nom": "Rassemblement national",
+    "sigle": "RN",
+    "couleur": "#1F3A6E",
+    "bloc": "extreme-droite",
+    "sieges_assemblee": 121,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 60,
+      "immigration": 95,
+      "fiscalite": 40,
+      "europe": -60,
+      "ecologie": -40,
+      "securite": 85
+    }
+  },
+  {
+    "id": "epr",
+    "nom": "Ensemble pour la République (Renaissance)",
+    "sigle": "EPR",
+    "couleur": "#E8B400",
+    "bloc": "centre",
+    "sieges_assemblee": 90,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": -20,
+      "immigration": 40,
+      "fiscalite": 50,
+      "europe": 85,
+      "ecologie": 30,
+      "securite": 55
+    }
+  },
+  {
+    "id": "dr",
+    "nom": "Droite Républicaine (LR)",
+    "sigle": "DR",
+    "couleur": "#2E6FBF",
+    "bloc": "droite",
+    "sieges_assemblee": 46,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": -50,
+      "immigration": 75,
+      "fiscalite": 70,
+      "europe": 30,
+      "ecologie": -10,
+      "securite": 75
+    }
+  },
+  {
+    "id": "udr",
+    "nom": "Union des droites pour la République (UDR)",
+    "sigle": "UDR",
+    "couleur": "#5B7BA8",
+    "bloc": "extreme-droite",
+    "sieges_assemblee": 17,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 20,
+      "immigration": 90,
+      "fiscalite": 50,
+      "europe": -40,
+      "ecologie": -50,
+      "securite": 85
+    }
+  },
+  {
+    "id": "horizons",
+    "nom": "Horizons & Indépendants",
+    "sigle": "HOR",
+    "couleur": "#4FA3C7",
+    "bloc": "centre",
+    "sieges_assemblee": 35,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": -40,
+      "immigration": 50,
+      "fiscalite": 60,
+      "europe": 70,
+      "ecologie": 20,
+      "securite": 60
+    }
+  },
+  {
+    "id": "modem",
+    "nom": "Les Démocrates (MoDem)",
+    "sigle": "DEM",
+    "couleur": "#E67E22",
+    "bloc": "centre",
+    "sieges_assemblee": 37,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": -10,
+      "immigration": 25,
+      "fiscalite": 30,
+      "europe": 90,
+      "ecologie": 40,
+      "securite": 45
+    }
+  },
+  {
+    "id": "ps",
+    "nom": "Socialistes et apparentés (PS)",
+    "sigle": "PS",
+    "couleur": "#D9534F",
+    "bloc": "gauche",
+    "sieges_assemblee": 68,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 70,
+      "immigration": -20,
+      "fiscalite": -60,
+      "europe": 80,
+      "ecologie": 65,
+      "securite": 0
+    }
+  },
+  {
+    "id": "ecolo",
+    "nom": "Écologiste et Social",
+    "sigle": "ECOS",
+    "couleur": "#3E9B5A",
+    "bloc": "gauche",
+    "sieges_assemblee": 38,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 75,
+      "immigration": -50,
+      "fiscalite": -75,
+      "europe": 75,
+      "ecologie": 95,
+      "securite": -25
+    }
+  },
+  {
+    "id": "lfi",
+    "nom": "La France insoumise - NFP",
+    "sigle": "LFI",
+    "couleur": "#B3262B",
+    "bloc": "extreme-gauche",
+    "sieges_assemblee": 70,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 95,
+      "immigration": -60,
+      "fiscalite": -90,
+      "europe": -20,
+      "ecologie": 85,
+      "securite": -45
+    }
+  },
+  {
+    "id": "gdr",
+    "nom": "Gauche démocrate et républicaine (PCF et ultramarins)",
+    "sigle": "GDR",
+    "couleur": "#8B1A1A",
+    "bloc": "extreme-gauche",
+    "sieges_assemblee": 17,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 95,
+      "immigration": -45,
+      "fiscalite": -90,
+      "europe": -10,
+      "ecologie": 70,
+      "securite": -35
+    }
+  },
+  {
+    "id": "liot",
+    "nom": "Libertés, Indépendants, Outre-mer et Territoires",
+    "sigle": "LIOT",
+    "couleur": "#8E6BAE",
+    "bloc": "regionaliste",
+    "sieges_assemblee": 24,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 10,
+      "immigration": 10,
+      "fiscalite": 0,
+      "europe": 50,
+      "ecologie": 35,
+      "securite": 20
+    }
+  },
+  {
+    "id": "reconquete",
+    "nom": "Reconquête",
+    "sigle": "REC",
+    "couleur": "#2B2B2B",
+    "bloc": "extreme-droite",
+    "sieges_assemblee": null,
+    "sieges_senat": null,
+    "intentions_vote": null,
+    "positions": {
+      "retraites": 30,
+      "immigration": 100,
+      "fiscalite": 60,
+      "europe": -70,
+      "ecologie": -70,
+      "securite": 95
+    }
+  }
+]
