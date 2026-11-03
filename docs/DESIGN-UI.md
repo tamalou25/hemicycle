@@ -40,3 +40,11 @@
 - **Hauteur du Bureau à 412 px après 3 mois** : environ 1 700 à 1 800 px, contre 2 393 avant, soit moins de 2 écrans. Une vérification e2e l'impose.
 - **Tests** : `e2e/navigation.spec.js` et l'aide `e2e/aide.js`. Les captures des tests sont écrites dans `test-results/` (hors dépôt) ; celles de `docs/captures/` sont mises à jour à la main.
 - **Reste** : audit de contraste automatisé ; vérification clavier approfondie du panneau « Plus » ; la carte d'un événement non résolu rallonge le Bureau d'environ 900 px (à compacter au chantier 2).
+
+## Chantier 2 (fait)
+- **Accessibilité** : audit automatisé axe-core (WCAG 2.0 et 2.1, A et AA, contraste compris) sur l'accueil, la création et les 7 onglets, en mobile et en ordinateur (`e2e/accessibilite.spec.js`). Correction : la liste des décisions urgentes n'est plus une liste sans rôle de liste.
+- **Carte d'événement** : environ 645 px sur mobile, contre environ 900 (effets en pastilles, région visée, coûts en Md€, lien vers la carte).
+- **Décisions mobile** : filtres sur une ligne défilante par groupe, 6 décisions par catégorie puis « Afficher les N autres », réaction des partis repliable. Hauteur : 11,2 → 5,1 écrans.
+- **Budget mobile** : chiffres clés sur 2 colonnes ; les curseurs du PLF sont repliés hors de la période de dépôt.
+- **Bureau mobile** : grille « Tous les indicateurs » repliée (ses valeurs principales sont déjà dans « État du pays »).
+- **Garde-fou** : `tests/build.test.js` échoue si `sw.js` n'est pas à jour (`npm run build`).

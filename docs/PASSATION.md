@@ -8,6 +8,18 @@
 - **Prochain chantier d'interface** : compacter la carte d'événement (environ 900 px) ; audit de contraste automatisé ; onglets Décisions, Carte et Budget sur mobile.
 - **Branche Codex `phase-E3-population`** : jamais mergée, devenue obsolète (voir la section E3).
 
+## État au 03/11/2026, fin des chantiers (Claude)
+- **`main`** contient tout le travail ci-dessous (PR #19 à #23). Tests : Vitest 165/165, Playwright 36/36 (ordinateur et mobile), CI verte.
+- **Fait depuis la passation précédente** :
+  - **Confiance par région** (#19) : distincte de la satisfaction, chocs nationaux, +3 à la mise en service d'un projet ; utilisée par les législatives (pondérée par la population) ; vue « Confiance » sur la carte.
+  - **Équilibrage** (#20) : tests de non-régression sur 20 graines. Correction : les options passives des événements condamnaient le joueur (85 % d'échecs → 50 % pour un joueur passif, 0 % pour un joueur réactif).
+  - **Objectifs de mandat** (#21) : 3 au choix parmi 10, neutres, avec un bonus au bilan. Transmis dans les défis. L'objectif « programmes » est réservé au Premier ministre.
+  - **Événements régionaux** (#22) : 4 événements ciblant une région fragile, effets locaux, coût sur l'enveloppe.
+  - **Interface, chantier 2** (#23) : audit WCAG AA automatisé, Décisions, Budget et Bureau compactés sur mobile, carte d'événement compacte, garde-fou `sw.js`.
+- **Sauvegarde** : v12, avec migrations depuis v1.
+- **Règle apprise** : toujours lancer `npm run build` avant de commiter (CSS et `sw.js`). `npm test` le vérifie désormais.
+- **Restant (hors code)** : tests sur un vrai téléphone (APK de la CI), build iOS sur Mac, publication sur les stores, recoupement des fonctions des élus, citations vérifiées (0 aujourd'hui), équilibrage par de vraies parties jouées.
+
 ## Travail en parallèle (Claude + Codex)
 > **Mise à jour du 03/11/2026 (décision de l'utilisateur)** : Claude reprend **tout**, interface et moteur, jusqu'à la fin des chantiers listés ci-dessous. Le partage décrit ici reste la référence si Codex reprend la main. Chaque sujet garde sa branche et sa PR, et on vérifie toujours `main` avant de merger, pour ne jamais écraser un éventuel commit de Codex.
 
