@@ -44,6 +44,8 @@ test('élu réel : personnalité, rôle PM, partie sans erreur, réactions sans 
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
   await page.getByRole('button', { name: 'Jouer un élu réel' }).click();
+  // Pas de défilement horizontal sur l'écran de choix (régression constatée en CI sur mobile)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   await page.locator('input[name=elu]').first().check();
   await page.locator('input[name=role][value=premier_ministre]').check();
   await page.getByRole('button', { name: 'Commencer' }).click();

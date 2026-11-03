@@ -13,6 +13,15 @@
   --bleu: #1F3A6E; --rouge: #B3262B; --bordeaux: #7A1F2B; --laiton: #8A6A1F;
 }
 
+@layer base {
+  /* Mobile : un <fieldset> ne rétrécit pas sous la largeur de son contenu par défaut (min-inline-size: min-content),
+     ce qui provoquait un défilement horizontal avec des polices plus larges. */
+  fieldset { min-width: 0; }
+  body { overflow-wrap: break-word; }
+  /* Garde-fou : quelques pixels de débordement ne doivent jamais faire défiler la page horizontalement */
+  html, body { overflow-x: clip; }
+}
+
 @layer components {
   body { background: #FAF6EC; color: #14213D; }
   :focus-visible { outline: 3px solid #1F3A6E; outline-offset: 2px; border-radius: 4px; }

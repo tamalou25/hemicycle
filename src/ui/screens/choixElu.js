@@ -10,7 +10,7 @@ export function render(racine, etat, dispatch, ctx) {
   const cartes = liste.map((p) => {
     const parti = partis.find((x) => x.id === p.parti);
     const sel = st.id === p.id;
-    return `<li class="bg-carte border-2 ${sel ? 'border-encre' : 'border-bord'} rounded-lg p-3 flex flex-col gap-2">
+    return `<li class="min-w-0 bg-carte border-2 ${sel ? 'border-encre' : 'border-bord'} rounded-lg p-3 flex flex-col gap-2">
       <label class="flex items-start gap-3 cursor-pointer">
         <input type="radio" name="elu" value="${esc(p.id)}" class="mt-3 w-5 h-5" ${sel ? 'checked' : ''}>
         ${avatar(p.nom, parti)}
@@ -28,7 +28,7 @@ export function render(racine, etat, dispatch, ctx) {
       <select id="fp" class="champ !w-auto"><option value="">Tous les partis</option>
       ${utiles.map((p) => `<option value="${esc(p.id)}" ${p.id === st.parti ? 'selected' : ''}>${esc(p.nom)}</option>`).join('')}</select></div>
     <fieldset class="mb-4"><legend class="font-serif font-bold text-xl mb-2">Personnalité</legend>
-      <ul class="grid sm:grid-cols-2 gap-3">${cartes || '<li class="text-doux">Aucune personnalité pour ce parti.</li>'}</ul></fieldset>
+      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">${cartes || '<li class="text-doux">Aucune personnalité pour ce parti.</li>'}</ul></fieldset>
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Rôle</legend>
       <label class="flex items-start gap-2 mb-3 cursor-pointer"><input type="radio" name="role" value="depute" class="mt-1" ${st.role !== 'premier_ministre' ? 'checked' : ''}>
         <span><strong>Député·e</strong><br><span class="text-sm text-doux">Vous proposez des lois et négociez des accords, sans risquer d’être renversé·e.</span></span></label>
