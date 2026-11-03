@@ -1,7 +1,7 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e1-carte-territoires`. E0 est mergé dans `main`.
+- **Branche en cours** : `e2-finances`. E0 et E1 sont mergés dans `main`.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
 - **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
 
@@ -55,7 +55,8 @@
 - Ordre de livraison : web, puis PWA, puis Capacitor (à évaluer en E7, rien d'installé). Multijoueur, comptes et opérations militaires sont hors périmètre.
 
 ## Tests exécutés (sur cette branche)
-- **Vitest** : 87 tests passent (E1 : territoires, projets, briefing, migration v5, schémas des régions, de la carte et des projets).
+- **Vitest, E2** : 98 tests passent. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
+- **Vitest, E1** : 87 tests passaient (E1 : territoires, projets, briefing, migration v5, schémas des régions, de la carte et des projets).
 - **Playwright, E1** : sélection de Mayotte au clavier, projet lancé puis mis en service, effet expliqué dans la fiche. Aucune erreur console et pas de scroll horizontal à 390 px.
 - **Vitest, E0** : 71 tests passaient, dont 5 sur le registre. Par exemple : la somme des causes égale la variation réelle de chaque indicateur.
 - **Playwright** :
@@ -73,8 +74,27 @@
 - **Régions** absentes, **0 citation** vérifiée.
 - **Polices** : seul le sous-ensemble latin est embarqué. Les caractères hors latin utiliseront la police de secours (Georgia).
 
-## Prochaine étape : E2 « Finances réelles »
-Budget en Md€ (recettes, dépenses par secteur, dette, charge de la dette), budget annuel voté au Parlement, solde mensuel expliqué.
+### E2 Finances réelles
+- Données Insee 2025 dans `finances.json` :
+  - PIB 2 991 Md€, dette 3 460 Md€ (115,7 %), déficit 5,1 %, intérêts 64,7 Md€ ;
+  - recettes ventilées en 5 postes ;
+  - dépenses en 8 postes, **estimées** à partir de la structure COFOG 2024, car la COFOG 2025 n'est pas encore publiée.
+- Moteur `budgetEtat.js` : projet de loi de finances déposé de septembre à décembre par le PM (variation de ±5 % par poste), chiffré en Md€ et en points de déficit.
+- Vote du budget :
+  - Assemblée : l'opposition idéologiquement éloignée vote contre par principe, un accord peut la retourner ;
+  - 49.3 possible sans délai, avec motion de censure ;
+  - en cas de rejet, une **loi spéciale** reconduit les crédits.
+- Effets :
+  - effets différés des sensibilités par Md€ (paramètres d'équilibrage), avec les crédits santé et infrastructures qui agissent sur les indices régionaux ;
+  - PIB qui évolue chaque mois ;
+  - charge d'intérêts révisée en janvier ;
+  - dynamique de la dette corrigée (croissance nominale).
+- Sauvegarde v6.
+- Interface : onglet Budget avec le tableau des finances, le PLF à curseurs et un aperçu en direct (solde, orientation, vote probable « estimation »), bannière dans Bureau. Les anciens leviers ±2 pt sont retirés.
+- **Équilibrage** : la dette progresse d'environ 2 points par an sans action. Un budget neutre d'un PM EPR est rejeté 271–292 sans accord : il faut négocier ou utiliser le 49.3.
+
+## Prochaine étape : E3 « Population »
+Groupes sociaux agrégés, satisfaction ≠ confiance ≠ vote, élections calculées par région.
 
 ## (Archive) Plan E1 initial
 1. Sourcer les données régionales :
