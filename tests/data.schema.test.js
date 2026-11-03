@@ -58,3 +58,13 @@ describe('situation.json', () => {
     for (const s of situation.sources) expect(s.url).toMatch(/^https?:\/\//);
   });
 });
+
+describe('senat.json', () => {
+  const senat = lire('senat.json');
+  const ids = new Set(partis.map((p) => p.id));
+  it('total cohérent et partis connus', () => {
+    expect(senat.groupes.reduce((s, g) => s + g.sieges, 0)).toBe(senat.total);
+    for (const g of senat.groupes) for (const p of g.partis) expect(ids.has(p), `${g.id}→${p}`).toBe(true);
+    expect(senat.sources.length).toBeGreaterThan(0);
+  });
+});
