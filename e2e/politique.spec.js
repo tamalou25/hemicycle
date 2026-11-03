@@ -1,5 +1,6 @@
 // Politique reliée (E5) : relations avec les partis, réactions du mois, mode élu réel.
 import { test, expect } from '@playwright/test';
+import { ouvrirOnglet } from './aide.js';
 
 const surveiller = (page) => {
   const erreurs = [];
@@ -17,12 +18,12 @@ test('relations : engager un programme modifie les relations et liste les réact
   await page.getByLabel(/Premier ministre/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();
 
-  await page.getByRole('tab', { name: 'Décisions' }).click();
+  await ouvrirOnglet(page, 'Décisions');
   const carte = page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Effectifs de police et gendarmerie de proximité' }) });
   await expect(carte.getByText(/Réaction probable/)).toBeVisible();
   await carte.getByRole('button', { name: 'Engager' }).click();
 
-  await page.getByRole('tab', { name: 'Parlement' }).click();
+  await ouvrirOnglet(page, 'Parlement');
   await expect(page.getByRole('heading', { name: 'Relations avec les partis', level: 2 })).toBeVisible();
   await expect(page.getByText(/SIMULATION/).first()).toBeVisible();
   const valeurs = await page.getByRole('meter').evaluateAll((l) => l.map((m) => m.getAttribute('aria-valuenow')));
@@ -35,7 +36,7 @@ test('relations : engager un programme modifie les relations et liste les réact
   await expect(bloc.locator('li').first()).toContainText('simulation');
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
-  if (info.project.name === 'ordinateur') await page.screenshot({ path: 'docs/captures/relations-desktop.png', fullPage: true });
+  if (info.project.name === 'ordinateur') await page.screenshot({ path: 'test-results/captures/relations-desktop.png', fullPage: true });
   expect(erreurs, 'aucune erreur JavaScript').toEqual([]);
 });
 
@@ -49,9 +50,9 @@ test('élu réel : personnalité, rôle PM, partie sans erreur, réactions sans 
   await page.locator('input[name=elu]').first().check();
   await page.locator('input[name=role][value=premier_ministre]').check();
   await page.getByRole('button', { name: 'Commencer' }).click();
-  await expect(page.getByRole('tab', { name: 'Bureau' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Bureau' }).or(page.getByRole('navigation', { name: 'Sections principales' }).getByRole('button', { name: 'Bureau' }))).toBeVisible();
 
-  for (const nom of ['Décisions', 'Parlement']) await page.getByRole('tab', { name: nom }).click();
+  for (const nom of ['Décisions', 'Parlement']) await ouvrirOnglet(page, nom);
   await expect(page.getByRole('heading', { name: 'Relations avec les partis', level: 2 })).toBeVisible();
   const phrases = await page.locator('#h-reac ~ ul p.text-sm, #h-rel ~ div li').allTextContents();
   for (const t of phrases) expect(t).not.toMatch(/[“”"]/);
