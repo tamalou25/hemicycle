@@ -41,5 +41,13 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 - Effet de loi : `{ indicateur, valeur, delaiMois, duree }`. La valeur est répartie sur `duree` mois et commence après `delaiMois`.
 - Positions sur 6 axes notés de −100 à +100 : retraites, immigration, fiscalite, europe, ecologie, securite
 
+## Institutions (Phase 2)
+- Rôles : `depute`, ou `premier_ministre` (49.3 possible, +1 capital par mois, exposé à la censure)
+- Navette (`navette.js`) : un seul texte à la fois, une étape par mois, traitée en fin de tour. Ordre : `assemblee` → `senat` → (`cmp` → `lecture_definitive`) → `conseil`
+- Vote d'un groupe : `pour` si son score ≥ 0,72. Score = proximité sur le thème, + négociation, + 0,15 en cas d'accord.
+- Censure : votent pour les groupes dont l'écart idéologique avec le joueur dépasse 60 (hors son parti et ses alliés). Adoptée à partir de 289 voix.
+- Actions du mois : 1 action parlementaire (déposer, amender ou 49.3) et 1 négociation d'accord
+- À chaque changement de structure de l'état : incrémenter `VERSION_SAUVEGARDE` et ajouter une migration dans `save.js`
+
 ## Roadmap
 1. MVP · 2. Institutions · 3. Politiciens réels · 4. Élections · 5. Profondeur · 6. Social / multijoueur
