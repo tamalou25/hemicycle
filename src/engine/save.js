@@ -83,6 +83,7 @@ function assainir(e) {
       ...(x.secondTour ? { secondTour: nombres(x.secondTour) ?? {} } : {}),
       ...(typeof x.vainqueur === 'string' ? { vainqueur: ch(x.vainqueur, 50) } : {}),
       ...(x.sieges ? { sieges: nombres(x.sieges) ?? {} } : {}),
+      ...(x.parRegion && typeof x.parRegion === 'object' && !Array.isArray(x.parRegion) ? { parRegion: Object.fromEntries(Object.entries(x.parRegion).slice(0, 30).map(([k, v]) => [k.slice(0, 50), nombres(v) ?? {}])) } : {}),
     })),
     electionsAnticipees: liste(e.electionsAnticipees, (x) => ({ id: ch(x.id, 100), type: ch(x.type, 30), tour: nb(x.tour), titre: ch(x.titre, 100) })),
     derniereDissolution: nbOuNull(e.derniereDissolution),

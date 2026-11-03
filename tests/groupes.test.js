@@ -73,3 +73,11 @@ describe('sauvegarde v7', () => {
     expect(importerPartie(exporterPartie(e))).toEqual(e);
   });
 });
+
+describe('sauvegarde des législatives par région', () => {
+  it('parRegion survit à l’export/import, valeurs non numériques écartées', () => {
+    const e = { ...partie(), resultatsElections: [{ id: 'l', type: 'legislatives', tour: 2, scores: { epr: 20 }, sieges: { epr: 100 }, parRegion: { bretagne: { epr: 10, rn: '<x>' } } }] };
+    const r = importerPartie(exporterPartie(e));
+    expect(r.resultatsElections[0].parRegion).toEqual({ bretagne: { epr: 10 } });
+  });
+});
