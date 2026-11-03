@@ -1,7 +1,8 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e3-population` (PR à ouvrir ou à finir). E0, E1 et E2 sont mergés dans `main`.
+- **Branche en cours** : `e4-secteurs`. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
+- **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
 - **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
 - **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
@@ -95,7 +96,7 @@
 - Interface : onglet Budget avec le tableau des finances, le PLF à curseurs et un aperçu en direct (solde, orientation, vote probable « estimation »), bannière dans Bureau. Les anciens leviers ±2 pt sont retirés.
 - **Équilibrage** : la dette progresse d'environ 2 points par an sans action. Un budget neutre d'un PM EPR est rejeté 271–292 sans accord : il faut négocier ou utiliser le 49.3.
 
-### E3 Population (en cours sur `e3-population`)
+### E3 Population (mergé, PR #10)
 - **Fait et testé (moteur)** :
   - `groupes.json` : 6 groupes avec leurs parts (Insee RP 2023) ;
   - `groupes-equilibrage.json` : des priorités seulement, **aucune orientation politique attribuée aux groupes** ;
@@ -104,7 +105,8 @@
   - sauvegarde v7.
 - **Corrigé** (4 remarques de revue sur E2) : PIB nominal, précision de `borner` portée à 4 décimales, mois de départ de la révision des intérêts, vote de censure enregistré.
 - **Playwright** : en place (`e2e/`, configurations ordinateur et mobile, job `e2e` dans la CI). Voir le README.
-- **Interface E3** : écrite par un sous-agent (onglet Opinion `src/ui/components/opinion.js`, vue « Législatives » sur la carte). Elle est commitée **sans relecture finale** : vérifier visuellement l'onglet Opinion et la vue Législatives, puis ajouter un test e2e pour l'onglet Opinion.
+- **Interface E3** : onglet Opinion et vue « Législatives » de la carte (motifs, légende, badge SIMULATION), vérifiés visuellement. Reste à ajouter un test e2e pour l'onglet Opinion.
+- **Branche `phase-E3-population` (Codex) : ne pas merger.** Elle a été faite en parallèle à partir de `main` avant E3. Elle réimplémente la population différemment (4 profils fictifs par région) et supprime les correctifs E2 ainsi que la config Vitest. Idée à reprendre plus tard : une confiance différenciée par région (`population.js`, `intentionsRegionales`).
 - **Avant de merger** : `npm test`, `npm run test:e2e`, `npm run build:css` (la CI vérifie que le CSS compilé est commité), mise à jour du README.
 
 ## Étapes suivantes (non commencées)
