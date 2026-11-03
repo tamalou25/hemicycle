@@ -1,5 +1,5 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { creerPartie, proposerLoi, tourSuivant, exporterPartie, importerPartie } from './engine/index.js';
+import { creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, exporterPartie, importerPartie } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as creation } from './ui/screens/creation.js';
 import { render as tableau } from './ui/screens/tableau.js';
@@ -51,7 +51,7 @@ function aller(nom) {
 
 export function dispatch(action) {
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -67,6 +67,9 @@ export function dispatch(action) {
       }
       case 'importer': etat = importerPartie(action.texte); toast('Sauvegarde importée.', 'info'); break;
       case 'proposer': etat = proposerLoi(etat, action.loi, donnees); break;
+      case 'amender': etat = amenderTexte(etat, donnees); break;
+      case '493': etat = recourir493(etat, donnees); break;
+      case 'negocier': etat = negocierAccord(etat, action.parti, donnees); break;
       case 'suivant': etat = tourSuivant(etat, donnees); break;
       case 'exporter': telecharger(exporterPartie(etat), `hemicycle-mois-${etat.tour}.json`); return;
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
@@ -83,8 +86,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';
