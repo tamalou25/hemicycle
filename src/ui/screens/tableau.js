@@ -4,6 +4,7 @@ import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { carteLoi } from '../components/carteLoi.js';
 import { blocVote, blocSondage } from '../components/vote.js';
 import { sectionReactions } from '../components/reactions.js';
+import { sectionElections, brancherElections } from '../components/elections.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
@@ -46,6 +47,8 @@ export function render(racine, etat, dispatch, ctx) {
         Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10</p>
     </section>
 
+    ${sectionElections(etat, ctx)}
+
     ${sectionParlement(etat, ctx)}
 
     ${sectionReactions(etat, ctx)}
@@ -79,6 +82,7 @@ export function render(racine, etat, dispatch, ctx) {
     const f = e.target.files?.[0];
     if (f) dispatch({ type: 'importer', texte: await f.text() });
   });
+  brancherElections(racine, dispatch);
   racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
   racine.querySelector('[data-amender]')?.addEventListener('click', () => dispatch({ type: 'amender' }));
   racine.querySelector('[data-493]')?.addEventListener('click', () => dispatch({ type: '493' }));

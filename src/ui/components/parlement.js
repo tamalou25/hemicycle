@@ -69,7 +69,7 @@ function hemicycle(titre, groupes, couleurDe, estAllie, joueurParti) {
 }
 
 function accords(etat, partis) {
-  const groupes = groupesAssemblee(partis);
+  const groupes = groupesAssemblee(partis, etat.sieges);
   const tol = toleranceAccord(etat);
   const actifs = (etat.accords ?? []).filter((a) => a.jusqua >= etat.tour);
   const liste = actifs.map((a) => {
@@ -104,7 +104,8 @@ export function sectionParlement(etat, ctx) {
     <div class="grid lg:grid-cols-2 gap-4">
       <div class="bg-carte border border-bord rounded-lg p-4"><h3 class="font-semibold text-sm text-doux uppercase tracking-wide mb-1">Texte en cours</h3><div aria-live="polite">${texteEnCours(etat, lois)}</div></div>
       <div class="bg-carte border border-bord rounded-lg p-4 space-y-4">
-        ${hemicycle('Assemblée nationale', groupesAssemblee(partis), couleurDe, estAllie, joueurParti)}
+        ${etat.sieges ? '<p class="text-xs"><span class="font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-1.5 py-0.5">Simulation</span> Assemblée issue des législatives simulées</p>' : ''}
+        ${hemicycle('Assemblée nationale', groupesAssemblee(partis, etat.sieges), couleurDe, estAllie, joueurParti)}
         ${hemicycle('Sénat', groupesSenat(senat, partis), couleurDe, estAllie, joueurParti)}
       </div>
     </div>
