@@ -1,6 +1,5 @@
 import { esc, fmt, MOIS } from '../util.js';
 import { dateDuTour } from '../../engine/index.js';
-import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { blocVote, blocSondage } from '../components/vote.js';
 import { sectionRelations } from '../components/relations.js';
 import { sectionReactions } from '../components/reactions.js';
@@ -10,7 +9,9 @@ import { sectionBudget, brancherBudget } from '../components/budget.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
 import { ongletOpinion } from '../components/opinion.js';
-import { sectionBilan } from '../components/bilan.js';
+import { ONGLETS, barreOnglets, enteteCollant, navigationMobile, brancherNavigation } from '../components/navigation.js';
+import { sectionEtatPays, sectionTousIndicateurs } from '../components/etatPays.js';
+import { sectionCeMois } from '../components/ceMois.js';
 import { briefing, satisfactionNationale, compterDecisions } from '../../engine/index.js';
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
 import { panneauSecteurs } from '../components/secteurs.js';
@@ -22,60 +23,48 @@ const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inlin
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
 
-export const ONGLETS = [['bureau', 'Bureau'], ['decisions', 'Décisions'], ['carte', 'Carte'], ['budget', 'Budget'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+export { ONGLETS };
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
-function barreOnglets(actif) {
-  return `<div class="overflow-x-auto -mx-4 px-4 mb-4 border-b-2 border-encre" id="barre-onglets">
-    <div role="tablist" aria-label="Sections du tableau de bord" class="flex gap-1 min-w-max">${ONGLETS.map(([id, nom]) =>
-      `<button type="button" role="tab" id="tab-${id}" data-onglet="${id}" aria-selected="${id === actif}" aria-controls="panneau" tabindex="${id === actif ? 0 : -1}"
-        class="min-h-[44px] px-4 font-serif font-bold text-base whitespace-nowrap border-x border-t rounded-t-md ${id === actif ? 'bg-carte border-encre border-b-0 text-bordeaux -mb-0.5 pb-0.5 shadow-[inset_0_3px_0_#8A6A1F]' : 'bg-[#EFE9D6] border-bord text-encre'}">${nom}</button>`).join('')}</div></div>`;
+function enteteBureau(etat, d, parti) {
+  return `<header class="mb-4">
+      <h1 class="font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
+      ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
+      <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))} · mois ${etat.tour} sur 60</p>
+    </header>`;
 }
 
-function entete(etat, ctx, d, parti, complet) {
-  const boutons = '<button type="button" id="suivant" class="btn btn-p">Mois suivant</button>';
-  if (!complet) return `<div class="flex flex-wrap items-center justify-between gap-2 mb-4"><p class="font-serif font-bold text-lg"><span class="capitalize">${esc(MOIS[d.mois - 1])}</span> ${d.annee} <span class="font-sans font-normal text-doux text-sm">· mois ${etat.tour} sur 60</span></p>${boutons}</div>`;
-  return `<header class="flex flex-wrap items-end justify-between gap-3 mb-4">
-      <div>
-        <h1 class="font-serif font-bold text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
-        ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
-        <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))} · mois ${etat.tour} sur 60</p>
-      </div>${boutons}</header>`;
-}
+const ACTIONS_BRIEFING = { evenement: 'Répondre', territoire: 'Voir sur la carte', projet: 'Suivre le projet', budget: 'Ouvrir le budget' };
 
 function carteBriefing(pt, i) {
   const icone = { evenement: '!', territoire: '◎', projet: '⚙', budget: '€' }[pt.type] ?? '•';
-  return `<li><button type="button" id="brief-${i}" data-brief="${i}" class="w-full min-h-[44px] text-left bg-carte border border-bord rounded-lg p-3 hover:bg-[#EFE9D6] filet-laiton">
-    <span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${icone}</span>${esc(pt.titre)}</span>
-    <span class="block text-sm text-doux">${esc(pt.texte)}</span></button></li>`;
+  return `<li class="bg-carte border border-bord rounded-lg p-2 pl-3 filet-laiton flex items-center justify-between gap-2">
+    <p class="min-w-0 text-sm leading-snug"><span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${icone}</span>${esc(pt.titre)}.</span> <span class="text-doux">${esc(pt.texte)}</span></p>
+    <button type="button" id="brief-${i}" data-brief="${i}" class="btn btn-s shrink-0 !px-3 text-sm">${ACTIONS_BRIEFING[pt.type] ?? 'Ouvrir'}<span class="sr-only"> : ${esc(pt.titre)}</span></button></li>`;
 }
 
 function lienDecisions(etat, ctx) {
   const c = compterDecisions(catalogue(etat, ctx)).parStatut;
   const dispo = (c.disponible ?? 0) + (c.urgent ?? 0), cours = c.en_cours ?? 0;
-  return `<p class="mb-4 text-sm"><strong>${dispo}</strong> décision${dispo > 1 ? 's' : ''} disponible${dispo > 1 ? 's' : ''} · <strong>${cours}</strong> en cours
+  return `<p class="text-sm"><strong>${dispo}</strong> décision${dispo > 1 ? 's' : ''} disponible${dispo > 1 ? 's' : ''} · <strong>${cours}</strong> en cours
     <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
 }
 
 function ongletBureau(etat, ctx, donnees, points) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
-  return `${sectionEvenement(etat, ctx)}
-    ${plfOuvert ? '<p class="mb-4 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
-    <section aria-labelledby="h-brief" class="mb-6">
-      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Briefing du mois</h2>
-      <ul class="grid md:grid-cols-3 gap-3">${points.map(carteBriefing).join('')}</ul>
+  return `${sectionEtatPays(etat)}
+    <section aria-labelledby="h-brief" class="mb-5">
+      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">À traiter</h2>
+      ${sectionEvenement(etat, ctx)}
+      ${plfOuvert ? '<p class="mb-3 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
+      <ul class="grid md:grid-cols-3 gap-2 mb-1">${points.map(carteBriefing).join('')}</ul>
+      ${lienDecisions(etat, ctx)}
     </section>
-    ${lienDecisions(etat, ctx)}
-    ${sectionBilan(etat, donnees)}
-    <section aria-labelledby="h-ind" class="mb-6">
-      <h2 id="h-ind" class="font-serif font-bold text-xl mb-2">Indicateurs nationaux</h2>
-      <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-3">${INDICATEURS_JAUGE.map((i) => jauge(i, etat)).join('')}</div>
-      <p class="mt-3 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
-        Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10${sat != null ? ` · Satisfaction territoriale : <strong>${fmt(sat, 0)}</strong>/100` : ''}</p>
-    </section>
+    ${sectionCeMois(etat, donnees)}
+    ${sectionTousIndicateurs(etat, sat)}
     ${panneauSecteurs(etat, ctx)}
-    <p class="text-xs text-doux">Situation de départ au ${esc(ctx.situation.date_collecte)} : Président ${esc(ctx.situation.president)}, Premier ministre ${esc(ctx.situation.premier_ministre)}.</p>`;
+    <p class="hidden sm:block text-xs text-doux">Situation de départ au ${esc(ctx.situation.date_collecte)} : Président ${esc(ctx.situation.president)}, Premier ministre ${esc(ctx.situation.premier_ministre)}.</p>`;
 }
 
 function ongletParlement(etat, ctx) {
@@ -131,27 +120,14 @@ export function render(racine, etat, dispatch, ctx) {
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
-    ${barreOnglets(onglet)}
-    ${entete(etat, ctx, d, parti, onglet === 'bureau')}
+    <div class="sm:sticky sm:top-0 z-30 bg-creme -mx-4 px-4 sm:border-b sm:border-bord">${enteteCollant(etat, d)}${barreOnglets(onglet)}</div>
+    ${onglet === 'bureau' ? enteteBureau(etat, d, parti) : ''}
     <div id="panneau" role="tabpanel" aria-labelledby="tab-${onglet}" tabindex="-1">${contenu}</div>
-    <p class="text-xs text-doux mt-6">Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage. <a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a></p>`;
+    <p class="text-xs text-doux mt-4">Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage. <a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a></p>
+    ${navigationMobile(etat, d, onglet)}`;
 
-  const barre = racine.querySelector('#barre-onglets');
-  const tabs = [...racine.querySelectorAll('[role=tab]')];
-  tabs.forEach((t, i) => {
-    t.addEventListener('click', () => dispatch({ type: 'onglet', onglet: t.dataset.onglet }));
-    t.addEventListener('keydown', (e) => {
-      const k = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
-      if (k === undefined) return;
-      e.preventDefault();
-      dispatch({ type: 'onglet', onglet: tabs[(k + tabs.length) % tabs.length].dataset.onglet });
-    });
-  });
-  const actif = racine.querySelector('[role=tab][aria-selected=true]');
-  if (barre && actif) barre.scrollLeft = Math.max(0, actif.offsetLeft - 16);
-
+  brancherNavigation(racine, dispatch);
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
-  racine.querySelector('#suivant')?.addEventListener('click', () => dispatch({ type: 'suivant' }));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
     racine.querySelector('[data-aller-budget]')?.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'budget', haut: true }));
@@ -160,7 +136,7 @@ export function render(racine, etat, dispatch, ctx) {
       if (pt.type === 'territoire') dispatch({ type: 'onglet', onglet: 'carte', region: pt.region, vue: pt.indice, haut: true });
       else if (pt.type === 'projet') dispatch({ type: 'onglet', onglet: 'carte', region: pt.region, haut: true });
       else if (pt.type === 'budget') dispatch({ type: 'onglet', onglet: 'budget', haut: true });
-      else racine.querySelector('[data-evenement]')?.focus();
+      else { const c = racine.querySelector('[data-evenement]'); c?.scrollIntoView({ block: 'center' }); c?.focus(); }
     }));
   } else if (onglet === 'decisions') brancherDecisions(racine, dispatch, ctx);
   else if (onglet === 'carte') brancherCarte(racine, dispatch);

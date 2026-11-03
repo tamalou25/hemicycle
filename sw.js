@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-31a3cddd7c51';
+const CACHE = 'hemicycle-473445bbac4a';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -55,15 +55,17 @@ const FICHIERS = [
   "./src/engine/turn.js",
   "./src/main.js",
   "./src/ui/components/avatar.js",
-  "./src/ui/components/bilan.js",
   "./src/ui/components/budget.js",
   "./src/ui/components/carte.js",
   "./src/ui/components/carteLoi.js",
+  "./src/ui/components/ceMois.js",
   "./src/ui/components/decisions.js",
   "./src/ui/components/elections.js",
+  "./src/ui/components/etatPays.js",
   "./src/ui/components/evenement.js",
   "./src/ui/components/finances.js",
   "./src/ui/components/jauge.js",
+  "./src/ui/components/navigation.js",
   "./src/ui/components/opinion.js",
   "./src/ui/components/parlement.js",
   "./src/ui/components/partage.js",

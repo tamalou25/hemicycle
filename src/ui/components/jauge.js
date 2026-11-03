@@ -2,13 +2,13 @@ import { esc, fmt } from '../util.js';
 import { BORNES } from '../../engine/index.js';
 
 // sens : +1 si une valeur haute est bonne, -1 si mauvaise.
-const META = {
+export const META = {
   chomage: { label: 'Chômage', unite: ' %', sens: -1 },
   croissance: { label: 'Croissance', unite: ' %', sens: 1 },
   deficit: { label: 'Déficit', unite: ' % du PIB', sens: -1 },
   inflation: { label: 'Inflation', unite: ' %', sens: -1 },
   popularite: { label: 'Popularité', unite: ' %', sens: 1 },
-  tensions: { label: 'Tensions sociales', unite: ' /100', sens: -1 },
+  tensions: { label: 'Tensions', unite: ' /100', sens: -1 },
 };
 export const INDICATEURS_JAUGE = Object.keys(META);
 
