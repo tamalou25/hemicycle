@@ -55,6 +55,25 @@ npm run build
 ```
 La CI vérifie que `assets/app.css` et `sw.js` commités sont à jour.
 
+### Applications mobiles (Capacitor)
+Les projets natifs sont dans `android/` et `ios/` (choix argumenté dans `docs/adr/0002-applications-mobiles.md`).
+
+Préparer le jeu et synchroniser les projets :
+```bash
+npm run cap:sync
+```
+Ouvrir le projet dans Android Studio (le SDK Android est requis) :
+```bash
+npm run cap:android
+```
+Ouvrir le projet dans Xcode (un Mac est nécessaire) :
+```bash
+npm run cap:ios
+```
+Chaque push sur `main` compile aussi un **APK de test** : onglet *Actions* → « Application Android » → artefact `hemicycle-debug-apk`. Il se télécharge et s'installe sur un téléphone Android en autorisant les sources inconnues.
+
+La publication sur les stores (comptes développeur, signature, validation) n'est pas automatisée.
+
 ### Feuille de style
 Après toute modification des classes Tailwind :
 ```bash

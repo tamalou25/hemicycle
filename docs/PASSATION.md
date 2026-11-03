@@ -1,7 +1,7 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e6-pwa` (E6). E0 à E5 sont mergés. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
+- **Branche en cours** : `e7-mobile` (E7). E0 à E6 sont mergés ; le site en ligne est installable et fonctionne hors ligne. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
 - **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
 - **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
@@ -136,8 +136,18 @@
 - CI : vérifie que `sw.js` est à jour ; le déploiement copie `sw.js` et le manifeste.
 - e2e `pwa.spec.js` : manifeste et icônes accessibles, **partie rechargée et jouée hors ligne**.
 
+### E7 Mobile
+- Capacitor 8.6.0 : `capacitor.config.json` (appId `io.github.tamalou25.hemicycle`), projets `android/` et `ios/` générés, `www/` construit par `npm run build:mobile` (ignoré par git).
+- Zones sûres (encoche) gérées en CSS ; scripts `cap:sync`, `cap:android` et `cap:ios`.
+- Workflow `android.yml` : APK de débogage téléchargeable depuis la CI.
+- ADR 0002 : choix et limites. Restent à faire **par toi** : comptes développeur, signature, icônes natives, build iOS sur Mac, tests sur appareil, publication.
+
+## Pistes après la roadmap v2
+- Confiance différenciée par région (idée de la branche Codex `phase-E3-population`, à reprendre proprement).
+- Compteurs des filtres de Décisions indépendants du filtre de statut.
+- Régions détaillées (événements locaux), objectifs de mandat variés, diplomatie/UE.
+
 ## Étapes suivantes (non commencées)
-- **E7 Mobile** : évaluer Capacitor (ne rien publier automatiquement sur les stores).
 - **Méthode** : une branche et une PR par étape, toute variation d'indicateur passe par `explications.js`, chaque nouveau champ d'état est ajouté à `save.js` (nettoyage strict) avec une migration de version.
 
 ## (Archive) Plan E1 initial

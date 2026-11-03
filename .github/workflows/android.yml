@@ -1,0 +1,35 @@
+name: Application Android (APK de test)
+
+# Compile un APK de débogage à installer sur un téléphone pour tester (non signé pour le Play Store).
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'assets/**', 'index.html', 'android/**', 'capacitor.config.json', 'package*.json']
+  pull_request:
+    paths: ['android/**', 'capacitor.config.json', 'scripts/construire-mobile.js']
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Préparer le jeu et synchroniser Capacitor
+        run: npm run build:mobile && npx cap sync android
+      - name: Compiler l'APK de débogage
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hemicycle-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
