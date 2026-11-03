@@ -40,3 +40,7 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Éric Zemmour (reconquete) : Président de Reconquête — https://fr.wikipedia.org/wiki/Éric_Zemmour
 - Composition du gouvernement : https://fr.wikipedia.org/wiki/Gouvernement_Sébastien_Lecornu_II (état au 22 septembre 2026)
 - Citations : aucune.
+
+## Calendrier électoral (collecte 2026-11-03)
+- Échéances déduites de la Constitution (art. 6, 7, 12) et du code électoral, à partir des scrutins de 2022 et 2024 : Légifrance (https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000571356) et Conseil constitutionnel.
+- Résultats électoraux du jeu : **entièrement simulés**, exprimés par parti.

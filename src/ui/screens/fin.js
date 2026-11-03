@@ -5,10 +5,13 @@ export function render(racine, etat, dispatch, ctx) {
   const d = dateDuTour(etat);
   const i = etat.indicateurs;
   const victoire = etat.fin.type === 'mandat';
-  const titre = victoire ? 'Fin de la législature' : etat.fin.type === 'censure' ? 'Gouvernement renversé' : 'Fin de partie';
+  const elu = etat.fin.type === 'victoire';
+  const titre = elu ? 'Élection à la présidence (simulation)' : victoire ? 'Fin de la législature' : etat.fin.type === 'censure' ? 'Gouvernement renversé' : 'Fin de partie';
   racine.innerHTML = `<section class="max-w-xl mx-auto py-4">
     <h1 class="font-serif font-bold text-3xl">${titre}</h1>
+    ${elu ? '<p class="mt-2"><span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5">Simulation</span></p>' : ''}
     <p class="mt-2 text-lg">${esc(etat.fin.texte)}</p>
+    ${elu ? '<p class="mt-2 text-sm text-doux">Résultat issu d’un scrutin simulé, sans lien avec une élection réelle.</p>' : ''}
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
       <h2 class="font-serif font-bold text-xl mb-2">Bilan de ${esc(etat.joueur.nom)}</h2>
       <p class="text-sm text-doux mb-3">${esc(MOIS[d.mois - 1])} ${d.annee}, après ${etat.tour} mois</p>

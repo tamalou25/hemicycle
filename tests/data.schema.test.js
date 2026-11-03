@@ -91,3 +91,14 @@ describe('politicians.json (règles de contenu)', () => {
     for (const p of politiciens) { expect(p.positions).toBeUndefined(); expect(p.competences).toBeUndefined(); }
   });
 });
+
+describe('calendrier.json', () => {
+  const cal = lire('calendrier.json');
+  it('dates AAAA-MM, types connus, sources', () => {
+    for (const e of cal.elections) {
+      expect(e.date).toMatch(/^\d{4}-\d{2}$/);
+      expect(['presidentielle', 'legislatives', 'europeennes']).toContain(e.type);
+    }
+    expect(cal.sources.length).toBeGreaterThan(0);
+  });
+});

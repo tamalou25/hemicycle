@@ -1,0 +1,12 @@
+{
+  "note": "Échéances fixées par la Constitution et le code électoral à partir des scrutins précédents (présidentielle 2022, européennes 2024, législatives anticipées 2024). Dates au mois près.",
+  "elections": [
+    { "id": "presidentielle-2027", "type": "presidentielle", "date": "2027-04", "titre": "Élection présidentielle" },
+    { "id": "europeennes-2029", "type": "europeennes", "date": "2029-06", "titre": "Élections européennes" },
+    { "id": "legislatives-2029", "type": "legislatives", "date": "2029-06", "titre": "Élections législatives" }
+  ],
+  "sources": [
+    { "source": "Constitution, art. 6 et 7 (mandat présidentiel de 5 ans)", "url": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000571356", "date": "2026-11-03" },
+    { "source": "Constitution, art. 12 (dissolution) et code électoral L.O. 121 (mandat des députés)", "url": "https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur", "date": "2026-11-03" }
+  ]
+}

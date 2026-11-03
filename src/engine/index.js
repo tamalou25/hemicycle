@@ -11,6 +11,11 @@ export {
 } from './parliament.js';
 export { avancerNavette, censureSpontanee, risqueConstitutionnel } from './navette.js';
 export { reactionsAuTexte, joueurDepuisPoliticien, attitude, positionsDe, ATTITUDES } from './reactions.js';
+export {
+  prochainesElections, enCampagne, actionCampagne, seDeclarerCandidat, proposerDissolution,
+  raisonRefusCampagne, raisonRefusDissolution, repartirSieges, secondTour, siegesEffectifs, tourDeDate,
+  ACTIONS_CAMPAGNE, MOIS_CAMPAGNE,
+} from './elections.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';
