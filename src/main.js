@@ -112,6 +112,7 @@ export function dispatch(action) {
         ctx.onglet = action.onglet; ecrire(CLE_ONGLET, action.onglet);
         if (action.region) ctx.region = action.region;
         if (action.vue) ctx.vue = action.vue;
+        if (action.decisions) ctx.decisions = action.decisions; // filtre posé par une piste du mandat
         afficher({ focus: !!action.haut }); if (action.haut) window.scrollTo(0, 0); return;
       case 'region': ctx.region = action.id; return afficher({ focus: false });
       case 'ui': Object.assign(ctx, action.patch); return afficher({ focus: false });

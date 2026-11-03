@@ -74,7 +74,10 @@ export function ongletDecisions(etat, ctx) {
   const f = filtres(ctx);
   const tout = catalogue(etat, ctx);
   const urgentes = tout.filter((x) => x.statut === 'urgent');
-  const normales = tout.filter((x) => x.statut !== 'urgent');
+  // Filtre par type (posé par une piste du mandat, ex. programmes) : appliqué ici, toujours visible et retirable
+  const TYPES = { programme: 'Programmes uniquement', loi: 'Lois uniquement' };
+  const type = TYPES[f.type] ? f.type : '';
+  const normales = tout.filter((x) => x.statut !== 'urgent' && (!type || x.type === type));
   const parStatut = compterDecisions(filtrerDecisions(normales, { categorie: f.categorie, secteur: f.secteur })).parStatut;
   const baseCat = filtrerDecisions(normales, { secteur: f.secteur, statut: f.statut });
   const cCat = compterDecisions(baseCat);
@@ -84,6 +87,7 @@ export function ongletDecisions(etat, ctx) {
   const pCat = [['', 'Toutes', cCat.total], ...Object.entries(CATEGORIES).map(([k, v]) => [k, v, cCat.parCategorie[k] ?? 0])]
     .map(([k, v, n]) => pastille(`f-cat-${k || 'toutes'}`, v, n, f.categorie === k, `data-f-cat="${k}"`)).join('');
   const pStat = STATUTS.map(([k, v]) => pastille(`f-stat-${k}`, v, parStatut[k] ?? 0, f.statut === k, `data-f-stat="${k}"`)).join('');
+  const pType = type ? `<div role="group" aria-label="Type"><button type="button" id="f-type" data-f-type class="min-h-[44px] px-3 rounded-full border text-sm font-semibold bg-encre text-white border-encre" aria-label="${esc(TYPES[type])} : retirer ce filtre">${esc(TYPES[type])} <span aria-hidden="true">✕</span></button></div>` : '';
   const options = Object.entries(SECTEURS_DECISION).map(([k, v]) => `<option value="${k}" ${f.secteur === k ? 'selected' : ''}>${esc(v)}</option>`).join('');
 
   let idx = urgentes.length;
@@ -105,6 +109,7 @@ export function ongletDecisions(etat, ctx) {
     <p class="text-sm text-doux mb-3">Toutes vos actions au même endroit : lois, programmes, projets en région, négociations. Capital politique : <strong>${etat.joueur.capital}</strong>/10.</p>
     ${urgentes.length ? `<div role="alert" aria-label="Décision urgente" class="mb-4"><ul class="space-y-3">${urgentes.map((x, i) => carte(x, i, etat, ctx)).join('')}</ul></div>` : ''}
     <div class="mb-4 space-y-2" role="group" aria-label="Filtres des décisions">
+      ${pType}
       <div role="group" aria-label="Catégorie" class="flex gap-2 overflow-x-auto sm:flex-wrap pb-1 [&>*]:shrink-0">${pCat}</div>
       <div role="group" aria-label="Statut" class="flex gap-2 items-center overflow-x-auto sm:flex-wrap pb-1 [&>*]:shrink-0">${pStat}</div>
       <div><label for="f-secteur" class="text-sm mr-2">Secteur</label>
@@ -121,6 +126,7 @@ export function brancherDecisions(racine, dispatch, ctx) {
   const maj = (patch) => dispatch({ type: 'ui', patch: { decisions: { ...filtres(ctx), ...patch } } });
   racine.querySelectorAll('[data-f-cat]').forEach((b) => b.addEventListener('click', () => maj({ categorie: b.dataset.fCat })));
   racine.querySelectorAll('[data-f-stat]').forEach((b) => b.addEventListener('click', () => maj({ statut: filtres(ctx).statut === b.dataset.fStat ? '' : b.dataset.fStat })));
+  racine.querySelector('[data-f-type]')?.addEventListener('click', () => maj({ type: '' }));
   racine.querySelector('#f-secteur').addEventListener('change', (e) => maj({ secteur: e.target.value }));
   racine.querySelectorAll('[data-etendre]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'ui', patch: { decisionsEtendues: { ...(ctx.decisionsEtendues ?? {}), [b.dataset.etendre]: true } } })));
   const dlg = racine.querySelector('#dlg-decision');
