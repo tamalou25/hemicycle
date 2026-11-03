@@ -8,8 +8,12 @@ const borne = (v) => Math.round(Math.min(100, Math.max(0, v)) * 100) / 100;
 
 export const relationsInitiales = (partis) => (partis ? Object.fromEntries(partis.map((p) => [p.id, RELATION_NEUTRE])) : null);
 
-/** Variation de relation d'un parti face à une décision (theme, orientation) : +4 si aligné, −4 si opposé. */
-export const reactionParti = (parti, theme, orientation) => Math.round((1 - Math.abs((parti.positions?.[theme] ?? 0) - orientation) / 100) * 4 * 100) / 100;
+/** Variation de relation d'un parti face à une décision (theme, orientation) : de +4 (aligné) à −4 (opposé). */
+// Neutre à 60 points d'écart : en deçà le parti approuve, au-delà il désapprouve (borné à ±4).
+export const reactionParti = (parti, theme, orientation) => {
+  const d = Math.abs((parti.positions?.[theme] ?? 0) - orientation);
+  return Math.round(Math.max(-4, Math.min(4, (1 - d / 60) * 4)) * 100) / 100;
+};
 
 /**
  * Applique la réaction de tous les partis à une décision. Renvoie { relations, entrees } ;
