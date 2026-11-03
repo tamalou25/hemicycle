@@ -27,7 +27,7 @@ export function tableauDeBord(etat) {
   const tuile = (nom, val, extra = '') => `<div class="border border-bord rounded p-3 bg-white"><dt class="text-sm text-doux">${nom}</dt><dd class="font-serif font-bold text-2xl">${val}</dd>${extra ? `<dd class="text-xs text-doux">${extra}</dd>` : ''}</div>`;
   return `<section aria-labelledby="h-tdb" class="mb-6 bg-carte border border-bord rounded-lg p-4 filet-laiton">
     <h2 id="h-tdb" class="font-serif font-bold text-xl mb-2">Finances publiques</h2>
-    <dl class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+    <dl class="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
       <div class="border-2 rounded p-3 bg-white ${neg ? 'border-rouge' : 'border-bleu'}"><dt class="text-sm text-doux">Solde annuel</dt>
         <dd class="font-serif font-bold text-2xl ${neg ? 'text-rouge' : 'text-bleu'}">${fmtMd(s)} Md€</dd><dd class="text-xs font-semibold ${neg ? 'text-rouge' : 'text-bleu'}">${neg ? 'Déficit' : 'Excédent'}</dd></div>
       ${tuile('Déficit', `${fmt(etat.indicateurs.deficit)} % du PIB`, 'Indicateur national')}

@@ -62,11 +62,12 @@ export function sectionBudget(etat, ctx) {
         : ctx.confirm493 ? `<p class="text-sm mt-1">Le 49.3 expose le gouvernement à une motion de censure. Confirmer ?</p>
           <div class="flex flex-wrap gap-2 mt-2"><button type="button" id="plf-493-ok" class="btn btn-p">Oui, engager le 49.3</button><button type="button" id="plf-493-non" class="btn btn-s">Annuler</button></div>`
         : '<button type="button" id="plf-493" class="btn btn-s mt-2">Engager le 49.3 sur le budget</button><p class="text-xs text-doux mt-1">Risque de motion de censure.</p>'}
-    </div>` : `<p class="text-sm text-doux mb-3">Variation annuelle de chaque poste, de −${VARIATION_MAX} % à +${VARIATION_MAX} %. Le vote a lieu à la fin du mois du dépôt.</p>
+    </div>` : `<details ${refus ? '' : 'open'}><summary class="min-h-[44px] flex items-center cursor-pointer font-semibold text-bleu underline">${refus ? 'Préparer le prochain budget' : 'Régler les dépenses et les recettes'}</summary>
+    <p class="text-sm text-doux mb-3">Variation annuelle de chaque poste, de −${VARIATION_MAX} % à +${VARIATION_MAX} %. Le vote a lieu à la fin du mois du dépôt.</p>
     <div class="grid md:grid-cols-2 gap-x-6 gap-y-3">
       <fieldset><legend class="font-serif font-bold text-lg mb-1">Dépenses</legend>${SECTEURS.map((k) => curseur('depenses', k, LIB_DEPENSES[k], c.dD[k])).join('')}</fieldset>
       <fieldset><legend class="font-serif font-bold text-lg mb-1">Recettes</legend>${RECETTES.map((k) => curseur('recettes', k, LIB_RECETTES[k], c.dR[k])).join('')}</fieldset>
-    </div>
+    </div></details>
     <h3 class="font-serif font-bold text-lg mt-4 mb-1">Aperçu</h3>
     <div id="plf-apercu" aria-live="polite">${apercu(etat, ctx, b)}</div>
     <div class="flex flex-wrap gap-2 mt-3"><button type="button" id="plf-deposer" class="btn btn-p" ${refus ? 'disabled aria-describedby="plf-raison"' : ''}>Déposer le projet de loi de finances</button>
