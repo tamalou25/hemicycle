@@ -7,10 +7,14 @@
   "scripts": {
     "test": "vitest run",
     "build:css": "tailwindcss -i src/styles/app.src.css -o assets/app.css --minify",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:tout": "vitest run && playwright test"
   },
   "devDependencies": {
     "@fontsource/source-serif-4": "^5.1.1",
+    "@playwright/test": "^1.63.0",
     "tailwindcss": "^3.4.17",
     "vitest": "^2.1.9"
   }

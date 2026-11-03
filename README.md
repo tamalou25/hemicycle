@@ -17,7 +17,40 @@ Simulation politique de la France, au tour par tour : **1 tour = 1 mois**. Le je
 ## Développement
 ```bash
 npm install
+```
+
+### Tests du moteur (Vitest)
+```bash
 npm test
+```
+
+### Tests dans le navigateur (Playwright, Chromium)
+Installer Chromium et ses dépendances système (une seule fois) :
+```bash
+npx playwright install --with-deps chromium
+```
+Lancer les tests en configurations **ordinateur** (1280 px) et **mobile** (Pixel 7). Le serveur local démarre automatiquement :
+```bash
+npm run test:e2e
+```
+Un seul appareil :
+```bash
+npx playwright test --project=mobile
+```
+Mode interactif :
+```bash
+npm run test:e2e:ui
+```
+Tout lancer (moteur puis navigateur) :
+```bash
+npm run test:tout
+```
+Les tests navigateur sont dans `e2e/`, ceux du moteur dans `tests/`. En cas d'échec, le rapport se trouve dans `playwright-report/`.
+
+### Feuille de style
+Après toute modification des classes Tailwind :
+```bash
+npm run build:css
 ```
 
 | Dossier | Rôle |
