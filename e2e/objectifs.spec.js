@@ -23,7 +23,7 @@ test('choisir 3 objectifs non défaut, les voir au Bureau', async ({ page }) => 
   await page.getByRole('button', { name: 'Commencer' }).click();
   const bloc = page.getByRole('region', { name: 'Votre mandat' });
   await expect(bloc).toBeVisible();
-  for (const t of choix) await expect(bloc.getByText(t, { exact: true })).toBeVisible();
+  for (const t of choix) await expect(bloc.locator('[data-objectif]').getByText(t, { exact: true })).toBeVisible();
   await expect(bloc.getByText('60 mois restants sur 60.')).toBeVisible();
   await expect(bloc.getByText(/Atteinte pour l’instant|Pas encore atteinte/)).toHaveCount(3);
   expect(erreurs).toEqual([]);

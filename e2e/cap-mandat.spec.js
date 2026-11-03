@@ -28,7 +28,7 @@ test('brief avant les indicateurs, objectifs choisis, fins et déroulé', async 
   await expect(brief.locator('[data-objectif]')).toHaveCount(3);
   for (const id of ['chomage', 'deficit', 'territoires']) await expect(brief.locator(`[data-objectif=${id}]`)).toBeVisible();
   await expect(brief).toContainText('+8 points');
-  await expect(brief).toContainText('une cible atteinte peut se perdre');
+  await expect(brief).toContainText('une cible atteinte aujourd’hui peut encore se perdre');
   await brief.getByText('Comment jouer un mois').click();
   await expect(brief.getByRole('listitem').filter({ hasText: 'Passez au mois suivant' })).toBeVisible();
   await expect(brief).toContainText('popularité passe sous 8 %');

@@ -45,10 +45,11 @@ function carteBriefing(pt, i) {
     <button type="button" id="brief-${i}" data-brief="${i}" class="btn btn-s shrink-0 !px-3 text-sm">${ACTIONS_BRIEFING[pt.type] ?? 'Ouvrir'}<span class="sr-only"> : ${esc(pt.titre)}</span></button></li>`;
 }
 
+// Sur mobile, la barre du bas mène déjà à Décisions et le brief du mandat propose des accès ciblés : ligne réservée à l’ordinateur
 function lienDecisions(etat, ctx) {
   const c = compterDecisions(catalogue(etat, ctx)).parStatut;
   const dispo = (c.disponible ?? 0) + (c.urgent ?? 0), cours = c.en_cours ?? 0;
-  return `<p class="text-sm"><strong>${dispo}</strong> décision${dispo > 1 ? 's' : ''} disponible${dispo > 1 ? 's' : ''} · <strong>${cours}</strong> en cours
+  return `<p class="hidden sm:block text-sm"><strong>${dispo}</strong> décision${dispo > 1 ? 's' : ''} disponible${dispo > 1 ? 's' : ''} · <strong>${cours}</strong> en cours
     <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
 }
 
