@@ -6,6 +6,7 @@ import { budgetInitial } from './budgetEtat.js';
 import { initialiserGroupes } from './groupes.js';
 import { secteursInitiaux } from './secteurs.js';
 import { relationsInitiales } from './relations.js';
+import { confianceRegionsInitiale } from './confianceRegions.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -87,15 +88,16 @@ export function dateDuTour(etat) {
 
 /** Partie territoriale de l'état (E1). Aussi utilisée pour compléter une ancienne sauvegarde. */
 export function etatTerritorial(regions, projets) {
-  if (!regions?.regions || !projets) return { territoires: null, projets: [], finances: null, satisfactionInitiale: null };
+  if (!regions?.regions || !projets) return { territoires: null, projets: [], finances: null, satisfactionInitiale: null, confianceRegions: null };
   const territoires = initialiserTerritoires(regions.regions, projets.transports_initial, projets.indices_par_defaut);
-  return { territoires, projets: [], finances: financesInitiales(projets), satisfactionInitiale: satisfactionNationale(territoires, regions.regions) };
+  return { territoires, projets: [], finances: financesInitiales(projets), satisfactionInitiale: satisfactionNationale(territoires, regions.regions), confianceRegions: confianceRegionsInitiale(territoires) };
 }
 
 /** Complète une partie qui n'a pas encore de territoires (sauvegarde antérieure à E1). */
 export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage, politiques, partis }) {
   let e = etat.territoires ? etat : { ...etat, ...etatTerritorial(regions, projets) };
   if (!e.budget && finances) e = { ...e, budget: budgetInitial(finances), plf: null, dernierPLF: null };
+  if (!e.confianceRegions && e.territoires) e = { ...e, confianceRegions: confianceRegionsInitiale(e.territoires) };
   if (!e.relations && partis) e = { ...e, relations: relationsInitiales(partis) };
   if (!e.secteurs && politiques) e = { ...e, secteurs: secteursInitiaux(politiques), politiques: [] };
   if (!e.groupes && groupes) e = { ...e, groupes: initialiserGroupes(e, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };

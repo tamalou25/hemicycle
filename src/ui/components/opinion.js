@@ -46,7 +46,7 @@ function blocResultats(etat, ctx) {
 
 function blocChocs(etat) {
   const chocs = new Map();
-  for (const e of etat.explications ?? []) if (e.type === 'choc' && e.tour === etat.tour && !chocs.has(e.source)) chocs.set(e.source, e.delta);
+  for (const e of etat.explications ?? []) if (e.type === 'choc' && !e.region && e.tour === etat.tour && !chocs.has(e.source)) chocs.set(e.source, e.delta);
   if (!chocs.size) return '<p class="text-sm text-doux">Aucun choc de confiance ce mois-ci.</p>';
   return `<ul class="text-sm">${[...chocs].map(([src, v]) => `<li class="py-1 border-b border-bord last:border-0">${esc(CHOCS[src] ? CHOCS[src](v) : `Un événement (${src}) fait varier la confiance de tous les groupes de ${fmt(v)} point.`)}</li>`).join('')}</ul>`;
 }

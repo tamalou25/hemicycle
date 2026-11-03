@@ -13,6 +13,7 @@ import { renouvelerEnveloppe } from './finances.js';
 import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
 import { evoluerSecteurs } from './secteurs.js';
 import { reagir, estomperRelations } from './relations.js';
+import { evoluerConfianceRegions } from './confianceRegions.js';
 import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
 
@@ -69,11 +70,14 @@ export function tourSuivant(etatInitial, donnees) {
 
   // 2 bis. Territoires et projets (E1) : usure, emploi régional, chantiers, mises en service
   let entreesTerritoires = [];
+  let misesEnService = [];
   let bonusTerritoires = 0;
   if (etat.territoires && donnees.regions && donnees.projets) {
     const evo = evoluerTerritoires(etat.territoires, ind.chomage - etat.indicateurs.chomage, tour);
     const bt = effetsBudgetTerritoires(evo.territoires, etat.budget, tour);
     const p = avancerProjets({ ...etat, territoires: bt.territoires }, donnees, tour);
+    // Régions où un projet vient d'être mis en service (chantier → montée en charge)
+    misesEnService = (p.etat.projets ?? []).filter((x) => x.statut !== 'chantier' && (etat.projets ?? []).find((y) => y.uid === x.uid)?.statut === 'chantier').map((x) => x.region);
     entreesTerritoires = [...evo.entrees, ...bt.entrees, ...p.entrees];
     const { mois } = dateDuTour({ ...etat, tour });
     etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md) };
@@ -100,6 +104,13 @@ export function tourSuivant(etatInitial, donnees) {
     entreesGroupes = gr.entrees;
     bonusConfiance = ((confianceMoyenne(etat.groupes, donnees.groupes) ?? 40) - 40) * 0.5;
   }
+  // Confiance par région : chocs nationaux du mois et projets mis en service localement
+  let entreesConfiance = [];
+  if (etat.confianceRegions) {
+    const cr = evoluerConfianceRegions(etat.confianceRegions, etat.territoires, etat.chocs ?? {}, misesEnService, tour);
+    etat = { ...etat, confianceRegions: cr.confianceRegions };
+    entreesConfiance = cr.entrees;
+  }
   etat = { ...etat, chocs: {}, relations: estomperRelations(etat.relations) };
 
   // 3. Popularité : converge à 15 %/mois vers la cible
@@ -108,7 +119,7 @@ export function tourSuivant(etatInitial, donnees) {
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };

@@ -4,6 +4,7 @@
 //  - vote : intention de voter pour le parti du joueur (dépend de la confiance, pas de la satisfaction).
 // Aucune orientation politique n'est attribuée aux groupes (neutralité).
 import { indiceEmploi, satisfactionNationale } from './territoires.js';
+import { confianceRegionaleMoyenne } from './confianceRegions.js';
 
 export const RESULTATS = ['emploi', 'pouvoir_achat', 'sante', 'transports', 'securite', 'avenir'];
 const borne = (v) => Math.round(Math.min(100, Math.max(0, v)) * 100) / 100;
@@ -115,9 +116,11 @@ export function voteJoueurNational(groupesEtat, groupes, baseParti) {
  * Législatives par région : sièges proportionnels à la population, le score du parti du joueur
  * étant modulé par la satisfaction de la région ; prime majoritaire appliquée dans chaque région.
  */
-export function siegesParRegion(scores, partiJoueur, territoires, regions, repartir, total = 577) {
+export function siegesParRegion(scores, partiJoueur, territoires, regions, repartir, total = 577, confianceRegions = null) {
   const popTot = regions.reduce((s, r) => s + r.population, 0);
   const satNat = satisfactionNationale(territoires, regions) || 50;
+  // Référence pondérée par la population : une petite région ne doit pas déplacer la base de toutes les autres
+  const confMoy = confianceRegions ? confianceRegionaleMoyenne(confianceRegions, regions) : null;
   const sieges = Object.fromEntries(Object.keys(scores).map((k) => [k, 0]));
   const parRegion = {};
   let attribues = 0;
@@ -127,8 +130,11 @@ export function siegesParRegion(scores, partiJoueur, territoires, regions, repar
   quotas.sort((a, b) => b.r.population - a.r.population);
   for (let i = 0; diff !== 0; i = (i + 1) % quotas.length) { if (diff > 0) { quotas[i].q++; diff--; } else if (quotas[i].q > 1) { quotas[i].q--; diff++; } }
   for (const { r, q } of quotas) {
-    const sat = territoires?.[r.id]?.satisfaction ?? satNat;
-    const local = { ...scores, [partiJoueur]: (scores[partiJoueur] ?? 0) * Math.max(0.3, Math.min(2, sat / satNat)) };
+    // Le vote dépend de la confiance locale envers le gouvernement (à défaut, de la satisfaction)
+    const ratio = confianceRegions
+      ? (confianceRegions[r.id] ?? confMoy) / (confMoy || 1)
+      : (territoires?.[r.id]?.satisfaction ?? satNat) / satNat;
+    const local = { ...scores, [partiJoueur]: (scores[partiJoueur] ?? 0) * Math.max(0.3, Math.min(2, ratio)) };
     const s = repartir(local, q);
     parRegion[r.id] = s;
     for (const [k, v] of Object.entries(s)) { sieges[k] = (sieges[k] ?? 0) + v; attribues += v; }

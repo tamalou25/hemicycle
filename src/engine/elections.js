@@ -164,7 +164,7 @@ export function tenirElections(etat, { partis, calendrier, regions }, intentions
     // E3 : élection par région (satisfaction locale) quand les territoires existent
     let sieges;
     if (etat.territoires && regions?.regions) {
-      const r = siegesParRegion(scores, j, etat.territoires, regions.regions, repartirSieges, TOTAL_DEPUTES);
+      const r = siegesParRegion(scores, j, etat.territoires, regions.regions, repartirSieges, TOTAL_DEPUTES, etat.confianceRegions);
       sieges = r.sieges; resultat.parRegion = r.parRegion;
     } else sieges = repartirSieges(scores);
     resultat.sieges = sieges;

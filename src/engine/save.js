@@ -16,6 +16,7 @@ export function importerPartie(texte) {
   if (etat.version === 6) etat = { ...etat, version: 7, groupes: null, chocs: {} };
   if (etat.version === 7) etat = { ...etat, version: 8, secteurs: null, politiques: [] };
   if (etat.version === 8) etat = { ...etat, version: 9, relations: null };
+  if (etat.version === 9) etat = { ...etat, version: 10, confianceRegions: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -121,6 +122,7 @@ function assainir(e) {
     chocs: nombres(e.chocs) ?? {},
     secteurs: nombres(e.secteurs),
     relations: nombres(e.relations),
+    confianceRegions: nombres(e.confianceRegions),
     politiques: liste(e.politiques, (x) => ({
       id: ch(x.id, 80), debut: nb(x.debut), enService: nb(x.enService),
       statut: ['preparation', 'montee', 'en_oeuvre'].includes(x.statut) ? x.statut : 'en_oeuvre',

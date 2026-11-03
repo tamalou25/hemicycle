@@ -55,3 +55,13 @@ test.describe('carte et projets territoriaux', () => {
     expect(debordement).toBeLessThanOrEqual(0);
   });
 });
+
+test('vue Confiance : distincte de la satisfaction, expliquée dans la fiche', async ({ page }) => {
+  await nouvellePartie(page);
+  await ouvrirOnglet(page, 'Carte');
+  await page.getByRole('button', { name: 'Confiance', exact: true }).click();
+  await expect(page.getByRole('button', { name: /^Bretagne, confiance envers le gouvernement 40 sur 100/ })).toBeVisible();
+  await page.getByRole('button', { name: /^Bretagne,/ }).click();
+  await expect(page.getByText('Confiance envers le gouvernement').first()).toBeVisible();
+  await expect(page.getByText(/c'est elle qui pèse aux législatives/)).toBeVisible();
+});
