@@ -25,7 +25,7 @@ describe('confiance par région', () => {
   it('choc national appliqué partout, expliqué', () => {
     const r = evoluerConfianceRegions({ a: 40, b: 40 }, { a: { satisfaction: 57 }, b: { satisfaction: 57 } }, { '49.3': -3 }, [], 1);
     expect(r.confianceRegions.a).toBeCloseTo(40 + (57 * 0.7 - 40) * 0.08 - 3, 1);
-    expect(phraseExplication(r.entrees[0], {})).toMatch(/49\.3/);
+    expect(phraseExplication(r.entrees.find((e) => e.type === 'choc'), {})).toMatch(/49\.3/);
   });
   it('un projet mis en service redonne confiance à sa région seulement', () => {
     let e = lancerProjet(partie(), 'recrutement-soignants', 'bretagne', donnees);
@@ -47,5 +47,26 @@ describe('confiance par région', () => {
     expect(confianceRegionaleMoyenne(partie().confianceRegions, regions.regions)).toBe(40);
     const e = tourSuivant(partie(), donnees);
     expect(importerPartie(exporterPartie(e))).toEqual(e);
+  });
+});
+
+describe('corrections (revue PR #19)', () => {
+  it('chocs simultanés : une entrée par source, pas de fusion', () => {
+    const r = evoluerConfianceRegions({ a: 40 }, { a: { satisfaction: 57 } }, { '49.3': -3, 'loi-speciale': -1.5 }, [], 1);
+    const chocs = r.entrees.filter((e) => e.type === 'choc').map((e) => e.source).sort();
+    expect(chocs).toEqual(['49.3', 'loi-speciale']);
+  });
+  it('la convergence mensuelle est enregistrée : la somme des entrées = la variation', () => {
+    const r = evoluerConfianceRegions({ a: 40 }, { a: { satisfaction: 70 } }, { '49.3': -3 }, ['a'], 1);
+    const somme = r.entrees.reduce((s, e) => s + e.delta, 0);
+    expect(somme).toBeCloseTo(r.confianceRegions.a - 40, 1);
+    expect(r.entrees.some((e) => e.type === 'convergence')).toBe(true);
+  });
+  it('référence pondérée par la population : une petite région confiante ne coûte pas de sièges ailleurs', () => {
+    const e = partie();
+    const scores = { epr: 20, rn: 30, lfi: 15, ps: 12, dr: 10, ecolo: 7, reconquete: 6 };
+    const base = siegesParRegion(scores, 'epr', e.territoires, regions.regions, repartirSieges, 577, e.confianceRegions);
+    const mayotte = siegesParRegion(scores, 'epr', e.territoires, regions.regions, repartirSieges, 577, { ...e.confianceRegions, mayotte: 80 });
+    expect(mayotte.sieges.epr).toBeGreaterThanOrEqual(base.sieges.epr);
   });
 });

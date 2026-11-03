@@ -80,6 +80,7 @@ const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', 
 export function nomCause(entree, { lois = [], evenements = [], projets, politiques } = {}) {
   if (entree.type === 'politique') return `le programme « ${politiques?.politiques?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
+  if (entree.type === 'convergence') return 'l’évolution de la satisfaction des habitants';
   if (entree.type === 'mise-en-service') return 'la mise en service d’un projet dans la région';
   if (entree.type === 'choc') return entree.source?.includes('49.3') ? 'le recours au 49.3' : entree.source?.includes('loi-speciale') ? 'l’absence de budget voté (loi spéciale)' : 'un choc politique';
   if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
@@ -102,7 +103,7 @@ export function phraseExplication(entree, donnees) {
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
-  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'interets' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
+  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'convergence' || entree.type === 'choc' || entree.type === 'mise-en-service' || entree.type === 'interets' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;
   return `${cause[0].toUpperCase()}${cause.slice(1)} ${etape} : ${nom} ${valeur}.`;
 }

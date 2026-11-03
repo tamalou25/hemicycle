@@ -18,12 +18,19 @@ export const confianceRegionsInitiale = (territoires) =>
 export function evoluerConfianceRegions(confianceRegions, territoires, chocs = {}, misesEnService = [], tour) {
   if (!confianceRegions || !territoires) return { confianceRegions, entrees: [] };
   const entrees = [];
-  const choc = Object.values(chocs).reduce((s, v) => s + v, 0);
   const res = {};
   for (const [id, avant] of Object.entries(confianceRegions)) {
     const sat = territoires[id]?.satisfaction ?? 50;
-    let c = avant + (sat * 0.7 - avant) * 0.08;
-    if (choc) { c += choc; entrees.push({ tour, region: id, indicateur: 'confiance', delta: choc, source: Object.keys(chocs).join('+'), type: 'choc', nature: 'observe' }); }
+    // Convergence vers la satisfaction locale (enregistrée pour que la fiche explique chaque variation)
+    const conv = (sat * 0.7 - avant) * 0.08;
+    let c = avant + conv;
+    if (Math.abs(conv) >= 0.005) entrees.push({ tour, region: id, indicateur: 'confiance', delta: Math.round(conv * 100) / 100, source: 'satisfaction-locale', type: 'convergence', nature: 'observe' });
+    // Chocs nationaux : une entrée par source (pas de fusion « 49.3+loi-speciale »)
+    for (const [source, v] of Object.entries(chocs)) {
+      if (!v) continue;
+      c += v;
+      entrees.push({ tour, region: id, indicateur: 'confiance', delta: v, source, type: 'choc', nature: 'observe' });
+    }
     const n = misesEnService.filter((r) => r === id).length;
     if (n) { c += BONUS_MISE_EN_SERVICE * n; entrees.push({ tour, region: id, indicateur: 'confiance', delta: BONUS_MISE_EN_SERVICE * n, source: 'mise-en-service', type: 'mise-en-service', nature: 'observe' }); }
     res[id] = borne(c);

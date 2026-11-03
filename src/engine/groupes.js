@@ -4,6 +4,7 @@
 //  - vote : intention de voter pour le parti du joueur (dépend de la confiance, pas de la satisfaction).
 // Aucune orientation politique n'est attribuée aux groupes (neutralité).
 import { indiceEmploi, satisfactionNationale } from './territoires.js';
+import { confianceRegionaleMoyenne } from './confianceRegions.js';
 
 export const RESULTATS = ['emploi', 'pouvoir_achat', 'sante', 'transports', 'securite', 'avenir'];
 const borne = (v) => Math.round(Math.min(100, Math.max(0, v)) * 100) / 100;
@@ -118,7 +119,8 @@ export function voteJoueurNational(groupesEtat, groupes, baseParti) {
 export function siegesParRegion(scores, partiJoueur, territoires, regions, repartir, total = 577, confianceRegions = null) {
   const popTot = regions.reduce((s, r) => s + r.population, 0);
   const satNat = satisfactionNationale(territoires, regions) || 50;
-  const confMoy = confianceRegions ? (Object.values(confianceRegions).reduce((a, b) => a + b, 0) / (Object.keys(confianceRegions).length || 1)) : null;
+  // Référence pondérée par la population : une petite région ne doit pas déplacer la base de toutes les autres
+  const confMoy = confianceRegions ? confianceRegionaleMoyenne(confianceRegions, regions) : null;
   const sieges = Object.fromEntries(Object.keys(scores).map((k) => [k, 0]));
   const parRegion = {};
   let attribues = 0;
