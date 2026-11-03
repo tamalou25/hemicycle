@@ -1,0 +1,23 @@
+{
+  "date_collecte": "2026-11-03",
+  "date_effectifs": "2026-11-03",
+  "total": 348,
+  "groupes": [
+    { "id": "lr", "nom": "Les Républicains", "sigle": "LR", "sieges": 124, "partis": ["dr"] },
+    { "id": "uci", "nom": "Union Centriste et Indépendants", "sigle": "UCI", "sieges": 63, "partis": ["modem"] },
+    { "id": "ser", "nom": "Socialiste, Écologiste et Républicain", "sigle": "SER", "sieges": 62, "partis": ["ps"] },
+    { "id": "crce-k", "nom": "Communiste Républicain Citoyen et Écologiste - Kanaky", "sigle": "CRCE-K", "sieges": 18, "partis": ["gdr"] },
+    { "id": "rdse", "nom": "Rassemblement Démocratique et Social Européen", "sigle": "RDSE", "sieges": 18, "partis": ["liot"] },
+    { "id": "rdpi", "nom": "Rassemblement des démocrates, progressistes et indépendants", "sigle": "RDPI", "sieges": 16, "partis": ["epr"] },
+    { "id": "gest", "nom": "Écologiste - Solidarité et Territoires", "sigle": "GEST", "sieges": 15, "partis": ["ecolo"] },
+    { "id": "independants", "nom": "Les Indépendants - République et Territoires", "sigle": "LI", "sieges": 14, "partis": ["horizons"] },
+    { "id": "unt", "nom": "Union Nationale pour les Territoires", "sigle": "UNT", "sieges": 15, "partis": ["rn"] },
+    { "id": "non-inscrits", "nom": "Réunion administrative des sénateurs ne figurant sur la liste d'aucun groupe", "sigle": "NI", "sieges": 3, "partis": [] }
+  ],
+  "notes": "Somme des sièges = 348. Effectifs senat.fr (membres + apparentés + rattachés) après le renouvellement de septembre 2026. Une synthèse de presse donnait Les Indépendants 15 et non-inscrits 2 (même total) ; la page senat.fr du 3 novembre 2026 (14 / 3) est retenue. Le groupe UNT réunit le RN et ses alliés UDR ; UCI rapproché du MoDem faute de meilleur équivalent.",
+  "sources": [
+    { "source": "Sénat - Liste des sénateurs par groupes politiques", "url": "https://www.senat.fr/senateurs/grp.html", "date": "2026-11-03" },
+    { "source": "Wikipédia - Triennat 2026-2029 du Sénat", "url": "https://fr.wikipedia.org/wiki/Triennat_2026-2029_du_S%C3%A9nat", "date": "2026-11-03" },
+    { "source": "Public Sénat - Nouvelle composition du Sénat après la formation des groupes", "url": "https://www.publicsenat.fr/actualites/politique/decouvrez-la-nouvelle-composition-du-senat-apres-la-formation-des-groupes-politiques", "date": "2026-11-03" }
+  ]
+}
