@@ -1,11 +1,45 @@
-# Passation : Hémicycle (03/11/2026)
+# Passation : Hémicycle
 
-## Où en est le projet
-- **Branche en cours** : `e7-mobile` (E7). E0 à E6 sont mergés ; le site en ligne est installable et fonctionne hors ligne. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
-- **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
-- **Reprise par un autre agent** : lire cette section en premier.
-- **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
-- **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
+## État au 03/11/2026 (Claude)
+- **Branche de référence** : `main`, au commit `687caa0` (merge de la PR #15). Toutes les étapes E0 à E7 et les correctifs de revue y sont intégrés.
+- **En ligne** : https://tamalou25.github.io/hemicycle/ (PWA installable, jouable hors ligne). Un APK Android de test est produit par la CI (workflow « Application Android »).
+- **Tests exécutés sur `687caa0`** : Vitest 130/130 (13 fichiers) ; Playwright 14/14 (ordinateur et mobile). La CI est verte sur les jobs `test`, `e2e` et `apk`.
+- **Branche Codex `phase-E3-population`** : jamais mergée, devenue obsolète (voir la section E3).
+
+## Travail en parallèle (Claude + Codex)
+| Domaine | Responsable | Fichiers |
+|---|---|---|
+| Interface, design, ergonomie, accessibilité | **Claude** | `index.html`, `src/ui/**`, `src/main.js` (partie affichage), `src/styles/**`, `assets/**`, `tailwind.config.js`, tests `e2e/**` de l'interface, captures |
+| Moteur, équilibrage, sauvegardes, tests du moteur | **Codex** | `src/engine/**`, `src/data/*.json` (paramètres), `tests/**`, migrations dans `save.js` |
+| Partagé, à toucher avec prudence | les deux | `package.json`, `.github/workflows/**`, `docs/**`, `CLAUDE.md` / `AGENTS.md` |
+
+Règles :
+1. **Une branche dédiée par sujet**, partie de `main` à jour (`git fetch origin main && git checkout -B <branche> origin/main`). Préfixes : `ui-…` pour Claude, `moteur-…` pour Codex.
+2. **On ne modifie pas le domaine de l'autre.** Si l'interface a besoin d'un changement du moteur (nouvelle fonction, nouveau champ d'état, autre format), on l'écrit d'abord dans `docs/DEMANDES-MOTEUR.md`. L'interface n'utilise que l'API exportée par `src/engine/index.js`.
+3. **Ne jamais écraser le travail de l'autre** : pas de `push --force` sur une branche partagée ni de merge qui résout un conflit en jetant l'autre côté. En cas de conflit, on garde les deux intentions ou on demande.
+4. **Avant de merger** : `npm test`, `npm run test:e2e` et `npm run build` (CSS et service worker à jour). La CI doit être verte.
+5. **Mettre à jour cette passation** à la fin de chaque sujet : branche, dernier commit, ce qui est fait, tests, problèmes, suite.
+
+## Prochaines étapes
+- **Claude (interface)** : branche `ui-design`.
+  - Audit d'ergonomie et d'accessibilité de chaque onglet, en mobile d'abord.
+  - Hiérarchie du Bureau (« Où en est le pays ? Quel problème ? Que faire ? »).
+  - Bilan de fin de mois plus lisible ; chronologie illustrée.
+  - États vides et chargement ; animations brèves et utiles.
+  - Correctif : les compteurs des filtres de Décisions ne doivent pas dépendre du filtre de statut (côté interface).
+- **Codex (moteur)** :
+  - Confiance différenciée par région (idée de `phase-E3-population`, à reprendre sur le `main` actuel).
+  - Équilibrage par vraies parties.
+  - Objectifs de mandat variés ; événements régionaux.
+  - Tests de non-régression de l'équilibrage.
+
+## Problèmes connus
+- **Application mobile** : export et partage natifs vérifiés seulement par la compilation de l'APK, pas sur un appareil. iOS non compilé (Mac nécessaire). Publication sur les stores non faite (comptes, signature, icônes natives).
+- **Données** : 0 citation vérifiée. Fonctions des élus tirées de Wikipédia, à recouper. Dépenses par fonction estimées (COFOG 2025 non publiée). Indice transports et sensibilités : paramètres d'équilibrage.
+- **Équilibrage** : réglé par simulations scriptées, pas par des parties jouées.
+- **Interface** : les compteurs des filtres de Décisions dépendent du filtre de statut. Le Bureau reste dense sur mobile.
+
+## Historique détaillé
 
 ## Terminé
 ### v1 (sur `main`)

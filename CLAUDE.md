@@ -49,6 +49,9 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 - Actions du mois : 1 action parlementaire (déposer, amender ou 49.3) et 1 négociation d'accord
 - À chaque changement de structure de l'état : incrémenter `VERSION_SAUVEGARDE` et ajouter une migration dans `save.js`
 
+## Travail en parallèle
+Claude : interface (`src/ui`, styles, `e2e`). Codex : moteur (`src/engine`, données d'équilibrage, `tests`, sauvegardes). Une branche par sujet ; ne pas modifier le domaine de l'autre ; besoins croisés dans `docs/DEMANDES-MOTEUR.md`. Détails : `docs/PASSATION.md`.
+
 ## Roadmap v2 (validée le 03/11/2026)
 E0 Fondations · E1 Carte et territoires · E2 Finances (Md€) · E3 Population · E4 Secteurs · E5 Politique reliée · E6 PWA · E7 Mobile.
 Décisions et état : `docs/PASSATION.md`. Toute variation d'indicateur doit passer par le registre `explications.js`.
