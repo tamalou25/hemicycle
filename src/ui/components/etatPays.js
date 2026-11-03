@@ -9,11 +9,29 @@ const CIBLE_INFLATION = 2;
 export const CLES = ['chomage', 'deficit', 'popularite', 'tensions'];
 const SENS = { chomage: -1, croissance: 1, deficit: -1, popularite: 1, tensions: -1 };
 
-/** Variation du dernier mois par indicateur, ou null avant le deuxième relevé. qualite : 1 mieux, -1 moins bien, 0 stable. */
+/**
+ * Valeurs du mois précédent. Pour le premier mois joué, l'historique ne contient pas le départ :
+ * on le reconstitue avec le registre des causes du moteur, dont la somme des explications
+ * d'un mois égale la variation réelle de chaque indicateur (garanti par les tests du moteur).
+ */
+function moisPrecedent(etat) {
+  const h = etat.historique ?? [];
+  if (h.length >= 2) return h[h.length - 2];
+  if (h.length !== 1) return null;
+  const fin = h[0];
+  const depart = { ...fin };
+  for (const e of etat.explications ?? []) {
+    if (e.tour === fin.tour && !e.region && e.indicateur in depart) depart[e.indicateur] -= e.delta;
+  }
+  return depart;
+}
+
+/** Variation du dernier mois par indicateur, ou null avant le premier mois joué. qualite : 1 mieux, -1 moins bien, 0 stable. */
 export function evolutions(etat) {
   const h = etat.historique ?? [];
-  if (h.length < 2) return null;
-  const a = h[h.length - 2], b = h[h.length - 1];
+  const a = moisPrecedent(etat);
+  if (!a) return null;
+  const b = h[h.length - 1];
   const res = {};
   for (const id of INDICATEURS_JAUGE) {
     const delta = b[id] - a[id];

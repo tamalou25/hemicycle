@@ -8,7 +8,8 @@ const MAX = 3;
 
 /** +1 favorable, -1 défavorable, pour une variation d'un indicateur (l'inflation vise 2 %). */
 function qualite(e, etat) {
-  if (e.indicateur === 'inflation') return (etat.indicateurs.inflation > 2 ? -1 : 1) * Math.sign(e.delta);
+  // Inflation : mieux si la variation la rapproche de la cible de 2 % (comparer la distance avant / après)
+  if (e.indicateur === 'inflation') { const apres = etat.indicateurs.inflation, avant = apres - e.delta; return Math.sign(Math.abs(avant - 2) - Math.abs(apres - 2)); }
   if (e.indicateur?.startsWith('secteur:')) return Math.sign(e.delta);
   return (SENS[e.indicateur] ?? 0) * Math.sign(e.delta);
 }

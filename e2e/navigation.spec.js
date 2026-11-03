@@ -94,3 +94,12 @@ test('« Voir sur la carte » ouvre la Carte sur la région du point', async ({ 
   }
   test.skip(true, 'aucun point territorial en 12 mois');
 });
+
+test('État du pays : les variations s’affichent dès le premier mois joué', async ({ page }) => {
+  const erreurs = surveiller(page);
+  await nouvellePartie(page);
+  await page.getByRole('button', { name: 'Mois suivant' }).first().click();
+  await expect(page.getByText(/Premier mois : aucune évolution/)).toHaveCount(0);
+  await expect(page.getByText(/(s’améliore|se dégrade|stable)/).first()).toBeVisible();
+  expect(erreurs, 'aucune erreur JavaScript').toEqual([]);
+});

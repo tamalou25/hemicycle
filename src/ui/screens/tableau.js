@@ -27,10 +27,11 @@ export { ONGLETS };
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
 function enteteBureau(etat, d, parti) {
-  return `<header class="mb-4">
-      <h1 class="font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
+  // Mobile : la date est déjà dans la barre fixe du bas ; le titre reste lisible par les lecteurs d'écran
+  return `<header class="mb-3 sm:mb-4">
+      <h1 class="sr-only sm:not-sr-only font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
       ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
-      <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))} · mois ${etat.tour} sur 60</p>
+      <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span></p>
     </header>`;
 }
 
@@ -123,7 +124,7 @@ export function render(racine, etat, dispatch, ctx) {
     <div class="sm:sticky sm:top-0 z-30 bg-creme -mx-4 px-4 sm:border-b sm:border-bord">${enteteCollant(etat, d)}${barreOnglets(onglet)}</div>
     ${onglet === 'bureau' ? enteteBureau(etat, d, parti) : ''}
     <div id="panneau" role="tabpanel" aria-labelledby="tab-${onglet}" tabindex="-1">${contenu}</div>
-    <p class="text-xs text-doux mt-4">Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage. <a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a></p>
+    <p class="text-xs text-doux mt-4"><a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a><span class="hidden sm:inline"> · Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage.</span></p>
     ${navigationMobile(etat, d, onglet)}`;
 
   brancherNavigation(racine, dispatch);
