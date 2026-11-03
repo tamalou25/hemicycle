@@ -1,0 +1,7 @@
+{
+  "appId": "io.github.tamalou25.hemicycle",
+  "appName": "Hémicycle",
+  "webDir": "www",
+  "android": { "backgroundColor": "#FAF6EC" },
+  "ios": { "backgroundColor": "#FAF6EC", "contentInset": "never" }
+}

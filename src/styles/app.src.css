@@ -20,6 +20,8 @@
   body { overflow-wrap: break-word; }
   /* Garde-fou : quelques pixels de débordement ne doivent jamais faire défiler la page horizontalement */
   html, body { overflow-x: clip; }
+  /* Applications mobiles (Capacitor) : respecter l'encoche et la barre de navigation */
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 }
 
 @layer components {
