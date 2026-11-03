@@ -1,5 +1,5 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, voterBudget } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, voterBudget } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
@@ -13,6 +13,7 @@ const CLE = 'hemicycle.save';
 const CLE_ACCORD = 'hemicycle.accord';
 const CLE_CLASSEMENT = 'hemicycle.classement';
 const CLE_IDS = 'hemicycle.classement.ids';
+const CLE_ONGLET = 'hemicycle.onglet';
 const ECRANS = { accueil, creation, choixElu, tableau, fin, defi, classement };
 
 const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
@@ -39,7 +40,7 @@ async function chargerJson(chemin) {
 const racine = document.getElementById('app');
 let etat = null;
 let ecran = 'accueil';
-const ctx = { accepte: lire(CLE_ACCORD) === '1', filtreTheme: '', brouillon: null, sauvegardeExiste: !!lire(CLE) };
+const ctx = { onglet: lire(CLE_ONGLET) || 'bureau', region: null, vue: 'satisfaction', accepte: lire(CLE_ACCORD) === '1', filtreTheme: '', brouillon: null, sauvegardeExiste: !!lire(CLE) };
 
 function afficher({ focus = true } = {}) {
   const actif = document.activeElement?.id;
@@ -70,7 +71,7 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -80,21 +81,29 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation });
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets });
         ctx.defi = null; ctx.brouillon = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; break;
       }
       case 'reprendre': {
         const brut = lire(CLE);
         if (!brut) throw new Error('Aucune sauvegarde trouvée.');
-        etat = importerPartie(brut); break;
+        etat = assurerTerritoires(importerPartie(brut), donnees); break;
       }
-      case 'importer': etat = importerPartie(action.texte); toast('Sauvegarde importée.', 'info'); break;
+      case 'importer': etat = assurerTerritoires(importerPartie(action.texte), donnees); toast('Sauvegarde importée.', 'info'); break;
+      case 'onglet':
+        ctx.onglet = action.onglet; ecrire(CLE_ONGLET, action.onglet);
+        if (action.region) ctx.region = action.region;
+        if (action.vue) ctx.vue = action.vue;
+        afficher({ focus: !!action.haut }); if (action.haut) window.scrollTo(0, 0); return;
+      case 'region': ctx.region = action.id; return afficher({ focus: false });
+      case 'ui': Object.assign(ctx, action.patch); return afficher({ focus: false });
+      case 'projet': etat = lancerProjet(etat, action.projetId, action.regionId, donnees); toast('Projet lancé.', 'info'); break;
       case 'proposer': etat = proposerLoi(etat, action.loi, donnees); break;
       case 'amender': etat = amenderTexte(etat, donnees); break;
       case '493': etat = recourir493(etat, donnees); break;
@@ -126,8 +135,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';
