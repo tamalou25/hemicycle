@@ -5,8 +5,9 @@ export function render(racine, etat, dispatch, ctx) {
   const d = dateDuTour(etat);
   const i = etat.indicateurs;
   const victoire = etat.fin.type === 'mandat';
+  const titre = victoire ? 'Fin de la législature' : etat.fin.type === 'censure' ? 'Gouvernement renversé' : 'Fin de partie';
   racine.innerHTML = `<section class="max-w-xl mx-auto py-4">
-    <h1 class="font-serif font-bold text-3xl">${victoire ? 'Fin de la législature' : 'Fin de partie'}</h1>
+    <h1 class="font-serif font-bold text-3xl">${titre}</h1>
     <p class="mt-2 text-lg">${esc(etat.fin.texte)}</p>
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
       <h2 class="font-serif font-bold text-xl mb-2">Bilan de ${esc(etat.joueur.nom)}</h2>

@@ -8,10 +8,19 @@ export function importerPartie(texte) {
   let etat;
   try { etat = JSON.parse(texte); } catch { throw new Error('Fichier illisible (JSON invalide).'); }
   if (!etat || typeof etat !== 'object') throw new Error('Sauvegarde vide.');
+  if (etat.version === 1) etat = migrerV1(etat);
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (!etat.joueur?.nom || typeof etat.tour !== 'number') throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
     if (typeof etat.indicateurs?.[i] !== 'number') throw new Error(`Indicateur manquant : ${i}.`);
   }
   return etat;
+}
+
+/** v1 (Phase 1) → v2 : ajoute les champs institutionnels. */
+function migrerV1(e) {
+  return {
+    ...e, version: 2, texte: null, accords: [], dernier493: null, motion: null, negoCeMois: false,
+    joueur: { ...e.joueur, role: e.joueur?.role ?? 'depute' },
+  };
 }

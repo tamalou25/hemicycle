@@ -3,17 +3,26 @@ import { appliquerEffets } from './effects.js';
 import { bruit } from './rng.js';
 import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DEFAITE } from './constants.js';
 import { populariteCible, intentionsDeVote } from './polls.js';
+import { avancerNavette, censureSpontanee } from './navette.js';
 
 /**
  * Ordre d'un tour :
+ * 0. navette du texte en cours (votes du mois écoulé) + censure spontanée
  * 1. effets différés des lois  2. dynamique économique + bruit
  * 3. popularité  4. sondage  5. capital politique  6. conditions de fin
  */
-export function tourSuivant(etat, { partis }) {
-  if (etat.fin) return etat;
-  const tour = etat.tour + 1;
-  let g = etat.graine;
+export function tourSuivant(etatInitial, donnees) {
+  if (etatInitial.fin) return etatInitial;
+  const { partis } = donnees;
+  let g = etatInitial.graine;
   let n;
+
+  // 0. Institutions (au mois courant, avant de passer au suivant)
+  let etat = { ...etatInitial, motion: null };
+  ({ etat, graine: g } = avancerNavette(etat, donnees, g));
+  ({ etat, graine: g } = censureSpontanee(etat, donnees, g));
+  if (etat.fin) return { ...etat, graine: g };
+  const tour = etat.tour + 1;
 
   // 1. Effets des lois
   const { indicateurs: apresLois, file } = appliquerEffets(etat.indicateurs, etat.effetsEnCours, tour);
@@ -48,8 +57,10 @@ export function tourSuivant(etat, { partis }) {
     indicateurs: ind,
     effetsEnCours: file,
     actionCeMois: false,
-    dernierVote: null,
-    joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL) },
+    negoCeMois: false,
+    accords: (etat.accords ?? []).filter((a) => a.jusqua >= tour),
+    // Le Premier ministre dispose de l'appareil d'État : +1 capital/mois
+    joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + (etat.joueur.role === 'premier_ministre' ? 1 : 0)) },
     sondage,
     historique: [...etat.historique, { tour, ...ind }],
     journal: fin ? [...etat.journal, { tour, type: 'fin', texte: fin.texte }] : etat.journal,

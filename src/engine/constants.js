@@ -18,7 +18,17 @@ export const DUREE_MANDAT = 60;       // 5 ans
 export const SEUIL_DEFAITE = 8;       // popularité sous laquelle la partie s'arrête
 export const CAPITAL_MENSUEL = 2;     // capital politique gagné chaque mois
 export const CAPITAL_MAX = 10;
-export const VERSION_SAUVEGARDE = 1;
+export const VERSION_SAUVEGARDE = 2;
+
+// --- Institutions (Phase 2) ---
+export const ROLES = ['depute', 'premier_ministre'];
+/** Parcours d'un texte : navette simplifiée, une étape par mois. */
+export const ETAPES = ['assemblee', 'senat', 'cmp', 'lecture_definitive', 'conseil'];
+export const MAJORITE_CENSURE = 289;      // majorité absolue des 577 députés
+export const DELAI_493 = 12;              // un 49.3 au plus tous les 12 mois (simplification)
+export const DUREE_ACCORD = 6;            // mois
+export const BONUS_ACCORD = 0.15;         // soutien ajouté chez un groupe allié
+export const SEUIL_OPPOSITION = 60;       // écart idéologique au-delà duquel un groupe censure
 
 export const borner = (ind, v) => {
   const [min, max] = BORNES[ind];

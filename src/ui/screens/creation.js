@@ -17,7 +17,7 @@ const BUDGET = 200;
 export function render(racine, etat, dispatch, ctx) {
   const partis = ctx.partis;
   const brouillon = ctx.brouillon ??= {
-    nom: '', age: 40, parti: partis[0].id,
+    nom: '', age: 40, role: 'depute', parti: partis[0].id,
     ideologie: Object.fromEntries(AXES.map((a) => [a, 0])),
     competences: Object.fromEntries(COMPETENCES.map((c) => [c, 50])),
   };
@@ -40,6 +40,12 @@ export function render(racine, etat, dispatch, ctx) {
       <label for="parti" class="font-semibold block">Parti</label>
       <select id="parti" class="champ">${partis.map((p) => `<option value="${esc(p.id)}" ${p.id === brouillon.parti ? 'selected' : ''}>${esc(p.nom)}</option>`).join('')}</select>
     </fieldset>
+    <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Rôle</legend>
+      <label class="flex items-start gap-2 mb-3 cursor-pointer"><input type="radio" name="role" value="depute" class="mt-1" ${brouillon.role !== 'premier_ministre' ? 'checked' : ''}>
+        <span><strong>Député·e</strong><br><span class="text-sm text-doux">Vous proposez des lois et négociez des accords, sans risquer d’être renversé·e.</span></span></label>
+      <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="role" value="premier_ministre" class="mt-1" ${brouillon.role === 'premier_ministre' ? 'checked' : ''}>
+        <span><strong>Premier ministre (fictif)</strong><br><span class="text-sm text-doux">49.3 possible et +1 capital politique par mois, mais vous êtes exposé·e aux motions de censure.</span></span></label>
+    </fieldset>
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Idéologie</legend>
       <p class="text-sm text-doux mb-3">Positions de −100 à +100 sur six axes, comme pour les partis.</p>${axes}</fieldset>
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Compétences</legend>
@@ -54,6 +60,7 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelector('#nom').addEventListener('input', (e) => { brouillon.nom = e.target.value; });
   racine.querySelector('#age').addEventListener('input', (e) => { brouillon.age = e.target.value; });
   racine.querySelector('#parti').addEventListener('change', (e) => { brouillon.parti = e.target.value; });
+  racine.querySelectorAll('[name=role]').forEach((el) => el.addEventListener('change', () => { if (el.checked) brouillon.role = el.value; }));
   racine.querySelectorAll('[data-axe]').forEach((el) => el.addEventListener('input', () => {
     brouillon.ideologie[el.dataset.axe] = Number(el.value);
     racine.querySelector(`#o-ax-${el.dataset.axe}`).textContent = el.value;

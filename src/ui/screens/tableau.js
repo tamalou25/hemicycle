@@ -3,6 +3,7 @@ import { dateDuTour, raisonRefus } from '../../engine/index.js';
 import { jauge, INDICATEURS_JAUGE } from '../components/jauge.js';
 import { carteLoi } from '../components/carteLoi.js';
 import { blocVote, blocSondage } from '../components/vote.js';
+import { sectionParlement, libelleRole } from '../components/parlement.js';
 
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
@@ -26,7 +27,7 @@ export function render(racine, etat, dispatch, ctx) {
     <header class="flex flex-wrap items-end justify-between gap-3 mb-4">
       <div>
         <h1 class="font-serif font-bold text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
-        <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · mois ${etat.tour} sur 60</p>
+        <p class="text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))} · mois ${etat.tour} sur 60</p>
       </div>
       <div class="flex gap-2 flex-wrap">
         <button type="button" id="suivant" class="btn btn-p">Mois suivant</button>
@@ -43,11 +44,13 @@ export function render(racine, etat, dispatch, ctx) {
         Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10</p>
     </section>
 
+    ${sectionParlement(etat, ctx)}
+
     <div class="grid lg:grid-cols-2 gap-6 mb-6">
       <section aria-labelledby="h-son" class="bg-carte border border-bord rounded-lg p-4">
         <h2 id="h-son" class="font-serif font-bold text-xl mb-2">Sondage, intentions de vote</h2>${blocSondage(etat, partis)}</section>
       <section aria-labelledby="h-vote" class="bg-carte border border-bord rounded-lg p-4">
-        <h2 id="h-vote" class="font-serif font-bold text-xl mb-2">Dernier vote</h2>${blocVote(etat, lois, partis)}</section>
+        <h2 id="h-vote" class="font-serif font-bold text-xl mb-2">Dernier vote</h2>${blocVote(etat, lois, partis, ctx.senat)}</section>
     </div>
 
     <section aria-labelledby="h-lois" class="mb-6">
@@ -57,7 +60,7 @@ export function render(racine, etat, dispatch, ctx) {
           <select id="theme" class="champ !w-auto"><option value="">Tous</option>
           ${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${k === filtre ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
       </div>
-      <p class="text-sm text-doux mb-2">Une loi par mois.</p>
+      <p class="text-sm text-doux mb-2">Un seul texte à la fois en navette ; une action au Parlement par mois.</p>
       <div class="grid md:grid-cols-2 gap-3">${loisAff.map((l) => carteLoi(l, etat, raisonRefus(etat, l))).join('')}</div>
     </section>
 
@@ -73,5 +76,8 @@ export function render(racine, etat, dispatch, ctx) {
     if (f) dispatch({ type: 'importer', texte: await f.text() });
   });
   racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
+  racine.querySelector('[data-amender]')?.addEventListener('click', () => dispatch({ type: 'amender' }));
+  racine.querySelector('[data-493]')?.addEventListener('click', () => dispatch({ type: '493' }));
+  racine.querySelectorAll('[data-negocier]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'negocier', parti: b.dataset.negocier })));
   racine.querySelectorAll('[data-proposer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'proposer', loi: b.dataset.proposer })));
 }

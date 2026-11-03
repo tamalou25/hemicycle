@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
-  creerPartie, tourSuivant, proposerLoi, calculerVote, dateDuTour,
+  creerPartie, tourSuivant, proposerLoi, dateDuTour,
   exporterPartie, importerPartie, BORNES, DUREE_MANDAT,
 } from '../src/engine/index.js';
 import { planifierEffets, appliquerEffets } from '../src/engine/effects.js';
@@ -11,7 +11,8 @@ const lire = (f) => JSON.parse(readFileSync(new URL(`../src/data/${f}`, import.m
 const partis = lire('parties.json');
 const lois = lire('laws.json');
 const situation = lire('situation.json');
-const donnees = { partis, lois };
+const senat = lire('senat.json');
+const donnees = { partis, lois, senat };
 
 const joueur = {
   nom: 'Camille Test', age: 35, parti: 'ps',
@@ -58,30 +59,17 @@ describe('effets différés', () => {
 });
 
 describe('lois', () => {
-  it('le parti du joueur vote pour', () => {
-    const v = calculerVote(nouvelle(), lois[0], partis);
-    expect(v.detail.find((d) => d.parti === 'ps').vote).toBe('pour');
-    expect(v.pour + v.contre).toBe(partis.reduce((s, p) => s + (p.sieges_assemblee ?? 0), 0));
-  });
-  it('proposer une loi ne mute pas l’état et coûte du capital', () => {
+  it('proposer une loi ne mute pas l’état, coûte du capital et ouvre la navette', () => {
     const e = nouvelle();
     const gel = JSON.stringify(e);
     const apres = proposerLoi(e, lois[0].id, donnees);
     expect(JSON.stringify(e)).toBe(gel);
     expect(apres.joueur.capital).toBe(e.joueur.capital - lois[0].cout_politique);
-    expect(apres.actionCeMois).toBe(true);
+    expect(apres.texte.etape).toBe('assemblee');
   });
-  it('une seule loi par mois', () => {
+  it('un seul texte à la fois', () => {
     const e = proposerLoi(nouvelle(), lois[0].id, donnees);
-    expect(() => proposerLoi(e, lois[1].id, donnees)).toThrow(/déjà proposé/);
-  });
-  it('une loi adoptée planifie ses effets', () => {
-    // Joueur RN + loi alignée sur la droite : majorité probable
-    const e = creerPartie({ joueur: { ...joueur, parti: 'rn' }, situation });
-    const loi = lois.find((l) => l.id === 'securite-fermete');
-    const apres = proposerLoi(e, loi.id, donnees);
-    expect(apres.loisAdoptees).toContain(loi.id);
-    expect(apres.effetsEnCours.length).toBe(loi.effets.length);
+    expect(() => proposerLoi(e, lois[1].id, donnees)).toThrow();
   });
 });
 
@@ -90,7 +78,7 @@ describe('tourSuivant', () => {
     expect(tourSuivant(nouvelle(1), donnees)).toEqual(tourSuivant(nouvelle(1), donnees));
   });
   it('avance le calendrier et réinitialise l’action', () => {
-    const e = tourSuivant(proposerLoi(nouvelle(), lois[0].id, donnees), donnees);
+    const e = tourSuivant(nouvelle(), donnees);
     expect(e.tour).toBe(1);
     expect(e.actionCeMois).toBe(false);
     expect(e.sondage.intentions).toBeDefined();

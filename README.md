@@ -27,7 +27,15 @@ npm test
 | `src/data/` | Partis, situation de départ et lois, au format JSON |
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
-## État : Phase 1 (MVP)
+## Fonctionnalités
+### Phase 2 : Institutions
+- Rôle au choix : député·e, ou Premier ministre (fictif)
+- Navette parlementaire : Assemblée, Sénat, CMP, lecture définitive, Conseil constitutionnel
+- 49.3 et motion de censure (289 voix requises), y compris des motions spontanées
+- Amendements de compromis et accords de soutien de 6 mois avec les groupes
+- Composition réelle des groupes à l'Assemblée et au Sénat (novembre 2026)
+
+### Phase 1 : MVP
 - Création du personnage : identité, 6 axes idéologiques, 4 compétences
 - 7 indicateurs : chômage, croissance, déficit, dette, inflation, popularité, tensions sociales
 - 12 lois, chacune avec des conséquences différées
@@ -35,4 +43,4 @@ npm test
 - Sondage mensuel
 - Sauvegarde automatique, plus export et import d'un fichier JSON
 
-Roadmap : institutions, puis politiciens réels, élections, profondeur, et enfin le volet social. Voir `CLAUDE.md`.
+Roadmap : politiciens réels, élections, profondeur, et enfin le volet social. Voir `CLAUDE.md`.
