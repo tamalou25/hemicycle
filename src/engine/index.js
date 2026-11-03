@@ -35,5 +35,6 @@ export { relationsInitiales, reactionParti, reagir, bonusVote, bonusTolerance, a
 export { confianceRegionsInitiale, evoluerConfianceRegions, confianceRegionaleMoyenne, BONUS_MISE_EN_SERVICE } from './confianceRegions.js';
 export { evaluerObjectifs, normaliserObjectifs, valeurObjectif, objectifPossible, POINTS_PAR_OBJECTIF } from './objectifs.js';
 export { tourSuivant } from './turn.js';
+export { creerMission, regionMission, projetMission, effetObserve, etapesMission, debriefMission, differerMission, apercuProjet, RESULTATS_MISSION } from './mission.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

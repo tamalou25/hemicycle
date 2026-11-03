@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-7a799f24344a';
+const CACHE = 'hemicycle-aaa91ac656d3';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ const FICHIERS = [
   "./src/data/groupes-equilibrage.json",
   "./src/data/groupes.json",
   "./src/data/laws.json",
+  "./src/data/mission.json",
   "./src/data/objectifs.json",
   "./src/data/parties.json",
   "./src/data/politicians.json",
@@ -42,6 +43,7 @@ const FICHIERS = [
   "./src/engine/groupes.js",
   "./src/engine/index.js",
   "./src/engine/laws.js",
+  "./src/engine/mission.js",
   "./src/engine/navette.js",
   "./src/engine/objectifs.js",
   "./src/engine/parliament.js",
@@ -68,6 +70,7 @@ const FICHIERS = [
   "./src/ui/components/evenement.js",
   "./src/ui/components/finances.js",
   "./src/ui/components/jauge.js",
+  "./src/ui/components/mission.js",
   "./src/ui/components/navigation.js",
   "./src/ui/components/objectifs.js",
   "./src/ui/components/opinion.js",
@@ -82,6 +85,7 @@ const FICHIERS = [
   "./src/ui/screens/choixElu.js",
   "./src/ui/screens/classement.js",
   "./src/ui/screens/creation.js",
+  "./src/ui/screens/decouverte.js",
   "./src/ui/screens/defi.js",
   "./src/ui/screens/fin.js",
   "./src/ui/screens/tableau.js",

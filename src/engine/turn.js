@@ -1,4 +1,5 @@
 // Passage au mois suivant.
+import { avancerMission } from './mission.js';
 import { appliquerEffets } from './effects.js';
 import { bruit } from './rng.js';
 import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DEFAITE } from './constants.js';
@@ -24,6 +25,11 @@ import { dateDuTour } from './state.js';
  * 3. popularité  4. sondage  5. capital politique  6. conditions de fin
  */
 export function tourSuivant(etatInitial, donnees) {
+  // Mission d'initiation : clôturée à l'échéance ou en cas de fin de partie (même moteur)
+  return avancerMission(tourDeBase(etatInitial, donnees), donnees);
+}
+
+function tourDeBase(etatInitial, donnees) {
   if (etatInitial.fin) return etatInitial;
   const { partis } = donnees;
   let g = etatInitial.graine;

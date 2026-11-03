@@ -22,7 +22,7 @@ test('hors ligne : la partie se recharge et se joue sans réseau', async ({ page
   await page.reload();
   await expect(page.getByText(/Simulation fictive/).first()).toBeVisible();
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Hors ligne');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByRole('button', { name: 'Mois suivant' }).click();

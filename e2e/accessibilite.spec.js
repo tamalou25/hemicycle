@@ -15,14 +15,14 @@ test('accueil et création de personnage', async ({ page }) => {
   await page.goto('/');
   await auditer(page, 'Accueil');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await auditer(page, 'Création');
 });
 
 test('tous les onglets de jeu, après 2 mois', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Audit');
   await page.getByLabel(/Premier ministre/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();

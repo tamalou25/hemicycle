@@ -7,7 +7,7 @@ test('choisir 3 objectifs non défaut, les voir au Bureau', async ({ page }) => 
   page.on('console', (m) => { if (m.type() === 'error') erreurs.push(m.text()); });
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Testeur');
   const fs = page.locator('#fs-objectifs');
   const cases = fs.getByRole('checkbox');
@@ -43,7 +43,7 @@ test('élu réel : décocher un objectif puis changer de filtre laisse « Commen
 test('création : « Investir dans l’avenir » désactivé pour un député, possible pour un PM', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   const programmes = page.locator('input[name=objectif][value=programmes]');
   await page.getByLabel(/Député/).check();
   await expect(programmes).toBeDisabled();

@@ -8,6 +8,7 @@ import { secteursInitiaux } from './secteurs.js';
 import { relationsInitiales } from './relations.js';
 import { confianceRegionsInitiale } from './confianceRegions.js';
 import { normaliserObjectifs } from './objectifs.js';
+import { creerMission } from './mission.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -17,7 +18,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -79,9 +80,11 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
     fin: null,
+    mission: null, // mission d'initiation (mode « Découvrir en jouant »), sinon null
   };
   // Population (E3) : calculée sur l'état initial complet
-  return { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
+  const complet = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
+  return mission ? { ...complet, mission: creerMission(complet, mission) } : complet;
 }
 
 /** Date affichable du tour courant. */

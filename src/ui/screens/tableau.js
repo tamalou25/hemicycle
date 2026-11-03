@@ -15,6 +15,7 @@ import { sectionCeMois } from '../components/ceMois.js';
 import { briefing, satisfactionNationale, compterDecisions } from '../../engine/index.js';
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
 import { briefMandat } from '../components/objectifs.js';
+import { sectionMission, brancherMission } from '../components/mission.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
@@ -56,7 +57,7 @@ function lienDecisions(etat, ctx) {
 function ongletBureau(etat, ctx, donnees, points, brief) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
-  return `${brief.html}${sectionEtatPays(etat)}
+  return `${sectionMission(etat, ctx)}${brief.html}${sectionEtatPays(etat)}
     <section aria-labelledby="h-brief" class="mb-5">
       <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">À traiter</h2>
       ${sectionEvenement(etat, ctx)}
@@ -135,6 +136,7 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
+    brancherMission(racine, dispatch, etat);
     // Pistes du mandat : simple navigation (aucune décision exécutée). Le filtre de Décisions est remplacé
     // pour qu'un ancien filtre (statut, secteur) ne masque pas le levier proposé.
     racine.querySelectorAll('[data-piste]').forEach((b) => b.addEventListener('click', () => {

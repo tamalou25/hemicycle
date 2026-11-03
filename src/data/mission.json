@@ -1,0 +1,13 @@
+{
+  "note": "Mission d'initiation (scénario de jeu). La région est choisie par une règle (indice de santé de jeu le plus bas), pas par un jugement sur une région réelle. Les personnages sont fictifs. Coûts, délais et effets viennent de projets.json (paramètres d'équilibrage).",
+  "id": "initiation",
+  "titre": "Améliorer l'accès aux soins dans une région en difficulté",
+  "duree_mois": 6,
+  "indice": "sante",
+  "options": [
+    { "projetId": "recrutement-soignants", "libelle": "Voie courte", "resume": "Moins cher, premiers effets après le chantier, puis montée en charge progressive. Une partie des postes peut rester non pourvue." },
+    { "projetId": "centres-sante", "libelle": "Investissement plus lent", "resume": "Plus cher et plus long : les effets arriveront après la mission, pendant le mandat." }
+  ],
+  "acteur": { "nom": "Inès Garnier", "fonction": "conseillère santé de votre cabinet", "fictif": true },
+  "avertissement_indice": "L'indice de santé est un indice de jeu (0 à 100) calculé à partir de la densité de médecins généralistes (Drees). Un indice bas ou nul ne signifie pas qu'il n'existe aucun accès aux soins dans la région réelle."
+}
