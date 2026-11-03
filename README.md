@@ -28,6 +28,12 @@ npm test
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
+### Phase 4 : Élections
+- Calendrier réel : présidentielle d'avril 2027, européennes et législatives de 2029
+- Campagne : meeting, débat, programme ; élan de campagne ; candidature à partir de 15 % de popularité
+- Présidentielle à deux tours avec report des voix, législatives avec prime majoritaire, dissolution (art. 12)
+- Résultats **simulés**, présentés par parti (« Candidat·e du parti X »)
+
 ### Phase 3 : Politiciens réels
 - Mode « jouer un élu » : 15 personnalités actuelles, avec leur fonction sourcée et des avatars à initiales (aucune photo)
 - Réactions probables au texte en cours, sans guillemets et avec un badge **SIMULATION**
@@ -48,4 +54,4 @@ npm test
 - Sondage mensuel
 - Sauvegarde automatique, plus export et import d'un fichier JSON
 
-Roadmap : élections, profondeur, et enfin le volet social. Voir `CLAUDE.md`.
+Roadmap : profondeur, et enfin le volet social. Voir `CLAUDE.md`.
