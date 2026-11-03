@@ -25,7 +25,7 @@ export function avancerNavette(etat, { partis, lois, senat }, graine) {
   let loisAdoptees = etat.loisAdoptees, loisRejetees = etat.loisRejetees, effetsEnCours = etat.effetsEnCours;
 
   const rejeter = (raison) => { log('rejet', `« ${loi.titre} » ${raison}`); loisRejetees = [...loisRejetees, loi.id]; texte = null; };
-  const AN = groupesAssemblee(partis);
+  const AN = groupesAssemblee(partis, etat.sieges);
 
   // Lecture à l'Assemblée (1re lecture ou lecture définitive), avec ou sans 49.3
   const lectureAssemblee = (siAdoptee, siRejet) => {
@@ -104,7 +104,7 @@ export function censureSpontanee(etat, { partis }, graine) {
   const p = Math.max(0, (tensions - 55) / 100) + Math.max(0, (22 - popularite) / 60);
   let [r, g] = aleatoire(graine);
   if (r >= p) return { etat, graine: g };
-  const c = voterCensure(etat, groupesAssemblee(partis));
+  const c = voterCensure(etat, groupesAssemblee(partis, etat.sieges));
   const journal = [...etat.journal, { tour: etat.tour, type: 'censure', texte: `L’opposition dépose une motion de censure : ${c.pour} voix (${c.requis} requises).` }];
   const fin = c.adoptee ? { type: 'censure', texte: 'Votre gouvernement a été renversé par une motion de censure.' } : etat.fin;
   return { etat: { ...etat, journal, fin, texte: c.adoptee ? null : etat.texte, motion: { tour: etat.tour, ...c } }, graine: g };

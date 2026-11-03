@@ -42,6 +42,14 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
     dernier493: null,
     dernierVote: null,
     motion: null,
+    // Élections (Phase 4)
+    sieges: null,             // { partiId: n } après des législatives simulées
+    resultatsElections: [],
+    electionsAnticipees: [],
+    derniereDissolution: null,
+    candidat: false,
+    elan: 0,
+    campagneCeMois: false,
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],

@@ -7,8 +7,11 @@ export const SEUIL_SOUTIEN = 0.72;
 const NEUTRE = Object.fromEntries(AXES.map((a) => [a, 0]));
 
 /** Groupes de l'Assemblée : un parti = un groupe (Phase 2). */
-export const groupesAssemblee = (partis) =>
-  partis.filter((p) => p.sieges_assemblee).map((p) => ({ id: p.id, sigle: p.sigle, sieges: p.sieges_assemblee, parti: p.id, positions: p.positions }));
+/** `sieges` (optionnel) : répartition issue d'une élection simulée, { partiId: n }. */
+export const groupesAssemblee = (partis, sieges = null) =>
+  partis
+    .map((p) => ({ id: p.id, sigle: p.sigle, sieges: sieges ? (sieges[p.id] ?? 0) : (p.sieges_assemblee ?? 0), parti: p.id, positions: p.positions }))
+    .filter((g) => g.sieges > 0);
 
 /** Groupes du Sénat : positions reprises du premier parti rattaché (neutres sinon). */
 export function groupesSenat(senat, partis) {

@@ -4,6 +4,7 @@ import { bruit } from './rng.js';
 import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DEFAITE } from './constants.js';
 import { populariteCible, intentionsDeVote } from './polls.js';
 import { avancerNavette, censureSpontanee } from './navette.js';
+import { tenirElections } from './elections.js';
 
 /**
  * Ordre d'un tour :
@@ -50,7 +51,7 @@ export function tourSuivant(etatInitial, donnees) {
   if (ind.popularite < SEUIL_DEFAITE) fin = { type: 'defaite', texte: 'Votre popularité s’est effondrée : votre parti vous retire son investiture.' };
   else if (tour >= DUREE_MANDAT) fin = { type: 'mandat', texte: 'Cinq ans se sont écoulés : fin de la législature.' };
 
-  return {
+  const apres = {
     ...etat,
     tour,
     graine: g,
@@ -58,6 +59,7 @@ export function tourSuivant(etatInitial, donnees) {
     effetsEnCours: file,
     actionCeMois: false,
     negoCeMois: false,
+    campagneCeMois: false,
     accords: (etat.accords ?? []).filter((a) => a.jusqua >= tour),
     // Le Premier ministre dispose de l'appareil d'État : +1 capital/mois
     joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + (etat.joueur.role === 'premier_ministre' ? 1 : 0)) },
@@ -65,5 +67,10 @@ export function tourSuivant(etatInitial, donnees) {
     historique: [...etat.historique, { tour, ...ind }],
     journal: fin ? [...etat.journal, { tour, type: 'fin', texte: fin.texte }] : etat.journal,
     fin,
-  };
+  };;
+
+  // 7. Élection prévue ce mois-ci (calendrier ou anticipée)
+  if (fin) return apres;
+  const r = tenirElections(apres, donnees, sondage.intentions, apres.graine);
+  return { ...r.etat, graine: r.graine }
 }
