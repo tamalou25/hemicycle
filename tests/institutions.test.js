@@ -83,7 +83,7 @@ describe('49.3 et censure', () => {
   });
   it('49.3 → motion de censure traitée à la fin du mois', () => {
     let e = proposerLoi(partie('epr', 'premier_ministre'), 'fiscalite-baisse-impots', donnees);
-    e = recourir493({ ...e, actionCeMois: false }, donnees);
+    e = recourir493(e, donnees); // autorisé le mois du dépôt
     expect(e.dernier493).toBe(0);
     const apres = tourSuivant(e, donnees);
     expect(apres.journal.some((j) => j.type === 'censure')).toBe(true);

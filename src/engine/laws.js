@@ -55,7 +55,9 @@ export function raisonRefus493(etat) {
   if (etat.joueur.role !== 'premier_ministre') return 'Seul le Premier ministre peut engager la responsabilité du gouvernement.';
   if (!etat.texte || !['assemblee', 'lecture_definitive'].includes(etat.texte.etape)) return 'Le 49.3 ne s’utilise que lors d’une lecture à l’Assemblée.';
   if (etat.texte.recours493) return '49.3 déjà engagé sur ce texte.';
-  if (etat.actionCeMois) return 'Vous avez déjà agi au Parlement ce mois-ci.';
+  // Exception : le 49.3 peut suivre le dépôt dans le même mois (sinon le vote aurait déjà eu lieu).
+  const memeMoisQueDepot = etat.texte.depot === etat.tour && etat.texte.amendements === 0;
+  if (etat.actionCeMois && !memeMoisQueDepot) return 'Vous avez déjà agi au Parlement ce mois-ci.';
   if (etat.dernier493 != null && etat.tour - etat.dernier493 < DELAI_493) return `49.3 possible dans ${DELAI_493 - (etat.tour - etat.dernier493)} mois.`;
   return null;
 }
