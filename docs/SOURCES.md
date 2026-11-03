@@ -18,3 +18,25 @@ Effectifs des groupes après le renouvellement de septembre 2026 (données du 20
 - Wikipédia, Triennat 2026-2029 du Sénat : https://fr.wikipedia.org/wiki/Triennat_2026-2029_du_S%C3%A9nat (2026-11-03)
 - Public Sénat, composition du Sénat après la formation des groupes : https://www.publicsenat.fr/actualites/politique/decouvrez-la-nouvelle-composition-du-senat-apres-la-formation-des-groupes-politiques (2026-11-03)
 - Écart noté : une synthèse de presse donnait Les Indépendants 15 / non-inscrits 2 ; senat.fr indique 14 / 3 (retenu).
+
+## Personnalités et citations (collecte 2026-11-03)
+
+Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper avec les sources officielles avant publication. Aucune citation retenue (aucun texte exact vérifié sur une page ouverte).
+
+- Jordan Bardella (rn) : Président du Rassemblement national — https://fr.wikipedia.org/wiki/Jordan_Bardella
+- Sébastien Chenu (rn) : Président du groupe Rassemblement national à l'Assemblée nationale (depuis fin octobre 2026) — https://fr.wikipedia.org/wiki/Sébastien_Chenu
+- Gabriel Attal (epr) : Président du groupe Ensemble pour la République à l'Assemblée nationale et secrétaire général de Renaissance — https://fr.wikipedia.org/wiki/Gabriel_Attal
+- Sébastien Lecornu (epr) : Premier ministre, chargé de la Planification écologique et énergétique — https://fr.wikipedia.org/wiki/Sébastien_Lecornu
+- Laurent Wauquiez (dr) : Président du groupe Droite républicaine à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Laurent_Wauquiez
+- Bruno Retailleau (dr) : Président des Républicains et sénateur de la Vendée — https://fr.wikipedia.org/wiki/Bruno_Retailleau
+- Éric Ciotti (udr) : Président de l'Union des droites pour la République et de son groupe à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Éric_Ciotti
+- Édouard Philippe (horizons) : Maire du Havre, candidat déclaré à l'élection présidentielle de 2027 — https://fr.wikipedia.org/wiki/Édouard_Philippe
+- Marc Fesneau (modem) : Président du groupe Les Démocrates à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Marc_Fesneau
+- Olivier Faure (ps) : Premier secrétaire du Parti socialiste — https://fr.wikipedia.org/wiki/Olivier_Faure
+- Marine Tondelier (ecolo) : Secrétaire nationale des Écologistes — https://fr.wikipedia.org/wiki/Marine_Tondelier
+- Mathilde Panot (lfi) : Présidente du groupe LFI à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Mathilde_Panot
+- Stéphane Peu (gdr) : Président du groupe Gauche démocrate et républicaine à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Stéphane_Peu
+- Christophe Naegelen (liot) : Président du groupe LIOT à l'Assemblée nationale — https://fr.wikipedia.org/wiki/Christophe_Naegelen
+- Éric Zemmour (reconquete) : Président de Reconquête — https://fr.wikipedia.org/wiki/Éric_Zemmour
+- Composition du gouvernement : https://fr.wikipedia.org/wiki/Gouvernement_Sébastien_Lecornu_II (état au 22 septembre 2026)
+- Citations : aucune.
