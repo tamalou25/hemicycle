@@ -7,6 +7,7 @@
 import { raisonRefus } from './laws.js';
 import { raisonRefus493, raisonRefusAccord, toleranceAccord } from './laws.js';
 import { ecartIdeologique } from './parliament.js';
+import { bonusTolerance } from './relations.js';
 import { raisonRefusPolitique } from './secteurs.js';
 import { raisonRefusPLF } from './budgetEtat.js';
 import { raisonRefusDissolution } from './elections.js';
@@ -71,7 +72,7 @@ export function catalogueDecisions(etat, d) {
     const sieges = etat.sieges ? (etat.sieges[p.id] ?? 0) : (p.sieges_assemblee ?? 0);
     if (p.id === etat.joueur.parti || !sieges) continue;
     const ecart = Math.round(ecartIdeologique(etat.joueur.ideologie, p.positions));
-    res.push(item({ id: `accord:${p.id}`, categorie: 'negociation', type: 'accord', secteur: 'institutions', titre: `Accord avec ${p.sigle}`, resume: `Écart idéologique ${ecart} (accepté jusqu’à ${Math.round(toleranceAccord(etat))}).`,
+    res.push(item({ id: `accord:${p.id}`, categorie: 'negociation', type: 'accord', secteur: 'institutions', titre: `Accord avec ${p.sigle}`, resume: `Écart idéologique ${ecart} (accepté jusqu’à ${Math.round(toleranceAccord(etat) + bonusTolerance(etat, p.id))}).`,
       cout: { capital: 2 }, delai: '6 mois', statut: (etat.accords ?? []).some((a) => a.parti === p.id && a.jusqua >= etat.tour) ? 'en_cours' : undefined,
       raison: raisonRefusAccord(etat, p.id), action: { type: 'negocier', parti: p.id } }));
   }

@@ -36,12 +36,14 @@ export function tourSuivant(etatInitial, donnees) {
     etat = ev ? resoudreEvenement(etat, ev.choix.length - 1, donnees) : { ...etat, evenement: null };
   }
   const loisAvant = etat.loisAdoptees.length;
+  const texteAvant = etat.texte; // orientation finale (après amendements / CMP), effacée par la navette à la promulgation
   ({ etat, graine: g } = avancerNavette(etat, donnees, g));
   // E5 : réaction des partis aux lois promulguées ce mois-ci
   for (const id of etat.loisAdoptees.slice(loisAvant)) {
     const loi = donnees.lois?.find((l) => l.id === id);
     if (loi && etat.relations) {
-      const rx = reagir(etat, partis, { theme: loi.theme, orientation: loi.orientation, source: id, libelle: loi.titre });
+      const orientation = texteAvant?.loiId === id ? texteAvant.orientation : loi.orientation;
+      const rx = reagir(etat, partis, { theme: loi.theme, orientation, source: id, libelle: loi.titre });
       etat = { ...etat, relations: rx.relations, explications: [...(etat.explications ?? []), ...rx.entrees] };
     }
   }
