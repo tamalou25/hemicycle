@@ -10,7 +10,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:tout": "vitest run && playwright test"
+    "test:tout": "vitest run && playwright test",
+    "build:sw": "node scripts/generer-sw.js",
+    "build": "npm run build:css && npm run build:sw"
   },
   "devDependencies": {
     "@fontsource/source-serif-4": "^5.1.1",

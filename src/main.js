@@ -158,3 +158,9 @@ async function init() {
   afficher({ focus: false });
 }
 init();
+
+// PWA (E6) : service worker pour jouer hors ligne après une première visite.
+// Désactivé en local sur file:// ; les erreurs d'enregistrement n'empêchent jamais de jouer.
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => { /* jeu jouable sans cache */ }); });
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Hémicycle — simulation politique",
+  "short_name": "Hémicycle",
+  "description": "Simulation politique de la France, tour par tour. Simulation fictive.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FAF6EC",
+  "theme_color": "#14213D",
+  "icons": [
+    { "src": "assets/icones/icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icones/icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
