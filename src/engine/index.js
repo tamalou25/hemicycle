@@ -1,6 +1,6 @@
 // Point d'entrée public du moteur.
 export * from './constants.js';
-export { creerPartie, dateDuTour } from './state.js';
+export { creerPartie, dateDuTour, assurerTerritoires } from './state.js';
 export {
   proposerLoi, amenderTexte, recourir493, negocierAccord,
   raisonRefus, raisonRefus493, raisonRefusAccord, toleranceAccord,
@@ -21,6 +21,9 @@ export { voterBudget, raisonRefusBudget, effetsBudget, LEVIERS } from './budget.
 export { scoreBilan, evaluerFin } from './fins.js';
 export { encoderDefi, decoderDefi, entreeClassement, ajouterAuClassement, TAILLE_CLASSEMENT } from './share.js';
 export { registreDuMois, prevoir, principales, phraseExplication, nomCause } from './explications.js';
+export { INDICES, initialiserTerritoires, satisfactionNationale, indiceEmploi, indiceSante } from './territoires.js';
+export { lancerProjet, raisonRefusProjet, prevoirProjets, facteurTaille } from './projets.js';
+export { briefing, SEUIL_CRITIQUE } from './briefing.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

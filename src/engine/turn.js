@@ -7,6 +7,10 @@ import { avancerNavette, censureSpontanee } from './navette.js';
 import { tenirElections } from './elections.js';
 import { tirerEvenement, resoudreEvenement } from './events.js';
 import { registreDuMois, archiver } from './explications.js';
+import { evoluerTerritoires, satisfactionNationale } from './territoires.js';
+import { avancerProjets } from './projets.js';
+import { renouvelerEnveloppe } from './finances.js';
+import { dateDuTour } from './state.js';
 
 /**
  * Ordre d'un tour :
@@ -34,6 +38,7 @@ export function tourSuivant(etatInitial, donnees) {
 
   // 1. Effets des lois
   const { indicateurs: apresLois, file, appliques } = appliquerEffets(etat.indicateurs, etat.effetsEnCours, tour);
+  etat = { ...etat, effetsEnCours: file };
   const ind = { ...apresLois };
 
   // 2. Dynamique : retour lent vers l'équilibre + petits chocs aléatoires
@@ -45,13 +50,26 @@ export function tourSuivant(etatInitial, donnees) {
   ind.dette = borner('dette', ind.dette + ind.deficit / 12 - ind.croissance / 12);
   [n, g] = bruit(g, 1.5); ind.tensions = borner('tensions', ind.tensions + (EQUILIBRE.tensions - ind.tensions) * 0.05 + n);
 
+  // 2 bis. Territoires et projets (E1) : usure, emploi régional, chantiers, mises en service
+  let entreesTerritoires = [];
+  let bonusTerritoires = 0;
+  if (etat.territoires && donnees.regions && donnees.projets) {
+    const evo = evoluerTerritoires(etat.territoires, ind.chomage - etat.indicateurs.chomage, tour);
+    const p = avancerProjets({ ...etat, territoires: evo.territoires }, donnees, tour);
+    entreesTerritoires = [...evo.entrees, ...p.entrees];
+    const { mois } = dateDuTour({ ...etat, tour });
+    etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md) };
+    // La satisfaction des territoires (pondérée par la population) tire la popularité
+    bonusTerritoires = (satisfactionNationale(etat.territoires, donnees.regions.regions) - (etat.satisfactionInitiale ?? 50)) / 2;
+  }
+
   // 3. Popularité : converge à 15 %/mois vers la cible
-  const cible = populariteCible(ind, etat.joueur.competences);
+  const cible = populariteCible(ind, etat.joueur.competences) + bonusTerritoires;
   [n, g] = bruit(g, 1);
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, registreDuMois(tour, appliques, apresLois, ind), tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
@@ -66,7 +84,7 @@ export function tourSuivant(etatInitial, donnees) {
     tour,
     graine: g,
     indicateurs: ind,
-    effetsEnCours: file,
+    effetsEnCours: etat.effetsEnCours,
     explications,
     actionCeMois: false,
     negoCeMois: false,

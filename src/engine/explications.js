@@ -8,6 +8,7 @@ export const MOIS_CONSERVES = 12;
 export function typeSource(source = '') {
   if (source === 'budget') return 'budget';
   if (source.startsWith('evenement:')) return 'evenement';
+  if (source.startsWith('projet:')) return 'projet';
   return 'loi';
 }
 
@@ -61,17 +62,20 @@ export function prevoir(etat, horizon = 6) {
 
 /** Les n explications les plus marquantes d'un mois (hors bruit). */
 export const principales = (registre, tour, n = 5) =>
-  (registre ?? []).filter((e) => e.tour === tour).sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
+  (registre ?? []).filter((e) => e.tour === tour && (!e.region || e.type === 'projet')).sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
 
 const LIBELLES = {
   chomage: ['le chômage', 'pt'], croissance: ['la croissance', 'pt'], deficit: ['le déficit', 'pt de PIB'],
   dette: ['la dette', 'pt de PIB'], inflation: ['l’inflation', 'pt'], popularite: ['votre popularité', 'pt'],
   tensions: ['les tensions sociales', 'pt'],
+  emploi: ['l’indice emploi', 'pt'], sante: ['l’accès aux soins', 'pt'], transports: ['l’indice transports', 'pt'],
 };
 const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`;
 
 /** Nom lisible de la cause. */
-export function nomCause(entree, { lois = [], evenements = [] } = {}) {
+export function nomCause(entree, { lois = [], evenements = [], projets } = {}) {
+  if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
+  if (entree.type === 'usure') return 'l’usure des équipements et la hausse des besoins';
   if (entree.type === 'loi') return `la loi « ${lois.find((l) => l.id === entree.source)?.titre ?? entree.source} »`;
   if (entree.type === 'evenement') return `votre réponse à « ${evenements.find((e) => `evenement:${e.id}` === entree.source)?.titre ?? 'un événement'} »`;
   if (entree.type === 'budget') return 'le budget adopté';
@@ -83,7 +87,8 @@ export function nomCause(entree, { lois = [], evenements = [] } = {}) {
 export function phraseExplication(entree, donnees) {
   const [nom, unite] = LIBELLES[entree.indicateur] ?? [entree.indicateur, ''];
   const cause = nomCause(entree, donnees);
-  const valeur = `${fmt(entree.delta)} ${unite}`.trim();
+  const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
+  const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
   if (entree.type === 'conjoncture' || entree.type === 'opinion') return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;

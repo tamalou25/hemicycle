@@ -1,5 +1,7 @@
 // Création de l'état initial d'une partie.
 import { AXES, COMPETENCES, ROLES, VERSION_SAUVEGARDE } from './constants.js';
+import { initialiserTerritoires, satisfactionNationale } from './territoires.js';
+import { financesInitiales } from './finances.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -9,7 +11,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -56,6 +58,8 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
     evenementsPasses: [],
     dernierBudget: null,
     explications: [],       // registre des causes (12 derniers mois)
+    // Territoires (E1) — null si les données régionales ne sont pas fournies
+    ...etatTerritorial(regions, projets),
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
@@ -68,3 +72,14 @@ export function dateDuTour(etat) {
   const total = etat.dateDepart.mois - 1 + etat.tour;
   return { annee: etat.dateDepart.annee + Math.floor(total / 12), mois: (total % 12) + 1 };
 }
+
+/** Partie territoriale de l'état (E1). Aussi utilisée pour compléter une ancienne sauvegarde. */
+export function etatTerritorial(regions, projets) {
+  if (!regions?.regions || !projets) return { territoires: null, projets: [], finances: null, satisfactionInitiale: null };
+  const territoires = initialiserTerritoires(regions.regions, projets.transports_initial, projets.indices_par_defaut);
+  return { territoires, projets: [], finances: financesInitiales(projets), satisfactionInitiale: satisfactionNationale(territoires, regions.regions) };
+}
+
+/** Complète une partie qui n'a pas encore de territoires (sauvegarde antérieure à E1). */
+export const assurerTerritoires = (etat, { regions, projets }) =>
+  etat.territoires ? etat : { ...etat, ...etatTerritorial(regions, projets) };
