@@ -9,6 +9,8 @@
 - **Branche Codex `phase-E3-population`** : jamais mergée, devenue obsolète (voir la section E3).
 
 ## Travail en parallèle (Claude + Codex)
+> **Mise à jour du 03/11/2026 (décision de l'utilisateur)** : Claude reprend **tout**, interface et moteur, jusqu'à la fin des chantiers listés ci-dessous. Le partage décrit ici reste la référence si Codex reprend la main. Chaque sujet garde sa branche et sa PR, et on vérifie toujours `main` avant de merger, pour ne jamais écraser un éventuel commit de Codex.
+
 | Domaine | Responsable | Fichiers |
 |---|---|---|
 | Interface, design, ergonomie, accessibilité | **Claude** | `index.html`, `src/ui/**`, `src/main.js` (partie affichage), `src/styles/**`, `assets/**`, `tailwind.config.js`, tests `e2e/**` de l'interface, captures |

@@ -50,7 +50,7 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 - À chaque changement de structure de l'état : incrémenter `VERSION_SAUVEGARDE` et ajouter une migration dans `save.js`
 
 ## Travail en parallèle
-Claude : interface (`src/ui`, styles, `e2e`). Codex : moteur (`src/engine`, données d'équilibrage, `tests`, sauvegardes). Une branche par sujet ; ne pas modifier le domaine de l'autre ; besoins croisés dans `docs/DEMANDES-MOTEUR.md`. Détails : `docs/PASSATION.md`.
+Par défaut, Claude : interface (`src/ui`, styles, `e2e`). Codex : moteur (`src/engine`, données d'équilibrage, `tests`, sauvegardes). Une branche par sujet ; ne pas modifier le domaine de l'autre ; besoins croisés dans `docs/DEMANDES-MOTEUR.md`. Détails : `docs/PASSATION.md` (actuellement, Claude fait tout).
 
 ## Roadmap v2 (validée le 03/11/2026)
 E0 Fondations · E1 Carte et territoires · E2 Finances (Md€) · E3 Population · E4 Secteurs · E5 Politique reliée · E6 PWA · E7 Mobile.
