@@ -20,6 +20,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
   return {
     version: VERSION_SAUVEGARDE,
     graine: graine >>> 0,
+    graineInitiale: graine >>> 0, // pour rejouer / partager la partie en défi
     tour: 0,
     dateDepart: { annee, mois },
     joueur: {
