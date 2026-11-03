@@ -50,6 +50,10 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
     candidat: false,
     elan: 0,
     campagneCeMois: false,
+    // Profondeur (Phase 5)
+    evenement: null,          // id de l'événement en attente de réponse
+    evenementsPasses: [],
+    dernierBudget: null,
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],

@@ -10,6 +10,7 @@ export function importerPartie(texte) {
   if (!etat || typeof etat !== 'object') throw new Error('Sauvegarde vide.');
   if (etat.version === 1) etat = migrerV1(etat);
   if (etat.version === 2) etat = migrerV2(etat);
+  if (etat.version === 3) etat = { ...etat, version: 4, evenement: null, evenementsPasses: [], dernierBudget: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (!etat.joueur?.nom || typeof etat.tour !== 'number') throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {

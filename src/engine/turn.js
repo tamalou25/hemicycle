@@ -5,6 +5,7 @@ import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DE
 import { populariteCible, intentionsDeVote } from './polls.js';
 import { avancerNavette, censureSpontanee } from './navette.js';
 import { tenirElections } from './elections.js';
+import { tirerEvenement, resoudreEvenement } from './events.js';
 
 /**
  * Ordre d'un tour :
@@ -20,6 +21,11 @@ export function tourSuivant(etatInitial, donnees) {
 
   // 0. Institutions (au mois courant, avant de passer au suivant)
   let etat = { ...etatInitial, motion: null };
+  // Événement ignoré : on applique automatiquement le dernier choix (option passive)
+  if (etat.evenement && donnees.evenements) {
+    const ev = donnees.evenements.find((e) => e.id === etat.evenement);
+    etat = ev ? resoudreEvenement(etat, ev.choix.length - 1, donnees) : { ...etat, evenement: null };
+  }
   ({ etat, graine: g } = avancerNavette(etat, donnees, g));
   ({ etat, graine: g } = censureSpontanee(etat, donnees, g));
   if (etat.fin) return { ...etat, graine: g };
@@ -72,5 +78,9 @@ export function tourSuivant(etatInitial, donnees) {
   // 7. Élection prévue ce mois-ci (calendrier ou anticipée)
   if (fin) return apres;
   const r = tenirElections(apres, donnees, sondage.intentions, apres.graine);
-  return { ...r.etat, graine: r.graine }
+  if (r.etat.fin || !donnees.evenements) return { ...r.etat, graine: r.graine };
+
+  // 8. Événement du mois (auquel le joueur répondra pendant le mois)
+  const t = tirerEvenement(r.etat, donnees.evenements, r.graine);
+  return { ...r.etat, graine: t.graine, evenement: t.evenementId }
 }
