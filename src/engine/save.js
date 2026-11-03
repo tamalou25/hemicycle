@@ -18,6 +18,7 @@ export function importerPartie(texte) {
   if (etat.version === 8) etat = { ...etat, version: 9, relations: null };
   if (etat.version === 9) etat = { ...etat, version: 10, confianceRegions: null };
   if (etat.version === 10) etat = { ...etat, version: 11, objectifs: [] };
+  if (etat.version === 11) etat = { ...etat, version: 12, evenementRegion: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -95,6 +96,7 @@ function assainir(e) {
     elan: nb(e.elan),
     campagneCeMois: bool(e.campagneCeMois),
     evenement: chOuNull(e.evenement, 100),
+    evenementRegion: chOuNull(e.evenementRegion, 60),
     evenementsPasses: liste(e.evenementsPasses, (x) => ({ id: ch(x.id, 100), tour: nb(x.tour), choix: nb(x.choix) })),
     dernierBudget: nbOuNull(e.dernierBudget),
     territoires: e.territoires && typeof e.territoires === 'object' && !Array.isArray(e.territoires)

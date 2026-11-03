@@ -164,5 +164,5 @@ export function tourSuivant(etatInitial, donnees) {
 
   // 8. Événement du mois (auquel le joueur répondra pendant le mois)
   const t = tirerEvenement(r.etat, donnees.evenements, r.graine);
-  return { ...r.etat, graine: t.graine, evenement: t.evenementId }
+  return { ...r.etat, graine: t.graine, evenement: t.evenementId, evenementRegion: t.region ?? null }
 }

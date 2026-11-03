@@ -84,7 +84,7 @@ describe('migration', () => {
     const v2 = { ...partie(), version: 2 };
     delete v2.resultatsElections; delete v2.sieges;
     const e = importerPartie(JSON.stringify(v2));
-    expect(e.version).toBe(11);
+    expect(e.version).toBe(12);
     expect(e.resultatsElections).toEqual([]);
   });
 });
