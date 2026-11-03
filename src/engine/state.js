@@ -1,11 +1,11 @@
 // Création de l'état initial d'une partie.
-import { AXES, COMPETENCES, VERSION_SAUVEGARDE } from './constants.js';
+import { AXES, COMPETENCES, ROLES, VERSION_SAUVEGARDE } from './constants.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
 /**
  * @param {object} p
- * @param {object} p.joueur     { nom, age, parti, ideologie{axe:-100..100}, competences{nom:0..100} }
+ * @param {object} p.joueur     { nom, age, parti, role, ideologie{axe:-100..100}, competences{nom:0..100} }
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
@@ -25,6 +25,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
     joueur: {
       nom: joueur.nom.trim(), age: borne(joueur.age ?? 40, 18, 99), parti: joueur.parti,
       ideologie, competences, capital: 4,
+      role: ROLES.includes(joueur.role) ? joueur.role : 'depute',
     },
     indicateurs: {
       chomage: ind.chomage ?? 7.5, croissance: ind.croissance ?? 0.8, deficit: ind.deficit ?? 5.4,
@@ -34,6 +35,12 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart }) {
     loisAdoptees: [],
     loisRejetees: [],
     actionCeMois: false,
+    negoCeMois: false,
+    texte: null,          // texte en navette { loiId, etape, orientation, facteur, recours493, amendements }
+    accords: [],          // [{ parti, debut, jusqua }]
+    dernier493: null,
+    dernierVote: null,
+    motion: null,
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
