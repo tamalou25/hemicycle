@@ -1,0 +1,65 @@
+{
+  "annee_reference": 2025,
+  "date_collecte": "2026-11-03",
+  "pib_md": 2991.1,
+  "dette_md": 3460.1,
+  "dette_pct_pib": 115.7,
+  "deficit_pct_pib": 5.1,
+  "charge_interets_md": 64.7,
+  "recettes_md": {
+    "impots_menages": 386.3,
+    "impots_entreprises": 158.1,
+    "tva_consommation": 340.5,
+    "cotisations_sociales": 498.7,
+    "autres": 178.9
+  },
+  "depenses_md": {
+    "protection_sociale": 708.7,
+    "sante": 260.2,
+    "education": 152.0,
+    "defense_securite": 107.0,
+    "infrastructures_environnement": 220.2,
+    "recherche": 52.6,
+    "administration_autres": 148.7,
+    "interets": 64.7
+  },
+  "sources": [
+    {
+      "donnee": "Dette Maastricht 2025 (3 460,1 Md€, 115,7 % du PIB) et série du PIB 2025 (2 991,1 Md€)",
+      "source": "Insee, Comptes nationaux annuels base 2020, tableaux 3.101/3.102 (Dette et déficit publics au sens de Maastricht en 2025)",
+      "url": "https://www.insee.fr/fr/statistiques/8988843",
+      "date": "2026-05-29"
+    },
+    {
+      "donnee": "Déficit 2025 : 152,5 Md€ = 5,1 % du PIB ; dépenses 57,3 % et recettes 52,2 % du PIB",
+      "source": "Insee, Informations rapides n°78 et Finances publiques en 2025",
+      "url": "https://www.insee.fr/fr/statistiques/8956575",
+      "date": "2026-03-27"
+    },
+    {
+      "donnee": "Totaux 2025 : recettes 1 562,5 Md€, dépenses 1 714,1 Md€, intérêts D41 hors correction SIFIM 64,7 Md€, cotisations sociales nettes 498,7 Md€, impôts D2/D5",
+      "source": "Insee, tableau 3.201 Dépenses et recettes des administrations publiques en 2025",
+      "url": "https://www.insee.fr/fr/statistiques/8988845",
+      "date": "2026-05-29"
+    },
+    {
+      "donnee": "Détail des impôts 2025 (TVA 208,8 ; CSG 156,6 ; CRDS 9,3 ; IRPP 103,6 ; IS 69,5 ; taxe foncière 44,2 ; TICPE, tabacs, etc.), données provisoires",
+      "source": "Insee, Impôts, données annuelles 1995-2025 (comptes nationaux base 2020)",
+      "url": "https://www.insee.fr/fr/statistiques/2381408",
+      "date": "2026-05-29"
+    },
+    {
+      "donnee": "Dépenses par fonction COFOG, dernier millésime publié : 2024 (tableau 3.301). Le millésime 2025 est annoncé pour décembre 2026.",
+      "source": "Insee, Dépenses des administrations publiques ventilées par fonction en 2024 / en 2025 (page annonçant la publication)",
+      "url": "https://www.insee.fr/fr/statistiques/8574707",
+      "date": "2025-11-28"
+    },
+    {
+      "donnee": "Page Insee 2025 des dépenses par fonction : tableaux 3.301 à 3.307 « seront publiées en décembre 2026 »",
+      "source": "Insee",
+      "url": "https://www.insee.fr/fr/statistiques/8988847",
+      "date": "2026-05-29"
+    }
+  ],
+  "notes": "Périmètre : administrations publiques (S13), comptes nationaux base 2020, résultats 2025 publiés par l'Insee le 29/05/2026 (premiers résultats 27/03/2026 ; dette 115,6 % puis 115,7 % après révision). PIB 2025 = 2 991,1 Md€ (série utilisée par l'Insee dans le tableau 3.101). Déficit 5,1 % = 152,5 Md€ (Maastricht) ; le besoin de financement B9NF du tableau 3.201 est de 151,6 Md€ (écart de 0,9 Md€ lié aux flux d'intérêts de swaps). charge_interets_md = intérêts D41 versés par les APU hors correction SIFIM (64,7 ; 65,7 avec la correction) ; ces intérêts sont comptés en COFOG 01.7. RECETTES (Md€, 2025, total 1 562,5) : impots_menages = IRPP 103,6 + CSG 156,6 + CRDS 9,3 + taxe foncière 44,2 (en totalité, bien qu'une part soit payée par les entreprises) + taxe d'habitation résiduelle 2,9 + IFI 2,7 + droits de mutation et autres impôts en capital 21,7 + autres impôts courants ; impots_entreprises = IS 69,5 + impôts sur les salaires et la main-d'œuvre 60,1 + impôts divers sur la production hors taxe foncière (CFE, CVAE, C3S, versement mobilité, etc.) ; tva_consommation = TVA 208,8 + impôts sur les produits hors TVA 128,1 (TICPE 30,5, tabacs 13,6, autres) + droits sur les importations 3,6 ; cotisations_sociales = cotisations sociales nettes D61 (498,7, y compris cotisations imputées 52,4 des fonctionnaires). autres = solde pour atteindre le total des recettes : recettes de production et ventes (130,9), revenus de la propriété (23,0), transferts (34,5) moins les ajustements d'impôts et cotisations non recouvrables et d'arrondi entre le tableau des impôts (avant crédits d'impôt) et les agrégats D2/D5/D61 (environ -9,5). Les impôts du détail sont des données provisoires (p). DÉPENSES : la ventilation COFOG 2025 n'est PAS encore publiée (prévue en décembre 2026) ; les montants ci-dessus sont une ESTIMATION = structure COFOG 2024 (Insee tableau 3.301, publié le 28/11/2025, total 1 671,8 Md€) mise à l'échelle du total de dépenses 2025 hors intérêts (coefficient uniforme 1,0227 appliqué à toutes les lignes hors intérêts ; intérêts = valeur 2025 réelle). Regroupements : protection_sociale = COFOG 10 ; sante = COFOG 07 hors 07.5 (R&D santé) ; education = COFOG 09 ; defense_securite = 02 + 03 hors 02.4 et 03.5 (R&D) ; infrastructures_environnement = 04 + 05 + 06 hors R&D (04.8, 05.5, 06.5), donc inclut transports, énergie, agriculture, subventions économiques (dont aides énergie en baisse), déchets, eau, logement ; recherche = somme des lignes COFOG « R&D » (01.4 recherche fondamentale 19,9 ; 01.5 ; 02.4 ; 04.8 ; 05.5 ; 07.5 ; 03.5, 06.5 et 08.5 nuls), soit 51,5 Md€ en 2024 : approximation par les seules lignes R&D identifiées de la COFOG (la R&D publique de l'enseignement supérieur n'est pas isolée en COFOG 09, donc sous-estimée par rapport à la DIRD/budget de recherche) ; administration_autres = 01 hors intérêts (01.7) et hors R&D 01.4/01.5 + 08 (loisirs, culture, culte). Note COFOG 2024 : un changement de nomenclature comptable des collectivités gonfle provisoirement la fonction 06 et réduit la 04 ; sans effet sur le regroupement 04+05+06. CONTRÔLE : somme des recettes 1 562,5 - somme des dépenses 1 714,1 = -151,6 Md€ contre -152,5 Md€ attendus (5,1 % x 2 991,1) ; écart d'environ 0,9 Md€ (0,6 %), expliqué par la différence B9NF/Maastricht. Aucun ajustement arbitraire de 'autres' hors solde de comptabilité (voir plus haut)."
+}

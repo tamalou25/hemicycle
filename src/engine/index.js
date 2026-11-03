@@ -24,6 +24,10 @@ export { registreDuMois, prevoir, principales, phraseExplication, nomCause } fro
 export { INDICES, initialiserTerritoires, satisfactionNationale, indiceEmploi, indiceSante } from './territoires.js';
 export { lancerProjet, raisonRefusProjet, prevoirProjets, facteurTaille } from './projets.js';
 export { briefing, SEUIL_CRITIQUE } from './briefing.js';
+export {
+  SECTEURS, RECETTES, VARIATION_MAX, solde, chiffrerPLF, orientationPLF, normaliserPLF,
+  deposerPLF, recourir493PLF, raisonRefusPLF, budgetInitial, voterBudgetAssemblee,
+} from './budgetEtat.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

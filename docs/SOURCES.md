@@ -57,3 +57,13 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Taux de chômage localisé, T2 2026 (CVS, provisoire, publié le 18/09/2026) : Insee — https://www.insee.fr/fr/statistiques/2012804 (valeurs lues via WebFetch ; Mayotte hors champ, donc null).
 - APL médecins généralistes (DREES, data.drees jeu 530, niveau communal, millésimes 2023/2024) : https://data.drees.solidarites-sante.gouv.fr/explore/dataset/530_l-accessibilite-potentielle-localisee-apl/ — aucune moyenne régionale lue, valeur null pour toutes les régions.
 - Densité de médecins généralistes pour 100 000 habitants, 1er janvier 2025 (Insee/Drees, RPPS ; publié 25/09/2025), 18 régions, colonne « dont généralistes » : https://www.insee.fr/fr/statistiques/2012677 (fichier TCRD_068.xlsx, feuille régionale, vérifié) ; médecins en activité, tous modes d'exercice.
+
+## Finances publiques (collecte 2026-11-03)
+- Fichier : `src/data/finances.json`. Périmètre : administrations publiques (S13), comptes nationaux base 2020, année 2025 (résultats Insee du 29/05/2026 ; données d'impôts provisoires).
+- PIB 2025 (2 991,1 Md€), dette Maastricht (3 460,1 Md€, 115,7 % du PIB) : Insee, tableaux 3.101/3.102 — https://www.insee.fr/fr/statistiques/8988843
+- Déficit 5,1 % du PIB (152,5 Md€) : Insee, Informations rapides n°78 (27/03/2026) — https://www.insee.fr/fr/statistiques/8956575
+- Recettes (1 562,5), dépenses (1 714,1), intérêts D41 (64,7 hors SIFIM), cotisations sociales (498,7) : Insee, tableau 3.201 — https://www.insee.fr/fr/statistiques/8988845
+- Détail des impôts 2025 (TVA, CSG, IR, IS, taxe foncière, accises…) : Insee, « Impôts », séries 1995-2025 — https://www.insee.fr/fr/statistiques/2381408
+- Dépenses COFOG : dernier millésime publié = 2024 (tableau 3.301, https://www.insee.fr/fr/statistiques/8574707) ; le millésime 2025 est annoncé pour décembre 2026. Les dépenses par fonction du fichier sont donc une **estimation** : structure 2024 mise à l'échelle du total de dépenses 2025 hors intérêts (coefficient 1,0227), intérêts 2025 réels.
+- Regroupements et approximations (détail dans le champ `notes` du JSON) : taxe foncière classée en totalité chez les ménages ; « recherche » = lignes COFOG R&D (01.4, 01.5, 02.4, 04.8, 05.5, 07.5), retranchées des autres postes, sous-estime la R&D universitaire ; « autres » recettes = solde pour atteindre le total des recettes.
+- Contrôle : recettes − dépenses = −151,6 Md€ contre −152,5 Md€ attendus (écart 0,6 %, différence B9NF / Maastricht). Non consultés : Cour des comptes, PLF 2027, Agence France Trésor, Eurostat (non nécessaires, les chiffres Insee suffisent).

@@ -1,5 +1,5 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, voterBudget } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
@@ -71,7 +71,7 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -81,14 +81,14 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets });
-        ctx.defi = null; ctx.brouillon = null; break;
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances });
+        ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
-        ctx.brouillon = null; break;
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {
         const brut = lire(CLE);
@@ -112,7 +112,8 @@ export function dispatch(action) {
       case 'candidat': etat = seDeclarerCandidat(etat, donnees); toast('Vous êtes candidat·e (simulation).', 'info'); break;
       case 'dissolution': etat = proposerDissolution(etat, donnees); break;
       case 'evenement': etat = resoudreEvenement(etat, action.index, donnees); break;
-      case 'budget': etat = voterBudget(etat, { depenses: action.depenses, impots: action.impots }); ctx.brouillonBudget = null; break;
+      case 'plf-deposer': etat = deposerPLF(etat, action.plf ?? ctx.brouillonPLF); ctx.brouillonPLF = null; toast('Projet de loi de finances déposé.', 'info'); break;
+      case 'plf-493': etat = recourir493PLF(etat); ctx.confirm493 = false; break;
       case 'suivant': etat = tourSuivant(etat, donnees); break;
       case 'exporter': telecharger(exporterPartie(etat), `hemicycle-mois-${etat.tour}.json`); return;
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
@@ -135,8 +136,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

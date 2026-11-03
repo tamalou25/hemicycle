@@ -12,6 +12,7 @@ export function importerPartie(texte) {
   if (etat.version === 2) etat = migrerV2(etat);
   if (etat.version === 3) etat = { ...etat, version: 4, evenement: null, evenementsPasses: [], dernierBudget: null };
   if (etat.version === 4) etat = { ...etat, version: 5, territoires: null, projets: [], finances: null, satisfactionInitiale: null };
+  if (etat.version === 5) etat = { ...etat, version: 6, budget: null, plf: null, dernierPLF: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -101,6 +102,14 @@ function assainir(e) {
     })),
     finances: e.finances && typeof e.finances === 'object' ? { enveloppe: nb(e.finances.enveloppe), recurrent: nb(e.finances.recurrent), annee: nb(e.finances.annee) } : null,
     satisfactionInitiale: nbOuNull(e.satisfactionInitiale),
+    budget: e.budget && typeof e.budget === 'object' ? {
+      pib: nb(e.budget.pib, 2900), taux: nb(e.budget.taux, 0.02), annee: nb(e.budget.annee),
+      recettes: nombres(e.budget.recettes) ?? {}, depenses: nombres(e.budget.depenses) ?? {}, ecarts: nombres(e.budget.ecarts) ?? {},
+    } : null,
+    plf: e.plf && typeof e.plf === 'object' ? {
+      depenses: nombres(e.plf.depenses) ?? {}, recettes: nombres(e.plf.recettes) ?? {}, depot: nb(e.plf.depot), recours493: bool(e.plf.recours493),
+    } : null,
+    dernierPLF: nbOuNull(e.dernierPLF),
     explications: liste(e.explications, (x) => ({
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
       tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),

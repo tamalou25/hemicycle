@@ -141,3 +141,16 @@ describe('régions, carte et projets (E1)', () => {
     for (const id of Object.keys(projets.transports_initial)) expect(regions.regions.some((r) => r.id === id)).toBe(true);
   });
 });
+
+describe('finances.json (E2)', () => {
+  const f = lire('finances.json');
+  it('cohérence : recettes − dépenses ≈ −déficit (écart < 5 %), postes attendus', () => {
+    const somme = (o) => Object.values(o).reduce((s, v) => s + v, 0);
+    const soldeCalc = somme(f.recettes_md) - somme(f.depenses_md);
+    const soldeAttendu = -(f.deficit_pct_pib * f.pib_md) / 100;
+    expect(Math.abs(soldeCalc - soldeAttendu) / Math.abs(soldeAttendu)).toBeLessThan(0.05);
+    for (const k of ['protection_sociale', 'sante', 'education', 'defense_securite', 'infrastructures_environnement', 'recherche', 'administration_autres', 'interets']) expect(f.depenses_md[k]).toBeGreaterThan(0);
+    for (const k of ['impots_menages', 'impots_entreprises', 'tva_consommation', 'cotisations_sociales']) expect(f.recettes_md[k]).toBeGreaterThan(0);
+    expect(f.sources.length).toBeGreaterThan(0);
+  });
+});
