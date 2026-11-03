@@ -9,6 +9,7 @@ import { sectionEvenement, brancherEvenement } from '../components/evenement.js'
 import { sectionBudget, brancherBudget } from '../components/budget.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
+import { sectionBilan } from '../components/bilan.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
 const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold border rounded-full mr-1 ${p[2]}" title="${p[1]}"><span aria-hidden="true">${p[0]}</span><span class="sr-only">${p[1]} :</span></span>` : ''; };
@@ -48,6 +49,7 @@ export function render(racine, etat, dispatch, ctx) {
       ${zonePartage(etat)}
     </header>
 
+    ${sectionBilan(etat, { lois, evenements: ctx.evenements })}
     <section aria-labelledby="h-ind" class="mb-6">
       <h2 id="h-ind" class="font-serif font-bold text-xl mb-2">Indicateurs</h2>
       <div class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-3">${INDICATEURS_JAUGE.map((i) => jauge(i, etat)).join('')}</div>

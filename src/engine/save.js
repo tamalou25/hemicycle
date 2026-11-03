@@ -89,6 +89,11 @@ function assainir(e) {
     evenement: chOuNull(e.evenement, 100),
     evenementsPasses: liste(e.evenementsPasses, (x) => ({ id: ch(x.id, 100), tour: nb(x.tour), choix: nb(x.choix) })),
     dernierBudget: nbOuNull(e.dernierBudget),
+    explications: liste(e.explications, (x) => ({
+      tour: nb(x.tour), indicateur: INDICATEURS.includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
+      source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
+      ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
+    })),
   };
 }
 

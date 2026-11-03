@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - name: CSS compilé à jour (assets/app.css doit être commité après npm run build:css)
+        run: npm run build:css && git diff --exit-code assets/app.css
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -36,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Préparer le site (fichiers statiques uniquement)
-        run: mkdir _site && cp -r index.html src _site/
+        run: mkdir _site && cp -r index.html src assets _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
