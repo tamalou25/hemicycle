@@ -4,6 +4,7 @@ import { initialiserTerritoires, satisfactionNationale } from './territoires.js'
 import { financesInitiales } from './finances.js';
 import { budgetInitial } from './budgetEtat.js';
 import { initialiserGroupes } from './groupes.js';
+import { secteursInitiaux } from './secteurs.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -13,7 +14,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -64,6 +65,8 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     ...etatTerritorial(regions, projets),
     // Finances publiques (E2)
     budget: budgetInitial(finances), plf: null, dernierPLF: null,
+    // Secteurs (E4)
+    secteurs: secteursInitiaux(politiques), politiques: [],
     sondage: null,
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
@@ -87,9 +90,10 @@ export function etatTerritorial(regions, projets) {
 }
 
 /** Complète une partie qui n'a pas encore de territoires (sauvegarde antérieure à E1). */
-export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage }) {
+export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage, politiques }) {
   let e = etat.territoires ? etat : { ...etat, ...etatTerritorial(regions, projets) };
   if (!e.budget && finances) e = { ...e, budget: budgetInitial(finances), plf: null, dernierPLF: null };
+  if (!e.secteurs && politiques) e = { ...e, secteurs: secteursInitiaux(politiques), politiques: [] };
   if (!e.groupes && groupes) e = { ...e, groupes: initialiserGroupes(e, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
   return e;
 }

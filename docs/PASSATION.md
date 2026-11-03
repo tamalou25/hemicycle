@@ -1,7 +1,8 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e3-population` (PR à ouvrir ou à finir). E0, E1 et E2 sont mergés dans `main`.
+- **Branche en cours** : `e4-secteurs` (E4). E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
+- **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
 - **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
 - **Cadrage v2** : validé, avec la roadmap E0 → E7 (voir plus bas).
@@ -56,7 +57,8 @@
 - Ordre de livraison : web, puis PWA, puis Capacitor (à évaluer en E7, rien d'installé). Multijoueur, comptes et opérations militaires sont hors périmètre.
 
 ## Tests exécutés (sur cette branche)
-- **Vitest, E3** : 111 tests passent. Playwright : 4 tests passent (ordinateur et mobile).
+- **Vitest, E4** : 120 tests passent. Playwright : 6 tests passent (dont `decisions.spec.js`).
+- **Vitest, E3** : 111 tests passaient. Playwright : 4 tests passent (ordinateur et mobile).
 - **Vitest, E2** : 98 tests passaient. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
 - **Vitest, E1** : 87 tests passaient (E1 : territoires, projets, briefing, migration v5, schémas des régions, de la carte et des projets).
 - **Playwright, E1** : sélection de Mayotte au clavier, projet lancé puis mis en service, effet expliqué dans la fiche. Aucune erreur console et pas de scroll horizontal à 390 px.
@@ -95,7 +97,7 @@
 - Interface : onglet Budget avec le tableau des finances, le PLF à curseurs et un aperçu en direct (solde, orientation, vote probable « estimation »), bannière dans Bureau. Les anciens leviers ±2 pt sont retirés.
 - **Équilibrage** : la dette progresse d'environ 2 points par an sans action. Un budget neutre d'un PM EPR est rejeté 271–292 sans accord : il faut négocier ou utiliser le 49.3.
 
-### E3 Population (en cours sur `e3-population`)
+### E3 Population (mergé, PR #10)
 - **Fait et testé (moteur)** :
   - `groupes.json` : 6 groupes avec leurs parts (Insee RP 2023) ;
   - `groupes-equilibrage.json` : des priorités seulement, **aucune orientation politique attribuée aux groupes** ;
@@ -104,11 +106,18 @@
   - sauvegarde v7.
 - **Corrigé** (4 remarques de revue sur E2) : PIB nominal, précision de `borner` portée à 4 décimales, mois de départ de la révision des intérêts, vote de censure enregistré.
 - **Playwright** : en place (`e2e/`, configurations ordinateur et mobile, job `e2e` dans la CI). Voir le README.
-- **Interface E3** : écrite par un sous-agent (onglet Opinion `src/ui/components/opinion.js`, vue « Législatives » sur la carte). Elle est commitée **sans relecture finale** : vérifier visuellement l'onglet Opinion et la vue Législatives, puis ajouter un test e2e pour l'onglet Opinion.
+- **Interface E3** : onglet Opinion et vue « Législatives » de la carte (motifs, légende, badge SIMULATION), vérifiés visuellement. Reste à ajouter un test e2e pour l'onglet Opinion.
+- **Branche `phase-E3-population` (Codex) : ne pas merger.** Elle a été faite en parallèle à partir de `main` avant E3. Elle réimplémente la population différemment (4 profils fictifs par région) et supprime les correctifs E2 ainsi que la config Vitest. Idée à reprendre plus tard : une confiance différenciée par région (`population.js`, `intentionsRegionales`).
 - **Avant de merger** : `npm test`, `npm run test:e2e`, `npm run build:css` (la CI vérifie que le CSS compilé est commité), mise à jour du README.
 
+### E4 Secteurs et onglet Décisions
+- `politiques.json` (paramètres d'équilibrage) : 6 secteurs et 12 programmes nationaux, chacun avec un coût en Md€ par an (déficit et poste budgétaire), un délai, une montée en charge du niveau et une contrepartie affichée. Prérequis en recherche. Défense limitée aux moyens et à la préparation.
+- `secteurs.js` : usure de 0,05 par mois, montée en charge expliquée dans le registre. Sauvegarde v8.
+- **`decisions.js` : catalogue unifié** de toutes les actions en 4 catégories (nationales, territoriales, exceptionnelles, négociations), avec secteur, coût, délai et statut (disponible, en cours, bloquée avec sa raison, faite, urgente).
+- Interface : **onglet Décisions** (filtres par catégorie, statut et secteur ; cartes compactes avec un seul bouton). Les doublons ont été retirés de l'onglet Parlement. Le Bureau affiche le nombre de décisions et un panneau Secteurs.
+- À corriger : les compteurs de catégorie dépendent du filtre de statut.
+
 ## Étapes suivantes (non commencées)
-- **E4 Secteurs** : social et logement, éducation, énergie, sécurité et justice, défense (moyens et préparation uniquement), recherche avec prérequis et durée. Au moins 2 actions par secteur, avec des contreparties testées.
 - **E5 Politique reliée** : les groupes parlementaires réagissent aux résultats ; réintégrer le mode élu réel (règles de contenu dans CLAUDE.md).
 - **E6 PWA** : manifest, service worker, partie jouable hors ligne (aucun CDN, déjà le cas).
 - **E7 Mobile** : évaluer Capacitor (ne rien publier automatiquement sur les stores).

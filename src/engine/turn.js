@@ -11,6 +11,7 @@ import { evoluerTerritoires, satisfactionNationale } from './territoires.js';
 import { avancerProjets } from './projets.js';
 import { renouvelerEnveloppe } from './finances.js';
 import { voterPLF, evoluerBudget, effetsBudgetTerritoires } from './budgetEtat.js';
+import { evoluerSecteurs } from './secteurs.js';
 import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
 
@@ -71,6 +72,13 @@ export function tourSuivant(etatInitial, donnees) {
   // 2 ter. Finances publiques : PIB, dette, charge d'intérêts (révisée en janvier)
   if (etat.budget) etat = evoluerBudget({ ...etat, indicateurs: ind }, dateDuTour({ ...etat, tour }).mois).etat;
 
+  // 2 ter bis. Secteurs (E4) : usure et montée en charge des programmes nationaux
+  let entreesSecteurs = [];
+  if (etat.secteurs && donnees.politiques) {
+    const sc = evoluerSecteurs(etat, donnees, tour);
+    etat = sc.etat; entreesSecteurs = sc.entrees;
+  }
+
   // 2 quater. Population (E3) : satisfaction et confiance des groupes sociaux
   let entreesGroupes = [];
   let bonusConfiance = 0;
@@ -88,7 +96,7 @@ export function tourSuivant(etatInitial, donnees) {
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };

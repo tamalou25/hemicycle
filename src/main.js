@@ -1,5 +1,5 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
@@ -40,7 +40,7 @@ async function chargerJson(chemin) {
 const racine = document.getElementById('app');
 let etat = null;
 let ecran = 'accueil';
-const ctx = { onglet: lire(CLE_ONGLET) || 'bureau', region: null, vue: 'satisfaction', accepte: lire(CLE_ACCORD) === '1', filtreTheme: '', brouillon: null, sauvegardeExiste: !!lire(CLE) };
+const ctx = { onglet: lire(CLE_ONGLET) || 'bureau', region: null, vue: 'satisfaction', accepte: lire(CLE_ACCORD) === '1', filtreTheme: '', decisions: { categorie: '', secteur: '', statut: 'disponible' }, brouillon: null, sauvegardeExiste: !!lire(CLE) };
 
 function afficher({ focus = true } = {}) {
   const actif = document.activeElement?.id;
@@ -72,7 +72,7 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -82,13 +82,13 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage });
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {
@@ -105,6 +105,7 @@ export function dispatch(action) {
       case 'region': ctx.region = action.id; return afficher({ focus: false });
       case 'ui': Object.assign(ctx, action.patch); return afficher({ focus: false });
       case 'projet': etat = lancerProjet(etat, action.projetId, action.regionId, donnees); toast('Projet lancé.', 'info'); break;
+      case 'politique': etat = engagerPolitique(etat, action.id, donnees); toast('Programme engagé.', 'info'); break;
       case 'proposer': etat = proposerLoi(etat, action.loi, donnees); break;
       case 'amender': etat = amenderTexte(etat, donnees); break;
       case '493': etat = recourir493(etat, donnees); break;
@@ -137,8 +138,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

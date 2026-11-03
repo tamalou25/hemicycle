@@ -14,6 +14,7 @@ export function importerPartie(texte) {
   if (etat.version === 4) etat = { ...etat, version: 5, territoires: null, projets: [], finances: null, satisfactionInitiale: null };
   if (etat.version === 5) etat = { ...etat, version: 6, budget: null, plf: null, dernierPLF: null };
   if (etat.version === 6) etat = { ...etat, version: 7, groupes: null, chocs: {} };
+  if (etat.version === 7) etat = { ...etat, version: 8, secteurs: null, politiques: [] };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -117,10 +118,16 @@ function assainir(e) {
         satisfaction: nb(g?.satisfaction, 50), confiance: nb(g?.confiance, 40), confianceInitiale: nb(g?.confianceInitiale, 40) }]))
       : null,
     chocs: nombres(e.chocs) ?? {},
+    secteurs: nombres(e.secteurs),
+    politiques: liste(e.politiques, (x) => ({
+      id: ch(x.id, 80), debut: nb(x.debut), enService: nb(x.enService),
+      statut: ['preparation', 'montee', 'en_oeuvre'].includes(x.statut) ? x.statut : 'en_oeuvre',
+    })),
     explications: liste(e.explications, (x) => ({
       ...(typeof x.groupe === 'string' ? { groupe: x.groupe.slice(0, 60) } : {}),
+      ...(typeof x.secteur === 'string' ? { secteur: x.secteur.slice(0, 40) } : {}),
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) ? x.indicateur : 'popularite', delta: nb(x.delta),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^secteur:[a-z_]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),
