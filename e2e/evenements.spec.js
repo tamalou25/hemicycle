@@ -28,7 +28,9 @@ test('événement régional : région affichée, effets locaux, lien vers la car
   await expect(carte).toContainText(/0,15 Md€/);
   const hauteur = await carte.evaluate((el) => el.getBoundingClientRect().height);
   test.info().annotations.push({ type: 'hauteur-evenement', description: `${Math.round(hauteur)}px` });
-  if (test.info().project.name === 'mobile') expect(hauteur).toBeLessThan(700); // environ 900 px avant le compactage
+  // Environ 900 px avant le compactage ; environ 645 px aujourd'hui (environ 680 px avec des polices plus larges, comme en CI).
+  // La limite détecte une régression vers l'ancien format, pas les écarts de rendu entre plateformes.
+  if (test.info().project.name === 'mobile') expect(hauteur).toBeLessThan(760);
   await page.getByRole('button', { name: 'Voir Mayotte sur la carte' }).click();
   await expect(page.getByRole('heading', { name: 'Mayotte' })).toBeVisible();
   expect(erreurs).toEqual([]);

@@ -30,7 +30,7 @@ export function sectionEvenement(etat, ctx) {
     const couts = [`${c.cout_capital ?? 0} capital`, c.cout_md ? `${fmt(c.cout_md, 2)} Md€` : ''].filter(Boolean).join(' · ');
     const effets = [...(c.effets ?? []).map(apercu), ...(region ? (c.effets_region ?? []).map((e) => apercuLocal(e, region.nom)) : [])].join('');
     return `<li><button type="button" data-evenement="${i}" ${refus ? `disabled aria-describedby="ev-refus-${i}"` : ''}
-      class="btn btn-s w-full !text-left !items-start flex-col gap-1 py-2 disabled:opacity-60 disabled:cursor-not-allowed">
+      class="btn btn-s w-full !text-left !items-start flex-col gap-0.5 py-1.5 disabled:opacity-60 disabled:cursor-not-allowed">
       <span class="font-semibold leading-snug">${esc(c.libelle)} <span class="font-normal text-doux text-sm">· ${esc(couts)}</span></span>
       ${effets ? `<ul class="flex flex-wrap gap-1">${effets}</ul>` : ''}
       ${refus ? `<span id="ev-refus-${i}" class="text-xs text-rouge">${esc(refus)}</span>` : ''}
@@ -40,9 +40,9 @@ export function sectionEvenement(etat, ctx) {
   return `<section role="alert" aria-labelledby="h-ev" class="mb-4 bg-[#FFF3C4] border-2 border-encre rounded-lg p-3 sm:p-4">
     <p class="text-xs font-bold uppercase tracking-wide">Événement · ${esc(THEMES_EV[ev.theme] ?? ev.theme)}${region ? ` · ${esc(region.nom)}` : ''}</p>
     <h2 id="h-ev" class="font-serif font-bold text-xl sm:text-2xl leading-tight">${esc(ev.titre)}</h2>
-    <p class="mt-1 text-sm sm:text-base">${esc(ev.description)}</p>${lienCarte}
-    <ul class="mt-2 grid gap-2 md:grid-cols-2 lg:grid-cols-3">${choix}</ul>
-    <p class="mt-2 text-xs">Sans réponse, la dernière option sera appliquée à la fin du mois.</p>
+    <p class="mt-0.5 text-sm sm:text-base leading-snug">${esc(ev.description)}</p>${lienCarte}
+    <ul class="mt-1.5 grid gap-1.5 md:grid-cols-2 lg:grid-cols-3">${choix}</ul>
+    <p class="mt-1.5 text-xs">Sans réponse, la dernière option s'applique à la fin du mois.</p>
   </section>`;
 }
 
