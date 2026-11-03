@@ -61,6 +61,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     campagneCeMois: false,
     // Profondeur (Phase 5)
     evenement: null,          // id de l'événement en attente de réponse
+    evenementRegion: null,    // région visée par un événement régional
     evenementsPasses: [],
     dernierBudget: null,
     explications: [],       // registre des causes (12 derniers mois)
