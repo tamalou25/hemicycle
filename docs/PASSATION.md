@@ -1,7 +1,7 @@
 # Passation : Hémicycle (03/11/2026)
 
 ## Où en est le projet
-- **Branche en cours** : `e5-politique` (E5). E0 à E4 sont mergés. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
+- **Branche en cours** : `e6-pwa` (E6). E0 à E5 sont mergés. E0, E1, E2 et E3 sont mergés dans `main` (E3 = PR #10).
 - **Toujours partir de `main` à jour** (`git fetch origin main && git checkout -B <branche> origin/main`).
 - **Reprise par un autre agent** : lire cette section en premier.
 - **`main`** : les phases 1 à 6 (v1) sont mergées et déployées sur https://tamalou25.github.io/hemicycle/
@@ -57,7 +57,8 @@
 - Ordre de livraison : web, puis PWA, puis Capacitor (à évaluer en E7, rien d'installé). Multijoueur, comptes et opérations militaires sont hors périmètre.
 
 ## Tests exécutés (sur cette branche)
-- **Vitest, E5** : 126 tests passent. Playwright : 10 tests passent (dont `politique.spec.js`).
+- **E6** : 128 tests Vitest, 14 tests Playwright (dont le hors ligne).
+- **Vitest, E5** : 128 tests passent. Playwright : 10 tests passent (dont `politique.spec.js`).
 - **Vitest, E4** : 120 tests passaient. Playwright : 6 tests passent (dont `decisions.spec.js`).
 - **Vitest, E3** : 111 tests passaient. Playwright : 4 tests passent (ordinateur et mobile).
 - **Vitest, E2** : 98 tests passaient. Playwright E2 : PLF déposé, aperçu cohérent avec le vote réel (rejet 271–292, loi spéciale), aucune erreur console.
@@ -126,8 +127,16 @@
 - Interface : relations et réactions du mois dans Parlement, réaction probable sur les cartes de Décisions. Le mode élu réel a été vérifié (e2e).
 - Corrigé : `partis` n'était pas passé à `creerPartie` lors d'une nouvelle partie.
 
+- E5, corrigé après coup : défilement horizontal sur l'écran de choix de l'élu en CI mobile (fieldset et grille rétrécissables, garde-fou `overflow-x: clip`, vérification dans l'e2e). Plus les 3 remarques de revue sur E4.
+
+### E6 PWA
+- `manifest.webmanifest` (installable, `standalone`, couleurs du bureau) et icônes générées dans `assets/icones/`.
+- `sw.js` est **généré** par `scripts/generer-sw.js` (`npm run build`) : il met en cache la liste exacte des 77 fichiers du jeu. La version du cache est dérivée du contenu, et les anciennes versions sont purgées.
+- Enregistrement dans `main.js`. Un échec d'enregistrement n'empêche jamais de jouer.
+- CI : vérifie que `sw.js` est à jour ; le déploiement copie `sw.js` et le manifeste.
+- e2e `pwa.spec.js` : manifeste et icônes accessibles, **partie rechargée et jouée hors ligne**.
+
 ## Étapes suivantes (non commencées)
-- **E6 PWA** : manifest, service worker, partie jouable hors ligne (aucun CDN, déjà le cas).
 - **E7 Mobile** : évaluer Capacitor (ne rien publier automatiquement sur les stores).
 - **Méthode** : une branche et une PR par étape, toute variation d'indicateur passe par `explications.js`, chaque nouveau champ d'état est ajouté à `save.js` (nettoyage strict) avec une migration de version.
 
