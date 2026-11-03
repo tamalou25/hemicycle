@@ -12,7 +12,7 @@ import { sectionParlement, libelleRole } from '../components/parlement.js';
 import { sectionBilan } from '../components/bilan.js';
 import { briefing, satisfactionNationale } from '../../engine/index.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
-import { sectionFinances } from '../components/finances.js';
+import { raisonRefusPLF } from '../../engine/index.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
 const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold border rounded-full mr-1 ${p[2]}" title="${p[1]}"><span aria-hidden="true">${p[0]}</span><span class="sr-only">${p[1]} :</span></span>` : ''; };
@@ -49,7 +49,9 @@ function carteBriefing(pt, i) {
 
 function ongletBureau(etat, ctx, donnees, points) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
+  const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
   return `${sectionEvenement(etat, ctx)}
+    ${plfOuvert ? '<p class="mb-4 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
     <section aria-labelledby="h-brief" class="mb-6">
       <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Briefing du mois</h2>
       <ul class="grid md:grid-cols-3 gap-3">${points.map(carteBriefing).join('')}</ul>
@@ -121,7 +123,7 @@ export function render(racine, etat, dispatch, ctx) {
   ctx.vue = vueValide(ctx.vue);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
-    : onglet === 'budget' ? `${sectionFinances(etat, ctx)}${sectionBudget(etat, ctx)}`
+    : onglet === 'budget' ? sectionBudget(etat, ctx)
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
@@ -147,6 +149,7 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelector('#suivant')?.addEventListener('click', () => dispatch({ type: 'suivant' }));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
+    racine.querySelector('[data-aller-budget]')?.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'budget', haut: true }));
     racine.querySelectorAll('[data-brief]').forEach((b) => b.addEventListener('click', () => {
       const pt = points[Number(b.dataset.brief)];
       if (pt.type === 'territoire') dispatch({ type: 'onglet', onglet: 'carte', region: pt.region, vue: pt.indice, haut: true });
@@ -155,7 +158,7 @@ export function render(racine, etat, dispatch, ctx) {
       else racine.querySelector('[data-evenement]')?.focus();
     }));
   } else if (onglet === 'carte') brancherCarte(racine, dispatch);
-  else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx);
+  else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);
     racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));
