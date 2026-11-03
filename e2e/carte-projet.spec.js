@@ -1,5 +1,6 @@
 // Parcours principal de la tranche E1 : carte → région → projet → dépense → mois → effet visible.
 import { test, expect } from '@playwright/test';
+import { ouvrirOnglet, texteVisible } from './aide.js';
 
 /** Accepte le disclaimer et crée un personnage Premier ministre. */
 async function nouvellePartie(page) {
@@ -22,7 +23,7 @@ test.describe('carte et projets territoriaux', () => {
 
   test('sélectionner une région au clavier et y lancer un projet', async ({ page }) => {
     await nouvellePartie(page);
-    await page.getByRole('tab', { name: 'Carte' }).click();
+    await ouvrirOnglet(page, 'Carte');
 
     // Sélection au clavier : focus sur la région puis Entrée
     const bretagne = page.getByRole('button', { name: /^Bretagne,/ });
@@ -42,14 +43,14 @@ test.describe('carte et projets territoriaux', () => {
 
     // Après un mois, le projet est toujours en chantier et la partie avance
     await page.getByRole('button', { name: 'Mois suivant' }).click();
-    await expect(page.getByText(/Décembre 2026/i).first()).toBeVisible();
+    await expect(texteVisible(page, /Décembre 2026/i)).toBeVisible();
 
     expect(page.erreurs, 'aucune erreur JavaScript').toEqual([]);
   });
 
   test('pas de défilement horizontal sur la carte', async ({ page }) => {
     await nouvellePartie(page);
-    await page.getByRole('tab', { name: 'Carte' }).click();
+    await ouvrirOnglet(page, 'Carte');
     const debordement = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(debordement).toBeLessThanOrEqual(0);
   });

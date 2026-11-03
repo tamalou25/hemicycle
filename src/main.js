@@ -46,6 +46,7 @@ function afficher({ focus = true } = {}) {
   const actif = document.activeElement?.id;
   const y = window.scrollY;
   ctx.sauvegardeExiste = !!lire(CLE);
+  document.body.classList.toggle('avec-barres', ecran === 'tableau');
   ECRANS[ecran](racine, etat, dispatch, ctx);
   window.scrollTo(0, y);
   const cible = actif && document.getElementById(actif);

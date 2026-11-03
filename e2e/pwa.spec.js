@@ -1,5 +1,6 @@
 // PWA : manifeste valide et partie jouable hors ligne après une première visite.
 import { test, expect } from '@playwright/test';
+import { texteVisible } from './aide.js';
 
 test('manifeste et icônes accessibles', async ({ page, request }) => {
   await page.goto('/');
@@ -25,6 +26,6 @@ test('hors ligne : la partie se recharge et se joue sans réseau', async ({ page
   await page.getByLabel(/^Nom/).fill('Hors ligne');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByRole('button', { name: 'Mois suivant' }).click();
-  await expect(page.getByText(/Décembre 2026/i).first()).toBeVisible();
+  await expect(texteVisible(page, /Décembre 2026/i)).toBeVisible();
   await context.setOffline(false);
 });

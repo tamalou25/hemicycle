@@ -1,5 +1,6 @@
 // Onglet Décisions : filtres, engagement d'un programme, raison d'un blocage.
 import { test, expect } from '@playwright/test';
+import { ouvrirOnglet } from './aide.js';
 
 async function nouvellePartie(page) {
   await page.goto('/');
@@ -16,7 +17,7 @@ test('décisions : filtrer, engager un programme, voir une raison de blocage', a
   page.on('console', (m) => { if (m.type() === 'error') erreurs.push(m.text()); });
   await nouvellePartie(page);
 
-  await page.getByRole('tab', { name: 'Décisions' }).click();
+  await ouvrirOnglet(page, 'Décisions');
   await expect(page.getByRole('heading', { name: 'Décisions', level: 2 })).toBeVisible();
   const nationales = page.getByRole('button', { name: /^Politiques nationales/ });
   await nationales.click();
