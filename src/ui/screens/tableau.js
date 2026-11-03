@@ -9,6 +9,7 @@ import { sectionEvenement, brancherEvenement } from '../components/evenement.js'
 import { sectionBudget, brancherBudget } from '../components/budget.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { sectionParlement, libelleRole } from '../components/parlement.js';
+import { ongletOpinion } from '../components/opinion.js';
 import { sectionBilan } from '../components/bilan.js';
 import { briefing, satisfactionNationale } from '../../engine/index.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
@@ -19,7 +20,7 @@ const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inlin
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
 
-export const ONGLETS = [['bureau', 'Bureau'], ['carte', 'Carte'], ['budget', 'Budget'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+export const ONGLETS = [['bureau', 'Bureau'], ['carte', 'Carte'], ['budget', 'Budget'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
 function barreOnglets(actif) {
@@ -72,9 +73,7 @@ function ongletParlement(etat, ctx) {
   const loisAff = lois.filter((l) => !filtre || l.theme === filtre);
   return `${sectionParlement(etat, ctx)}
     ${sectionReactions(etat, ctx)}
-    <div class="grid lg:grid-cols-2 gap-6 mb-6">
-      <section aria-labelledby="h-son" class="bg-carte border border-bord rounded-lg p-4">
-        <h2 id="h-son" class="font-serif font-bold text-xl mb-2">Sondage, intentions de vote</h2>${blocSondage(etat, partis)}</section>
+    <div class="grid gap-6 mb-6">
       <section aria-labelledby="h-vote" class="bg-carte border border-bord rounded-lg p-4">
         <h2 id="h-vote" class="font-serif font-bold text-xl mb-2">Dernier vote</h2>${blocVote(etat, lois, partis, ctx.senat)}</section>
     </div>
@@ -120,10 +119,11 @@ export function render(racine, etat, dispatch, ctx) {
   const onglet = ONGLETS.some(([id]) => id === ctx.onglet) ? ctx.onglet : 'bureau';
   const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
-  ctx.vue = vueValide(ctx.vue);
+  ctx.vue = vueValide(ctx.vue, etat);
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
+    : onglet === 'opinion' ? ongletOpinion(etat, ctx)
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
@@ -159,6 +159,7 @@ export function render(racine, etat, dispatch, ctx) {
     }));
   } else if (onglet === 'carte') brancherCarte(racine, dispatch);
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
+  else if (onglet === 'opinion') { /* contenu en lecture seule */ }
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);
     racine.querySelector('#theme').addEventListener('change', (e) => dispatch({ type: 'filtre', theme: e.target.value }));

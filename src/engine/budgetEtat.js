@@ -97,7 +97,7 @@ export function deposerPLF(etat, choix) {
 export function recourir493PLF(etat) {
   if (!etat.plf) throw new Error('Aucun projet de loi de finances en discussion.');
   if (etat.plf.recours493) throw new Error('49.3 déjà engagé sur le budget.');
-  return { ...etat, plf: { ...etat.plf, recours493: true }, journal: [...etat.journal, { tour: etat.tour, type: '493', texte: 'Le gouvernement engage sa responsabilité (49.3) sur le budget.' }] };
+  return { ...etat, plf: { ...etat.plf, recours493: true }, chocs: { ...(etat.chocs ?? {}), '49.3': -3 }, journal: [...etat.journal, { tour: etat.tour, type: '493', texte: 'Le gouvernement engage sa responsabilité (49.3) sur le budget.' }] };
 }
 
 /** Applique un PLF adopté : nouveaux montants, effets différés (déficit, secteurs, recettes). */
@@ -150,6 +150,7 @@ export function voterPLF(etat, { partis }) {
       return { ...etat, plf: null, journal, dernierVote: { loi: 'budget', chambre: 'censure', ...c }, fin: { type: 'censure', texte: 'Votre gouvernement a été renversé sur le budget.' } };
     }
     journal.push({ tour: etat.tour, type: 'censure', texte: `Motion de censure rejetée (${c.pour} voix) : le budget est adopté.` });
+    etat = { ...etat, dernierVote: { loi: 'budget', chambre: 'censure', ...c } };
     adopte = true;
   } else {
     const v = voterBudgetAssemblee(etat, AN, plf);
@@ -159,7 +160,7 @@ export function voterPLF(etat, { partis }) {
   }
   if (!adopte) {
     journal.push({ tour: etat.tour, type: 'budget', texte: 'Faute de budget, une loi spéciale reconduit les crédits de l’année précédente.' });
-    return { ...etat, plf: null, dernierPLF: etat.tour, journal, indicateurs: { ...etat.indicateurs, popularite: Math.max(0, etat.indicateurs.popularite - 2) } };
+    return { ...etat, plf: null, dernierPLF: etat.tour, journal, chocs: { ...(etat.chocs ?? {}), 'loi-speciale': -1.5 }, indicateurs: { ...etat.indicateurs, popularite: Math.max(0, etat.indicateurs.popularite - 2) } };
   }
   journal.push({ tour: etat.tour, type: 'budget', texte: 'Loi de finances promulguée.' });
   return appliquerPLF({ ...etat, plf: null, dernierPLF: etat.tour, journal }, plf);
@@ -172,7 +173,8 @@ export function voterPLF(etat, { partis }) {
 export function evoluerBudget(etat, moisCalendaire) {
   const b = etat.budget;
   if (!b) return { etat, entrees: [] };
-  const pib = r2(b.pib * (1 + etat.indicateurs.croissance / 1200));
+  // PIB nominal : croissance réelle + inflation (cohérent avec la dynamique de la dette en % du PIB)
+  const pib = r2(b.pib * (1 + (etat.indicateurs.croissance + etat.indicateurs.inflation) / 1200));
   let budget = { ...b, pib };
   let effetsEnCours = etat.effetsEnCours;
   if (moisCalendaire === 1) {
@@ -180,7 +182,7 @@ export function evoluerBudget(etat, moisCalendaire) {
     const interets = r2(detteMd * b.taux);
     const delta = r2(interets - b.depenses.interets);
     budget = { ...budget, depenses: { ...b.depenses, interets }, annee: (b.annee ?? 0) + 1 };
-    if (delta) effetsEnCours = [...effetsEnCours, ...planifierEffets([{ indicateur: 'deficit', valeur: r2((delta / pib) * 100 * 100) / 100, delaiMois: 0, duree: 12 }], etat.tour + 1, 'interets')];
+    if (delta) effetsEnCours = [...effetsEnCours, ...planifierEffets([{ indicateur: 'deficit', valeur: r2((delta / pib) * 100 * 100) / 100, delaiMois: 0, duree: 12 }], etat.tour + 2, 'interets')]; // etat.tour + 1 est le mois en cours, déjà appliqué
   }
   return { etat: { ...etat, budget, effetsEnCours } };
 }

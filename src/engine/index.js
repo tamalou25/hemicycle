@@ -28,6 +28,7 @@ export {
   SECTEURS, RECETTES, VARIATION_MAX, solde, chiffrerPLF, orientationPLF, normaliserPLF,
   deposerPLF, recourir493PLF, raisonRefusPLF, budgetInitial, voterBudgetAssemblee,
 } from './budgetEtat.js';
+export { resultats, satisfactionGroupe, confianceMoyenne, voteJoueurParGroupe, siegesParRegion, RESULTATS } from './groupes.js';
 export { tourSuivant } from './turn.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

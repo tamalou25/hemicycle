@@ -3,6 +3,7 @@
 import { aleatoire, bruit } from './rng.js';
 import { AXES, borner } from './constants.js';
 import { ecartIdeologique } from './parliament.js';
+import { siegesParRegion } from './groupes.js';
 
 export const MOIS_CAMPAGNE = 3;          // campagne ouverte 3 mois avant un scrutin
 export const DELAI_DISSOLUTION = 12;     // art. 12 : pas de nouvelle dissolution dans l'année
@@ -112,15 +113,17 @@ export function secondTour(scores, finalistes, partis) {
 }
 
 /** Législatives : prime majoritaire du scrutin à deux tours (part^1,6), en blocs. */
-export function repartirSieges(scores) {
-  const poids = Object.entries(scores).filter(([, s]) => s >= 5).map(([id, s]) => [id, s ** 1.6]);
-  const total = poids.reduce((a, [, w]) => a + w, 0) || 1;
+export function repartirSieges(scores, total = TOTAL_DEPUTES) {
+  let poids = Object.entries(scores).filter(([, s]) => s >= 5).map(([id, s]) => [id, s ** 1.6]);
+  if (!poids.length) poids = Object.entries(scores).filter(([, s]) => s > 0).map(([id, s]) => [id, s ** 1.6]);
+  if (!poids.length) return Object.fromEntries(Object.keys(scores).map((id) => [id, 0]));
+  const somme = poids.reduce((a, [, w]) => a + w, 0) || 1;
   const sieges = Object.fromEntries(Object.keys(scores).map((id) => [id, 0]));
   let attribues = 0;
-  for (const [id, w] of poids) { sieges[id] = Math.floor((w / total) * TOTAL_DEPUTES); attribues += sieges[id]; }
+  for (const [id, w] of poids) { sieges[id] = Math.floor((w / somme) * total); attribues += sieges[id]; }
   // Restes au plus fort
-  const restes = poids.map(([id, w]) => [id, (w / total) * TOTAL_DEPUTES - sieges[id]]).sort((a, b) => b[1] - a[1]);
-  for (let i = 0; attribues < TOTAL_DEPUTES; i++, attribues++) sieges[restes[i % restes.length][0]]++;
+  const restes = poids.map(([id, w]) => [id, (w / somme) * total - sieges[id]]).sort((a, b) => b[1] - a[1]);
+  for (let i = 0; attribues < total; i++, attribues++) sieges[restes[i % restes.length][0]]++;
   return sieges;
 }
 
@@ -128,7 +131,7 @@ export function repartirSieges(scores) {
  * Organise l'élection prévue ce tour (s'il y en a une). Appelé par tourSuivant.
  * @returns {{ etat, graine }}
  */
-export function tenirElections(etat, { partis, calendrier }, intentions, graine) {
+export function tenirElections(etat, { partis, calendrier, regions }, intentions, graine) {
   const e = prochainesElections(etat, calendrier).find((x) => x.tour === etat.tour);
   if (!e) return { etat, graine };
   let { scores, graine: g } = scoresPremierTour(etat, partis, intentions, graine);
@@ -158,7 +161,12 @@ export function tenirElections(etat, { partis, calendrier }, intentions, graine)
       journal.push({ tour: etat.tour, type: 'election', texte: 'Le nouveau président nomme un autre Premier ministre : vous redevenez député·e.' });
     }
   } else if (e.type === 'legislatives') {
-    const sieges = repartirSieges(scores);
+    // E3 : élection par région (satisfaction locale) quand les territoires existent
+    let sieges;
+    if (etat.territoires && regions?.regions) {
+      const r = siegesParRegion(scores, j, etat.territoires, regions.regions, repartirSieges, TOTAL_DEPUTES);
+      sieges = r.sieges; resultat.parRegion = r.parRegion;
+    } else sieges = repartirSieges(scores);
     resultat.sieges = sieges;
     suite.sieges = sieges;
     journal.push({ tour: etat.tour, type: 'election', texte: `Législatives (simulation) : ${sigle(j)} obtient ${sieges[j] ?? 0} sièges sur ${TOTAL_DEPUTES}.` });

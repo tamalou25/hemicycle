@@ -90,3 +90,32 @@ describe('vote du budget', () => {
     expect(avecAccord.pour).toBeGreaterThanOrEqual(v.pour);
   });
 });
+
+describe('corrections (revue Codex sur E2)', () => {
+  it('les petits effets mensuels s’accumulent (pas perdus à l’arrondi)', async () => {
+    const { appliquerEffets, planifierEffets } = await import('../src/engine/effects.js');
+    let ind = { deficit: 5 }, file = planifierEffets([{ indicateur: 'deficit', valeur: 0.04, delaiMois: 0, duree: 12 }], 1, 'x');
+    for (let m = 1; m <= 12; m++) ({ indicateurs: ind, file } = appliquerEffets(ind, file, m));
+    expect(ind.deficit).toBeCloseTo(5.04, 3);
+  });
+  it('la révision des intérêts s’applique sur 12 mois complets', () => {
+    let e = partie(); // septembre
+    for (let i = 0; i < 4; i++) e = tourSuivant({ ...e, evenement: null }, donnees); // → janvier
+    const eff = e.effetsEnCours.filter((x) => x.source === 'interets');
+    expect(eff.length).toBe(1);
+    expect(eff[0].debut).toBe(e.tour + 1);
+    expect(eff[0].fin - eff[0].debut + 1).toBe(12);
+  });
+  it('49.3 qui survit : le vote de censure est enregistré', () => {
+    let e = recourir493PLF(deposerPLF(partie(), {}));
+    e = tourSuivant(e, donnees);
+    if (!e.fin) expect(e.dernierVote?.chambre).toBe('censure');
+  });
+  it('PIB nominal = croissance réelle + inflation', () => {
+    let e = partie();
+    const pib0 = e.budget.pib, { croissance, inflation } = e.indicateurs;
+    e = tourSuivant({ ...e, evenement: null }, donnees);
+    expect(e.budget.pib / pib0).toBeGreaterThan(1 + croissance / 1200);
+    expect(inflation).toBeGreaterThan(0);
+  });
+});
