@@ -34,7 +34,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     },
     indicateurs: {
       chomage: ind.chomage ?? 7.5, croissance: ind.croissance ?? 0.8, deficit: ind.deficit ?? 5.4,
-      dette: ind.dette ?? 115, inflation: ind.inflation ?? 1.2, popularite: 30, tensions: 40,
+      dette: ind.dette ?? finances?.dette_pct_pib ?? 115, inflation: ind.inflation ?? 1.2, popularite: 30, tensions: 40,
     },
     effetsEnCours: [],
     loisAdoptees: [],
