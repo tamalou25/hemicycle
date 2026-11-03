@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-ae5402149fc0';
+const CACHE = 'hemicycle-60f8a55c65e2';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ const FICHIERS = [
   "./src/data/groupes-equilibrage.json",
   "./src/data/groupes.json",
   "./src/data/laws.json",
+  "./src/data/objectifs.json",
   "./src/data/parties.json",
   "./src/data/politicians.json",
   "./src/data/politiques.json",
@@ -42,6 +43,7 @@ const FICHIERS = [
   "./src/engine/index.js",
   "./src/engine/laws.js",
   "./src/engine/navette.js",
+  "./src/engine/objectifs.js",
   "./src/engine/parliament.js",
   "./src/engine/polls.js",
   "./src/engine/projets.js",
@@ -67,6 +69,7 @@ const FICHIERS = [
   "./src/ui/components/finances.js",
   "./src/ui/components/jauge.js",
   "./src/ui/components/navigation.js",
+  "./src/ui/components/objectifs.js",
   "./src/ui/components/opinion.js",
   "./src/ui/components/parlement.js",
   "./src/ui/components/partage.js",

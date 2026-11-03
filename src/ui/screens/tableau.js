@@ -14,6 +14,7 @@ import { sectionEtatPays, sectionTousIndicateurs } from '../components/etatPays.
 import { sectionCeMois } from '../components/ceMois.js';
 import { briefing, satisfactionNationale, compterDecisions } from '../../engine/index.js';
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
+import { sectionObjectifs } from '../components/objectifs.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { raisonRefusPLF } from '../../engine/index.js';
@@ -62,6 +63,7 @@ function ongletBureau(etat, ctx, donnees, points) {
       <ul class="grid md:grid-cols-3 gap-2 mb-1">${points.map(carteBriefing).join('')}</ul>
       ${lienDecisions(etat, ctx)}
     </section>
+    ${sectionObjectifs(etat, { regions: ctx.regions, objectifs: ctx.objectifs })}
     ${sectionCeMois(etat, donnees)}
     ${sectionTousIndicateurs(etat, sat)}
     ${panneauSecteurs(etat, ctx)}

@@ -1,0 +1,98 @@
+{
+  "note": "Objectifs de mandat proposés au joueur (il en choisit 3). Seuils = paramètres d'équilibrage. Aucun objectif n'impose une orientation politique : ils portent sur des résultats.",
+  "nombre_a_choisir": 3,
+  "defaut": [
+    "chomage",
+    "deficit",
+    "territoires"
+  ],
+  "objectifs": [
+    {
+      "id": "chomage",
+      "titre": "Faire reculer le chômage",
+      "description": "Chômage à 7 % ou moins en fin de mandat.",
+      "mesure": "indicateur",
+      "indicateur": "chomage",
+      "sens": "max",
+      "cible": 7
+    },
+    {
+      "id": "deficit",
+      "titre": "Revenir sous 3 % de déficit",
+      "description": "Déficit public à 3 % du PIB ou moins.",
+      "mesure": "indicateur",
+      "indicateur": "deficit",
+      "sens": "max",
+      "cible": 3
+    },
+    {
+      "id": "dette",
+      "titre": "Stabiliser la dette",
+      "description": "Dette publique à 115 % du PIB ou moins.",
+      "mesure": "indicateur",
+      "indicateur": "dette",
+      "sens": "max",
+      "cible": 115
+    },
+    {
+      "id": "popularite",
+      "titre": "Rester populaire",
+      "description": "Popularité de 40 % ou plus.",
+      "mesure": "indicateur",
+      "indicateur": "popularite",
+      "sens": "min",
+      "cible": 40
+    },
+    {
+      "id": "apaisement",
+      "titre": "Apaiser le pays",
+      "description": "Tensions sociales à 25 sur 100 ou moins.",
+      "mesure": "indicateur",
+      "indicateur": "tensions",
+      "sens": "max",
+      "cible": 25
+    },
+    {
+      "id": "territoires",
+      "titre": "Améliorer la vie dans les territoires",
+      "description": "Satisfaction territoriale moyenne de 70 sur 100 ou plus.",
+      "mesure": "satisfaction_territoriale",
+      "sens": "min",
+      "cible": 70
+    },
+    {
+      "id": "aucun-abandon",
+      "titre": "Aucun territoire abandonné",
+      "description": "Aucune région avec un indice (emploi, soins, transports) sous 30.",
+      "mesure": "indice_minimal",
+      "sens": "min",
+      "cible": 30
+    },
+    {
+      "id": "reformes",
+      "titre": "Réformer",
+      "description": "Au moins 5 lois promulguées.",
+      "mesure": "lois_adoptees",
+      "sens": "min",
+      "cible": 5
+    },
+    {
+      "id": "programmes",
+      "titre": "Investir dans l'avenir",
+      "description": "Au moins 4 programmes nationaux en œuvre.",
+      "mesure": "programmes_en_oeuvre",
+      "sens": "min",
+      "cible": 4,
+      "role": "premier_ministre"
+    },
+    {
+      "id": "confiance",
+      "titre": "Regagner la confiance",
+      "description": "Confiance moyenne des régions de 50 sur 100 ou plus.",
+      "mesure": "confiance_regionale",
+      "sens": "min",
+      "cible": 50
+    }
+  ],
+  "note_role": "« role » : objectif atteignable seulement dans ce rôle (ex. les programmes nationaux relèvent du gouvernement)."
+}

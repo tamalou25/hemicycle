@@ -154,3 +154,23 @@ describe('finances.json (E2)', () => {
     expect(f.sources.length).toBeGreaterThan(0);
   });
 });
+
+describe('objectifs.json', () => {
+  const cat = lire('objectifs.json');
+  const MESURES = ['indicateur', 'satisfaction_territoriale', 'indice_minimal', 'lois_adoptees', 'programmes_en_oeuvre', 'confiance_regionale'];
+  it('champs requis, mesures connues, cibles numériques, défaut valide', () => {
+    expect(Number.isInteger(cat.nombre_a_choisir)).toBe(true);
+    const ids = new Set();
+    for (const o of cat.objectifs) {
+      for (const k of ['id', 'titre', 'description', 'mesure', 'sens']) expect(typeof o[k], `${o.id}.${k}`).toBe('string');
+      expect(MESURES).toContain(o.mesure);
+      expect(['min', 'max']).toContain(o.sens);
+      expect(Number.isFinite(o.cible)).toBe(true);
+      if (o.mesure === 'indicateur') expect(INDICATEURS).toContain(o.indicateur);
+      expect(ids.has(o.id)).toBe(false);
+      ids.add(o.id);
+    }
+    expect(cat.defaut).toHaveLength(cat.nombre_a_choisir);
+    for (const id of cat.defaut) expect(ids.has(id)).toBe(true);
+  });
+});

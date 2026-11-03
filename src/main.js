@@ -26,7 +26,7 @@ function enregistrerClassement(e) {
   const id = `${e.graineInitiale ?? 'x'}:${e.joueur.nom}:${e.tour}:${e.fin?.type ?? ''}`;
   const ids = lireJson(CLE_IDS).filter((x) => typeof x === 'string');
   if (ids.includes(id)) return;
-  const entree = entreeClassement(e, evaluerFin(e), new Date().toISOString().slice(0, 10));
+  const entree = entreeClassement(e, evaluerFin(e, { regions: ctx.regions, objectifs: ctx.objectifs }), new Date().toISOString().slice(0, 10));
   ecrire(CLE_CLASSEMENT, JSON.stringify(ajouterAuClassement(lireJson(CLE_CLASSEMENT), entree)));
   ecrire(CLE_IDS, JSON.stringify([...ids, id].slice(-50)));
 }
@@ -93,13 +93,13 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis });
+        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {
@@ -149,8 +149,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

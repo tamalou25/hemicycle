@@ -1,4 +1,5 @@
 // Bilan et fins multiples.
+import { evaluerObjectifs, POINTS_PAR_OBJECTIF } from './objectifs.js';
 
 /** Score de bilan (0..100) : évolution des indicateurs depuis le début + popularité finale. */
 export function scoreBilan(etat) {
@@ -15,8 +16,15 @@ export function scoreBilan(etat) {
 }
 
 /** Titre de fin selon le type et le bilan. */
-export function evaluerFin(etat) {
-  const score = scoreBilan(etat);
+export function evaluerFin(etat, donnees) {
+  // Objectifs de mandat : chaque objectif atteint ajoute des points au bilan
+  const objectifs = evaluerObjectifs(etat, donnees);
+  const score = Math.min(100, scoreBilan(etat) + objectifs.filter((o) => o.atteint).length * POINTS_PAR_OBJECTIF);
+  const res = evaluerFinBase(etat, score);
+  return { ...res, objectifs };
+}
+
+function evaluerFinBase(etat, score) {
   const type = etat.fin?.type;
   if (type === 'victoire') return { titre: 'À l’Élysée', score, texte: 'Vous remportez l’élection présidentielle (simulation).' };
   if (type === 'censure') return { titre: 'Renversé·e', score, texte: 'Une motion de censure met fin à votre gouvernement.' };

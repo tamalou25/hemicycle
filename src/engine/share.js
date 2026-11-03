@@ -16,6 +16,7 @@ export function encoderDefi({ graine, joueur }) {
   const j = {
     n: joueur.nom, a: joueur.age, p: joueur.parti, r: joueur.role, e: joueur.politicienId ?? undefined,
     i: AXES.map((x) => joueur.ideologie?.[x] ?? 0), c: COMPETENCES.map((x) => joueur.competences?.[x] ?? 50),
+    o: Array.isArray(joueur.objectifs) && joueur.objectifs.length ? joueur.objectifs : undefined, // objectifs de mandat (même défi = même barème)
   };
   return versB64(JSON.stringify({ v: VERSION_DEFI, g: graine >>> 0, j }));
 }
@@ -33,6 +34,8 @@ export function decoderDefi(code) {
       role: ROLES.includes(d.j.r) ? d.j.r : 'depute', politicienId: d.j.e ?? null,
       ideologie: Object.fromEntries(AXES.map((x, k) => [x, borne(d.j.i?.[k], -100, 100)])),
       competences: Object.fromEntries(COMPETENCES.map((x, k) => [x, borne(d.j.c?.[k] ?? 50, 0, 100)])),
+      // Objectifs : validés ensuite par normaliserObjectifs (ids connus, nombre exact) à la création de la partie
+      ...(Array.isArray(d.j.o) ? { objectifs: d.j.o.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 5) } : {}),
     },
   };
 }

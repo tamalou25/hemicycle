@@ -1,6 +1,7 @@
 import { esc, fmt, MOIS } from '../util.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
-import { dateDuTour, evaluerFin } from '../../engine/index.js';
+import { dateDuTour, evaluerFin, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
+import { texteValeur } from '../components/objectifs.js';
 
 const evo = (etat, id, unite) => {
   const h = etat.historique;
@@ -9,10 +10,16 @@ const evo = (etat, id, unite) => {
   return `<dt>${id === 'chomage' ? 'Chômage' : id === 'croissance' ? 'Croissance' : 'Déficit'}</dt><dd class="text-right font-semibold tabular-nums">${fmt(a)} → ${fmt(b)}${unite}</dd>`;
 };
 
-export function render(racine, etat, dispatch) {
+export function render(racine, etat, dispatch, ctx) {
   const d = dateDuTour(etat);
   const i = etat.indicateurs;
-  const f = evaluerFin(etat);
+  const f = evaluerFin(etat, { regions: ctx?.regions, objectifs: ctx?.objectifs });
+  const nbAtteints = (f.objectifs ?? []).filter((o) => o.atteint).length;
+  const sectionObj = (f.objectifs ?? []).length ? `<section aria-labelledby="h-obj" class="bg-carte border border-bord rounded-lg p-4 mt-4">
+      <h2 id="h-obj" class="font-serif font-bold text-xl mb-2">Objectifs du mandat</h2>
+      <ul>${f.objectifs.map((o) => { const t = texteValeur(o); return `<li class="py-1.5 border-b border-bord last:border-0 flex items-baseline justify-between gap-2"><span class="min-w-0"><strong class="text-sm">${esc(o.titre)}</strong><br><span class="text-xs text-doux">Valeur finale : ${esc(t.v)} · cible ${esc(t.c)}</span></span><span class="shrink-0 text-xs font-bold border rounded px-2 py-0.5 ${o.atteint ? 'border-[#1F6E43] text-[#1F6E43]' : 'border-bord text-doux'}">${o.atteint ? 'Atteint' : 'Non atteint'}</span></li>`; }).join('')}</ul>
+      <p class="text-sm mt-2">${nbAtteints} sur ${f.objectifs.length} atteint${nbAtteints > 1 ? 's' : ''} : <strong>+${nbAtteints * POINTS_PAR_OBJECTIF} points au bilan</strong> (${POINTS_PAR_OBJECTIF} par objectif).</p>
+    </section>` : '';
   const elu = etat.fin.type === 'victoire';
   const nbElections = (etat.resultatsElections ?? []).length;
   const couleur = f.score >= 55 ? '#1F6E43' : f.score >= 35 ? '#8A5A00' : '#B3262B';
@@ -39,6 +46,7 @@ export function render(racine, etat, dispatch) {
       </dl>
       <p class="text-xs text-doux mt-2">Évolution : début de mandat → fin.</p>
     </div>
+    ${sectionObj}
     <div class="mt-6 flex gap-3 flex-wrap">
       <button type="button" id="rejouer" class="btn btn-p">Rejouer</button>
       <button type="button" id="export" class="btn btn-s">Exporter la partie</button>
