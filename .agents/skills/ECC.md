@@ -15,3 +15,5 @@ Source : https://github.com/affaan-m/ECC (licence MIT, voir `LICENSE-ECC`), copi
 | `change-impact` | Avant un gros changement |
 | `architecture-decision-records` | Décisions structurantes (`docs/`) |
 | `security-review` | Sauvegardes, import JSON |
+| `deep-research` | Recherche sourcée (positions des partis, données publiques) ; respecter les règles de contenu de `CLAUDE.md` |
+| `design-system` | Cohérence visuelle, jetons de design |
