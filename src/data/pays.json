@@ -1,0 +1,78 @@
+{
+  "note": "Diplomatie de jeu (lot 3). Les partenaires sont des ACTEURS SIMULÉS : relations initiales, intérêts, seuils et probabilités sont des PARAMÈTRES DE SIMULATION, jamais des affirmations sur les intentions réelles de gouvernements ou de dirigeants. Appartenances (UE, OTAN) et poids économiques : données publiques (voir sources). Identifiants ISO 3166-1 alpha-2 (carte-monde.json) ; « ue » = Union européenne.",
+  "date_collecte": "2026-11-04",
+  "parametres": {
+    "convergence_mensuelle": 0.06,
+    "proba_initiative": 0.22,
+    "delai_initiative_pays": 9,
+    "relation_refus": -2,
+    "bonus_accord": 8,
+    "malus_sanction": 25,
+    "malus_sanction_subie": 15,
+    "effet_sanction_echanges": 0.5,
+    "ue_deficit_seuil": 3,
+    "ue_deficit_par_point": 4,
+    "ue_poids_axe_europe": 15
+  },
+  "pays": [
+    { "id": "de", "nom": "Allemagne", "ue": true, "otan": true, "poids": 3, "relation_initiale": 72, "positions": { "europe": 60, "ecologie": 30, "securite": 10 }, "interets": ["commerce", "europe", "energie"] },
+    { "id": "it", "nom": "Italie", "ue": true, "otan": true, "poids": 2, "relation_initiale": 66, "positions": { "europe": 30, "immigration": 40, "securite": 20 }, "interets": ["commerce", "europe", "immigration"] },
+    { "id": "es", "nom": "Espagne", "ue": true, "otan": true, "poids": 2, "relation_initiale": 70, "positions": { "europe": 60, "ecologie": 40, "immigration": -10 }, "interets": ["commerce", "energie", "europe"] },
+    { "id": "be", "nom": "Belgique", "ue": true, "otan": true, "poids": 2, "relation_initiale": 74, "positions": { "europe": 70, "ecologie": 20 }, "interets": ["commerce", "europe"] },
+    { "id": "nl", "nom": "Pays-Bas", "ue": true, "otan": true, "poids": 2, "relation_initiale": 66, "positions": { "europe": 40, "fiscalite": 40 }, "interets": ["commerce", "energie"] },
+    { "id": "gb", "nom": "Royaume-Uni", "ue": false, "otan": true, "poids": 2, "relation_initiale": 62, "positions": { "europe": -20, "securite": 30, "immigration": 30 }, "interets": ["securite", "commerce"] },
+    { "id": "us", "nom": "États-Unis", "ue": false, "otan": true, "poids": 3, "relation_initiale": 58, "positions": { "securite": 50, "fiscalite": 50, "ecologie": -40 }, "interets": ["securite", "commerce", "energie"] },
+    { "id": "cn", "nom": "Chine", "ue": false, "otan": false, "poids": 3, "relation_initiale": 45, "positions": { "securite": 60, "ecologie": -20 }, "interets": ["commerce", "technologie"] },
+    { "id": "in", "nom": "Inde", "ue": false, "otan": false, "poids": 2, "relation_initiale": 58, "positions": { "securite": 40 }, "interets": ["commerce", "securite", "technologie"] },
+    { "id": "dz", "nom": "Algérie", "ue": false, "otan": false, "poids": 1, "relation_initiale": 42, "positions": { "immigration": -40, "securite": 30 }, "interets": ["energie", "immigration"] },
+    { "id": "ma", "nom": "Maroc", "ue": false, "otan": false, "poids": 1, "relation_initiale": 55, "positions": { "immigration": -30 }, "interets": ["commerce", "immigration", "securite"] },
+    { "id": "no", "nom": "Norvège", "ue": false, "otan": true, "poids": 1, "relation_initiale": 70, "positions": { "ecologie": 50, "europe": 30 }, "interets": ["energie", "securite"] }
+  ],
+  "ue": { "nom": "Union européenne", "relation_initiale": 62 },
+  "accords": [
+    { "id": "commerce", "titre": "Accord commercial", "description": "Facilités douanières et réglementaires réciproques.", "duree_mois": 36, "relation_min": 55, "cout_capital": 1, "cout_annuel_md": 0, "debouches": 0.15, "disponibilite": 0.1, "relation": 8, "contrepartie": "Les secteurs exposés se plaignent de la concurrence : tensions légères." , "effets": [{ "indicateur": "tensions", "valeur": 1, "delaiMois": 1, "duree": 3 }], "interet": "commerce" },
+    { "id": "energie", "titre": "Partenariat énergétique", "description": "Contrats d'approvisionnement de long terme et interconnexions.", "duree_mois": 48, "relation_min": 50, "cout_capital": 1, "cout_annuel_md": 0.5, "debouches": 0, "disponibilite": 0.3, "relation": 6, "contrepartie": "0,5 Md€/an de garanties publiques ; dépendance accrue à ce partenaire.", "effets": [], "interet": "energie" },
+    { "id": "defense", "titre": "Coopération de défense", "description": "Exercices communs, achats groupés d'équipements, engagement d'assistance.", "duree_mois": 60, "relation_min": 65, "cout_capital": 2, "cout_annuel_md": 0.8, "debouches": 0, "disponibilite": 0, "relation": 10, "contrepartie": "0,8 Md€/an et un engagement : une crise chez le partenaire vous concerne.", "effets": [], "interet": "securite", "otan_ou_ue": true },
+    { "id": "recherche", "titre": "Programme scientifique commun", "description": "Co-financement de laboratoires et d'échanges universitaires.", "duree_mois": 36, "relation_min": 50, "cout_capital": 1, "cout_annuel_md": 0.3, "debouches": 0.05, "disponibilite": 0, "relation": 5, "contrepartie": "0,3 Md€/an ; effets sur la croissance lents.", "effets": [{ "indicateur": "croissance", "valeur": 0.1, "delaiMois": 24, "duree": 12 }], "interet": "technologie" }
+  ],
+  "initiatives": [
+    { "id": "proposition-commerce", "type": "proposition", "accord": "commerce", "titre": "{pays} propose un accord commercial", "texte": "Une délégation de {pays} propose de faciliter les échanges. Accepter crée l'accord aux conditions habituelles ; refuser froisse.", "conditions": { "relation_min": 50, "sans_accord": "commerce" }, "poids": 3 },
+    { "id": "proposition-energie", "type": "proposition", "accord": "energie", "titre": "{pays} propose un partenariat énergétique", "texte": "{pays} offre des contrats d'approvisionnement de long terme.", "conditions": { "relation_min": 45, "sans_accord": "energie", "interet": "energie" }, "poids": 2 },
+    { "id": "droits-douane", "type": "tension", "titre": "{pays} relève ses droits de douane", "texte": "De nouveaux droits frappent les produits français : les débouchés se réduisent tant que le différend dure.", "conditions": { "relation_max": 60, "interet": "commerce" }, "poids": 3, "duree_mois": 12, "debouches": -0.25,
+      "choix": [
+        { "libelle": "Négocier une exemption", "cout_capital": 2, "relation": 6, "annule": true, "effets": [] },
+        { "libelle": "Riposter par des droits équivalents", "cout_capital": 1, "relation": -10, "annule": false, "disponibilite": -0.2, "effets": [{ "indicateur": "inflation", "valeur": 0.2, "delaiMois": 1, "duree": 6 }] },
+        { "libelle": "Saisir l'Union européenne", "cout_capital": 1, "relation": -2, "annule": false, "ue": 4, "duree_mois": 6, "effets": [] },
+        { "libelle": "Ne rien faire", "cout_capital": 0, "relation": 0, "annule": false, "effets": [{ "indicateur": "popularite", "valeur": -1, "delaiMois": 0, "duree": 2 }] }
+      ] },
+    { "id": "rupture-approvisionnement", "type": "tension", "titre": "{pays} réduit ses livraisons d'énergie", "texte": "Pour des raisons intérieures, {pays} réduit ses exportations : vos importations d'énergie depuis ce pays chutent.", "conditions": { "relation_max": 65, "interet": "energie" }, "poids": 2, "duree_mois": 9, "disponibilite": -0.6,
+      "choix": [
+        { "libelle": "Payer un prix majoré", "cout_capital": 1, "relation": 3, "annule": true, "effets": [{ "indicateur": "deficit", "valeur": 0.1, "delaiMois": 0, "duree": 6 }, { "indicateur": "inflation", "valeur": 0.2, "delaiMois": 0, "duree": 3 }] },
+        { "libelle": "Se tourner vers d'autres fournisseurs", "cout_capital": 2, "relation": -5, "annule": false, "effets": [{ "indicateur": "inflation", "valeur": 0.1, "delaiMois": 1, "duree": 3 }], "amortir": 0.5 },
+        { "libelle": "Subir la pénurie", "cout_capital": 0, "relation": 0, "annule": false, "effets": [] }
+      ] },
+    { "id": "demande-soutien", "type": "demande", "titre": "{pays} demande votre soutien diplomatique", "texte": "{pays} sollicite un appui public dans un différend international. Soutenir rapproche de {pays} mais irrite d'autres partenaires.", "conditions": { "relation_min": 55 }, "poids": 2,
+      "choix": [
+        { "libelle": "Soutenir publiquement", "cout_capital": 1, "relation": 8, "autres": -3, "effets": [] },
+        { "libelle": "Soutien discret", "cout_capital": 1, "relation": 3, "autres": 0, "effets": [] },
+        { "libelle": "Rester neutre", "cout_capital": 0, "relation": -6, "autres": 0, "effets": [] }
+      ] },
+    { "id": "crise-frontiere", "type": "crise", "titre": "Crise sécuritaire impliquant {pays}", "texte": "Un incident grave aux marges de {pays} fait craindre une escalade. Vos alliés attendent une position ; une contribution militaire exige des moyens disponibles.", "conditions": { "otan_ou_ue": true }, "poids": 2, "defense": true,
+      "choix": [
+        { "libelle": "Contribuer militairement (dissuasion)", "cout_capital": 2, "relation": 10, "allies": 5, "disponibilite_min": 55, "cout_md": 1.5, "engagement": { "type": "operation", "duree_mois": 12, "cout_annuel_md": 1.2, "disponibilite": -8 }, "effets": [{ "indicateur": "tensions", "valeur": 2, "delaiMois": 0, "duree": 3 }] },
+        { "libelle": "Soutien politique et matériel", "cout_capital": 1, "relation": 5, "allies": 2, "cout_md": 0.5, "effets": [] },
+        { "libelle": "Rester en retrait", "cout_capital": 0, "relation": -8, "allies": -4, "effets": [] }
+      ] },
+    { "id": "sommet-ue-budget", "type": "ue", "titre": "L'Union européenne s'inquiète de votre déficit", "texte": "La Commission demande une trajectoire de retour sous 3 % du PIB. Un engagement crédible rassure ; un refus tend la relation avec l'Union.", "conditions": { "deficit_min": 4 }, "poids": 2,
+      "choix": [
+        { "libelle": "S'engager sur une trajectoire", "cout_capital": 1, "ue": 8, "effets": [{ "indicateur": "popularite", "valeur": -1, "delaiMois": 0, "duree": 3 }] },
+        { "libelle": "Contester la règle", "cout_capital": 1, "ue": -8, "effets": [{ "indicateur": "popularite", "valeur": 1, "delaiMois": 0, "duree": 2 }] },
+        { "libelle": "Gagner du temps", "cout_capital": 0, "ue": -3, "effets": [] }
+      ] }
+  ],
+  "sources": [
+    { "donnee": "États membres de l'Union européenne (27)", "source": "Union européenne, « Pays membres »", "url": "https://european-union.europa.eu/principles-countries-history/eu-countries_fr", "date": "2026-11-04" },
+    { "donnee": "Pays membres de l'OTAN (32)", "source": "OTAN, « Pays membres »", "url": "https://www.nato.int/cps/fr/natohq/nato_countries.htm", "date": "2026-11-04" },
+    { "donnee": "Relations initiales, intérêts, positions, seuils, probabilités d'initiative : hypothèses de jeu", "source": "Paramètres de simulation (aucune source : ce ne sont pas des faits)", "url": "https://github.com/tamalou25/hemicycle/blob/main/docs/adr/0003-economie-diplomatie-defense.md", "date": "2026-11-04" }
+  ]
+}

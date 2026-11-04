@@ -37,6 +37,7 @@ export function raisonPause(etat) {
   if (!etat) return 'Aucune partie.';
   if (etat.fin) return 'Fin de la campagne.';
   if (etat.evenement) return 'Un événement attend votre réponse.';
+  if (etat.diplomatie?.initiative) return 'Une initiative diplomatique attend votre réponse.';
   if (etat.joueur?.role === 'president' && etat.gouvernement?.statut === 'renverse') return 'Le gouvernement est renversé : nommez un Premier ministre.';
   if (etat.scenario?.statut === 'termine' && etat.scenario.bilan?.tour === etat.tour) return 'Conclusion du scénario.';
   return null;

@@ -291,3 +291,48 @@ describe('economie.json (lot 2)', () => {
     for (const s of eco.sources) { expect(s.url).toMatch(/^https?:\/\//); expect(s.date).toMatch(/^\d{4}-\d{2}/); }
   });
 });
+
+describe('pays.json (lot 3)', () => {
+  const p = lire('pays.json');
+  const carte = lire('carte-monde.json');
+  const eco = lire('economie.json');
+  it('partenaires : ids uniques présents sur la carte et parmi les partenaires commerciaux, relation 0-100, positions bornées sur des axes connus, intérêts connus', () => {
+    const ids = p.pays.map((x) => x.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    const interets = new Set(p.accords.map((a) => a.interet));
+    for (const x of p.pays) {
+      expect(carte.pays.some((c) => c.id === x.id), x.id).toBe(true);
+      expect(eco.commerce.partenaires.some((c) => c.id === x.id), x.id).toBe(true);
+      expect(x.relation_initiale).toBeGreaterThanOrEqual(0); expect(x.relation_initiale).toBeLessThanOrEqual(100);
+      for (const [a, v] of Object.entries(x.positions ?? {})) { expect(AXES).toContain(a); expect(Math.abs(v)).toBeLessThanOrEqual(100); }
+      for (const i of x.interets) expect([...interets, 'europe', 'immigration'], i).toContain(i);
+      expect(typeof x.ue).toBe('boolean'); expect(typeof x.otan).toBe('boolean');
+    }
+  });
+  it('accords : ids uniques, durée, seuil de relation, contrepartie, effets sur des indicateurs connus', () => {
+    expect(new Set(p.accords.map((a) => a.id)).size).toBe(p.accords.length);
+    for (const a of p.accords) {
+      expect(a.duree_mois).toBeGreaterThanOrEqual(12); expect(a.relation_min).toBeGreaterThan(0); expect(a.contrepartie.length).toBeGreaterThan(10);
+      for (const e of a.effets) expect(INDICATEURS).toContain(e.indicateur);
+    }
+  });
+  it('initiatives : types connus, {pays} dans le titre, choix avec libellé, dernier choix sans coût (réponse par défaut possible)', () => {
+    expect(new Set(p.initiatives.map((i) => i.id)).size).toBe(p.initiatives.length);
+    for (const i of p.initiatives) {
+      expect(['proposition', 'tension', 'demande', 'crise', 'ue']).toContain(i.type);
+      if (i.type !== 'ue') expect(i.titre).toContain('{pays}');
+      if (i.type === 'proposition') expect(p.accords.some((a) => a.id === i.accord)).toBe(true);
+      else {
+        expect(i.choix.length).toBeGreaterThanOrEqual(2);
+        for (const c of i.choix) { expect(c.libelle.length).toBeGreaterThan(3); for (const e of c.effets ?? []) expect(INDICATEURS).toContain(e.indicateur); }
+        expect(i.choix.at(-1).cout_capital ?? 0).toBe(0);
+        expect(i.choix.at(-1).cout_md ?? 0).toBe(0);
+      }
+    }
+  });
+  it('paramètres et sources : la note précise qu’il s’agit de paramètres de simulation', () => {
+    expect(p.note).toMatch(/PARAMÈTRES DE SIMULATION/);
+    for (const s of p.sources) { expect(s.url).toMatch(/^https?:\/\//); expect(s.date).toMatch(/^\d{4}-\d{2}/); }
+    for (const k of ['convergence_mensuelle', 'proba_initiative', 'delai_initiative_pays', 'effet_sanction_echanges']) expect(typeof p.parametres[k]).toBe('number');
+  });
+});

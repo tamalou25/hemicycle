@@ -24,7 +24,8 @@ import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { ecranMonde, brancherMonde } from '../components/carteMonde.js';
 import { ongletEconomie, brancherEconomie } from '../components/economie.js';
-import { alertesEconomie } from '../../engine/index.js';
+import { alertesEconomie, initiativeEnCours } from '../../engine/index.js';
+import { sectionInitiative, brancherInitiative } from '../components/diplomatie.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF4D6] border-encre'], budget: ['€', 'Budget', 'bg-[#DEE8FB] border-bleu'] };
@@ -78,6 +79,8 @@ function prioritesCampagne(etat, ctx) {
   if (etat.joueur.role !== 'president' || etat.scenario) return null;
   const liste = [];
   if (etat.evenement) { const ev = ctx.evenements?.find((e) => e.id === etat.evenement); liste.push({ type: 'urgence', titre: ev?.titre ?? 'Événement', raison: 'Le temps est en pause jusqu’à votre réponse ; sans réponse au passage du mois, l’option par défaut s’applique.', aller: { onglet: 'bureau', cible: 'evenement' } }); }
+  const init = ctx.pays ? initiativeEnCours(etat, { pays: ctx.pays }) : null;
+  if (init) liste.push({ type: 'urgence', titre: init.titre, raison: 'Le temps est en pause jusqu’à votre réponse ; sans réponse, la dernière option s’applique.', aller: { onglet: 'bureau', cible: 'initiative' } });
   if (etat.gouvernement?.statut === 'renverse') liste.push({ type: 'urgence', titre: 'Nommer un Premier ministre', raison: 'Sans gouvernement : ni loi du gouvernement, ni programme, ni budget, ni 49.3.', aller: { onglet: 'bureau', cible: 'gouvernement' } });
   const rienEngage = !etat.texte && !(etat.politiques ?? []).length && !(etat.projets ?? []).length && !etat.loisAdoptees.length;
   if (rienEngage && gouverne(etat)) {
@@ -85,7 +88,7 @@ function prioritesCampagne(etat, ctx) {
     liste.push({ type: 'engagement', titre: 'Ou un projet dans une région', raison: `Enveloppe ${(etat.finances?.enveloppe ?? 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€, sans vote ; effets locaux visibles sur la carte.`, aller: { onglet: 'carte', vue: 'satisfaction' } });
   }
   if (gouverne(etat) && etat.budget && !etat.plf && !raisonRefusPLF(etat)) liste.push({ type: 'decision', titre: 'Budget de l’État à déposer', raison: 'Fenêtre ouverte jusqu’en décembre ; sans budget voté, une loi spéciale reconduit les crédits.', aller: { onglet: 'budget' } });
-  // Alertes économiques : une pénurie est une urgence ; une dépendance se traite après les territoires (Économie : investissements)
+  // Alertes économiques : une pénurie est une urgence ; une dépendance se traite après les territoires (Économie : investissements, ou diplomatie)
   const alertesEco = alertesEconomie(etat, { economie: ctx.economie });
   for (const a of alertesEco.filter((x) => x.type === 'penurie').slice(0, 1)) liste.push({ type: 'urgence', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
   // Alertes territoriales (indice sous le seuil critique) : rejoindre directement le territoire sur la carte
@@ -122,6 +125,7 @@ function ongletBureau(etat, ctx, donnees, points, brief, prio) {
     <section aria-labelledby="h-q1" class="mb-4">
       <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
+      ${sectionInitiative(etat, ctx)}
       ${scenario && etat.tour === etat.scenario.debut && !etat.evenement
         ? `<details class="mb-2"><summary class="min-h-[44px] flex items-center cursor-pointer text-sm underline text-bleu">Premier mois : rien n’a encore bougé. État du pays au départ</summary>${sectionEtatPays(etat, sat)}</details>`
         : `${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
@@ -182,7 +186,7 @@ export function render(racine, etat, dispatch, ctx) {
   const parti = partis.find((p) => p.id === etat.joueur.parti);
   const onglet = ONGLETS.some(([id]) => id === ctx.onglet) && !(ctx.onglet === 'monde' && !ctx.monde) ? ctx.onglet : 'bureau';
   // Toutes les définitions nécessaires aux phrases d'explication (programmes, partis…)
-  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis, economie: ctx.economie };
+  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis, economie: ctx.economie, pays: ctx.pays };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
@@ -208,6 +212,7 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
+    brancherInitiative(racine, dispatch);
     brancherMission(racine, dispatch, etat);
     brancherScenario(racine, dispatch, etat, prio.liste);
     brancherGouvernement(racine, dispatch);

@@ -66,7 +66,7 @@ export function prevoir(etat, horizon = 6) {
 
 /** Les n explications les plus marquantes d'un mois (hors bruit). */
 export const principales = (registre, tour, n = 5) =>
-  (registre ?? []).filter((e) => e.tour === tour && (!e.region || e.type === 'projet') && e.type !== 'relation').sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
+  (registre ?? []).filter((e) => e.tour === tour && (!e.region || e.type === 'projet') && e.type !== 'relation' && e.type !== 'diplomatie').sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)).slice(0, n);
 
 const LIBELLES = {
   chomage: ['le chômage', 'pt'], croissance: ['la croissance', 'pt'], deficit: ['le déficit', 'pt de PIB'],
@@ -82,6 +82,7 @@ const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', 
 export function nomCause(entree, { lois = [], evenements = [], projets, politiques, economie } = {}) {
   if (entree.type === 'investissement') return `l’investissement « ${economie?.investissements?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'economie') { const nom = economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere ?? 'une filière'; return entree.source?.startsWith('penurie:') ? `la pénurie dans la filière ${nom}` : `la production de la filière ${nom}`; }
+  if (entree.type === 'diplomatie') return entree.source === 'convergence' ? 'l’évolution naturelle des relations' : `l’initiative « ${entree.source} »`;
   if (entree.type === 'commerce') return entree.source?.startsWith('debouches:') ? 'la perte de débouchés à l’exportation' : 'l’indisponibilité de partenaires à l’importation';
   if (entree.type === 'politique') return `le programme « ${politiques?.politiques?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'projet') return `le projet « ${projets?.projets?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'territorial'} »`;
@@ -105,12 +106,13 @@ export function phraseExplication(entree, donnees) {
   }
   const [nom, unite] = LIBELLES[entree.indicateur] ?? (entree.indicateur?.startsWith('secteur:') ? [`le niveau « ${donnees?.politiques?.secteurs?.[entree.secteur]?.nom ?? entree.secteur} »`, 'pt']
     : entree.indicateur?.startsWith('filiere:') ? [`${entree.type === 'investissement' ? 'la capacité' : 'la production'} de la filière ${donnees?.economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere}`, 'pt']
+    : entree.indicateur?.startsWith('pays:') ? [`la relation avec ${donnees?.pays?.pays?.find((p) => p.id === entree.pays)?.nom ?? entree.pays}`, 'pt']
     : entree.indicateur?.startsWith('commerce:') ? [`les ${entree.source?.startsWith('debouches:') ? 'exportations' : 'importations disponibles'} de la filière ${donnees?.economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere}`, 'Md€/an'] : [entree.indicateur, '']);
   const cause = nomCause(entree, donnees);
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
-  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'convergence' || entree.type === 'choc' || entree.type === 'mise-en-service' || entree.type === 'interets' || entree.type === 'economie' || entree.type === 'commerce' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
+  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'convergence' || entree.type === 'choc' || entree.type === 'mise-en-service' || entree.type === 'interets' || entree.type === 'economie' || entree.type === 'commerce' || entree.type === 'diplomatie' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;
   return `${cause[0].toUpperCase()}${cause.slice(1)} ${etape} : ${nom} ${valeur}.`;
 }

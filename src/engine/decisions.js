@@ -14,12 +14,13 @@ import { raisonRefusDissolution } from './elections.js';
 import { raisonRefusProjet } from './projets.js';
 import { gouverne, raisonRefusNommer } from './presidence.js';
 import { raisonRefusInvestissement } from './economie.js';
+import { initiativeEnCours, resumePartenaires } from './diplomatie.js';
 
-export const CATEGORIES = { nationale: 'Politiques nationales', territoriale: 'Projets territoriaux', exceptionnelle: 'Décisions exceptionnelles', negociation: 'Négociations' };
+export const CATEGORIES = { nationale: 'Politiques nationales', territoriale: 'Projets territoriaux', exceptionnelle: 'Décisions exceptionnelles', negociation: 'Négociations', diplomatie: 'Diplomatie' };
 export const SECTEURS_DECISION = {
   social: 'Social et logement', sante: 'Santé', education: 'Éducation', emploi: 'Emploi et économie', transports: 'Transports',
   energie: 'Énergie et environnement', securite: 'Sécurité et justice', defense: 'Défense', recherche: 'Recherche',
-  finances: 'Finances publiques', institutions: 'Institutions et Europe', agriculture: 'Agriculture et alimentation',
+  finances: 'Finances publiques', institutions: 'Institutions et Europe', agriculture: 'Agriculture et alimentation', international: 'International',
 };
 const THEME_LOI = { retraites: 'social', immigration: 'securite', fiscalite: 'finances', europe: 'institutions', ecologie: 'energie', securite: 'securite' };
 const SECTEUR_POLITIQUE = { logement: 'social', education: 'education', energie: 'energie', securite: 'securite', defense: 'defense', recherche: 'recherche' };
@@ -33,6 +34,11 @@ export function catalogueDecisions(etat, d) {
   if (etat.evenement) {
     const ev = d.evenements?.find((e) => e.id === etat.evenement);
     if (ev) res.push(item({ id: `evenement:${ev.id}`, categorie: 'exceptionnelle', type: 'evenement', secteur: null, titre: ev.titre, resume: ev.description, statut: 'urgent', action: { type: 'evenement' } }));
+  }
+  // Initiative diplomatique en attente (lot 3)
+  if (etat.diplomatie?.initiative && d.pays) {
+    const i = initiativeEnCours(etat, d);
+    if (i) res.push(item({ id: `initiative:${i.id}:${i.pays}`, categorie: 'exceptionnelle', type: 'initiative', secteur: 'international', titre: i.titre, resume: i.texte, statut: 'urgent', action: { type: 'onglet', onglet: 'bureau', cible: 'initiative' } }));
   }
   // Lois
   for (const l of d.lois ?? []) {
@@ -89,6 +95,13 @@ export function catalogueDecisions(etat, d) {
       const actuel = etat.gouvernement?.statut === 'en_place' && etat.gouvernement.parti === p.id;
       res.push(item({ id: `gouvernement:${p.id}`, categorie: 'negociation', type: 'gouvernement', secteur: 'institutions', titre: `Gouvernement ${p.sigle}`, resume: actuel ? 'Dirige le gouvernement actuel.' : `Nommer un Premier ministre issu de ${p.sigle} (${sieges} députés) : son groupe soutient les textes et ne vote pas la censure.`,
         cout: { capital: 2 }, statut: actuel ? 'en_cours' : etat.gouvernement?.statut === 'renverse' ? 'urgent' : undefined, raison: actuel ? null : raisonRefusNommer(etat, p.id, d.partis), action: { type: 'nommer', parti: p.id } }));
+    }
+  }
+  // Diplomatie (lot 3) : une entrée par partenaire, les actions se font sur la carte (fiche pays)
+  if (etat.diplomatie && d.pays) {
+    for (const p of resumePartenaires(etat, d)) {
+      res.push(item({ id: `pays:${p.id}`, categorie: 'diplomatie', type: 'pays', secteur: 'international', titre: `Relations avec ${p.nom}`, resume: `Relation ${Math.round(p.relation)}/100${p.ue ? ' · UE' : ''}${p.otan ? ' · OTAN' : ''}${p.accords ? ` · ${p.accords} accord${p.accords > 1 ? 's' : ''}` : ''}${p.sanctions ? ' · sous sanctions' : ''}. Accords, sanctions : fiche pays sur la carte.`,
+        delai: 'Une action diplomatique par mois', statut: p.sanctions || p.accords ? 'en_cours' : undefined, raison: etat.diploCeMois && !(p.sanctions || p.accords) ? 'Vous avez déjà mené une action diplomatique ce mois-ci.' : null, action: { type: 'onglet', onglet: 'monde', pays: p.id } }));
     }
   }
   // Négociations

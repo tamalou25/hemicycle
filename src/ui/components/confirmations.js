@@ -47,6 +47,8 @@ export function confirmation(action, avant, apres, ctx) {
       parts.push(`Investissement lancé : ${def?.titre ?? x?.id}.`, capital(avant, apres), `${fmt(def?.cout_total_md ?? 0, 0)} Md€ étalés sur le chantier, au déficit dès le mois prochain. Capacité en hausse à partir de ${moisDe(apres, x.enService)} (Économie).`, def?.contrepartie ? `Contrepartie : ${def.contrepartie}` : '');
       break;
     }
+    case 'accord': case 'sanction': case 'lever-sanctions': parts.push(dernier(apres), capital(avant, apres), action.type === 'accord' ? 'Effets sur les échanges dès le mois prochain (Économie) ; la relation évolue chaque mois.' : ''); break;
+    case 'initiative': parts.push(dernier(apres), capital(avant, apres), enveloppe(avant, apres), 'Le temps peut reprendre.'); break;
     case 'evenement': {
       const ev = ctx.evenements?.find((e) => e.id === avant.evenement);
       const choix = ev?.choix?.[action.index];

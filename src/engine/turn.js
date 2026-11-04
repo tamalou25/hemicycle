@@ -19,6 +19,7 @@ import { evoluerConfianceRegions } from './confianceRegions.js';
 import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
 import { evoluerEconomie } from './economie.js';
+import { evoluerDiplomatie } from './diplomatie.js';
 
 /**
  * Ordre d'un tour :
@@ -142,6 +143,12 @@ function passage(etatInitial, donnees) {
     etat = { ...etat, confianceRegions: cr.confianceRegions };
     entreesConfiance = cr.entrees;
   }
+  // 2 quinquies. Diplomatie (lot 3) : initiative ignorée, échéances, convergence des relations, modificateurs commerciaux, nouvelle initiative
+  let entreesDiplomatie = [];
+  if (etat.diplomatie && donnees.pays) {
+    const dp = evoluerDiplomatie({ ...etat, indicateurs: ind }, donnees, tour, g);
+    etat = dp.etat; entreesDiplomatie = dp.entrees; g = dp.graine;
+  }
   etat = { ...etat, chocs: {}, relations: estomperRelations(etat.relations) };
 
   // 3. Popularité : converge à 15 %/mois vers la cible
@@ -150,7 +157,7 @@ function passage(etatInitial, donnees) {
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesEconomie, ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesEconomie, ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance, ...entreesDiplomatie], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
@@ -178,6 +185,7 @@ function passage(etatInitial, donnees) {
     explications,
     actionCeMois: false,
     negoCeMois: false,
+    diploCeMois: false,
     campagneCeMois: false,
     accords: (etat.accords ?? []).filter((a) => a.jusqua >= tour),
     // Le Premier ministre dispose de l'appareil d'État : +1 capital/mois

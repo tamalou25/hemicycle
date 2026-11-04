@@ -1,5 +1,24 @@
 # Passation : Hémicycle
 
+## Lot 3 : diplomatie et pays étrangers autonomes (Claude, branche `lot3-diplomatie`, base `lot2-economie`, 04/11/2026)
+- **Moteur** : `src/engine/diplomatie.js` : 12 partenaires simulés + Union européenne (`src/data/pays.json`, appartenances UE/OTAN sourcées,
+  relations, intérêts, positions, seuils et probabilités = paramètres de simulation) ; relation 0-100 convergeant vers une cible
+  **explicable** (`relationCible` : départ, proximité idéologique, accords, sanctions, différends, déficit > 3 % pour l'UE, engagements OTAN) ;
+  4 types d'accords (commerce, énergie, défense, recherche) avec seuil de relation, capital, coût annuel au déficit, durée, contrepartie ;
+  sanctions (échanges −50 % des deux sens, levée après 6 mois) ; initiatives étrangères tirées à la graine (propositions, tensions
+  douanières ou énergétiques, demandes de soutien, crise sécuritaire, UE sur le déficit) avec choix, coûts, réponse par défaut au passage
+  du mois, pause automatique de l'horloge ; mesures temporaires (droits de douane, rupture d'approvisionnement). La diplomatie écrit
+  `economie.disponibilite` / `debouches` par partenaire, lus par l'économie au mois suivant (ADR 0003). Une action diplomatique par mois
+  (`diploCeMois`). Sauvegarde v16 : `diplomatie` assainie ; anciennes parties complétées à la reprise sans accord rétroactif.
+- **Interface** : carte du monde en mode « Partenaires » (pays colorés par relation, légende textuelle, badge SIMULATION, recadrage Europe),
+  sélection d'un pays (pointeur ou clavier), panneau « Pays » (relation, « Pourquoi cette tendance ? », intérêts, échanges, accords,
+  différends, actions avec refus expliqué), tableau des partenaires ; initiative étrangère au Bureau (carte à choix, lien vers le pays),
+  urgence dans « Votre cap » et dans Décisions ; catégorie « Diplomatie » au catalogue ; confirmations. Captures : `docs/captures/lot3/`.
+- **Tests** : `tests/diplomatie.test.js` (14), schéma `pays.json` (4), `e2e/diplomatie.spec.js` (3). Résultats : Vitest **264/264**
+  (25 fichiers), Playwright **108 passed / 5 skipped / 0 failed** après correction de 3 échecs (contraste du badge « Dépendante », compte des entrées « Plus » = 5 ; suite complète relancée sur `lot3-diplomatie` : voir le journal de la PR), `npm run build` OK.
+- **Limites** : pas de diplomatie multilatérale (une relation par partenaire), UE réduite à une relation et à la règle du déficit ; les
+  initiatives n'ont pas d'« humeur » durable au-delà de la relation ; équilibrage (fréquence des initiatives, effets) à confirmer en lot 5.
+
 ## Lot 2 : économie, production et commerce (Claude, branche `lot2-economie`, 04/11/2026)
 - **Plan et décisions** : `docs/PLAN-LOTS-2-5.md`, `docs/adr/0003-economie-diplomatie-defense.md` (unités, ordre des calculs, pas de double compte).
 - **Moteur** : `src/engine/economie.js` : 4 filières (énergie, agriculture, industrie, services ; indices 100 = 2025) avec capacité, production,
