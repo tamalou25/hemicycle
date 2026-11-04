@@ -73,8 +73,8 @@ export function evaluerEngagements(etat, donnees) {
         engage: ps.length > 0, mesure: enService > 0, effet: effet > 0,
         projets: ps.map((p) => ({ projetId: p.projetId, titre: p.def.titre, lance: p.lance, service: p.service, statut: p.statut, alea: p.alea, cout: p.def.cout_md })),
         restantAttendu: ps.length ? Math.max(0, r1(theorique - effet)) : 0, finMontee,
-        detail: !ps.length ? 'Aucun projet lancé dans la région.' : effet >= d.cible ? `+${effet} pts attribués à vos projets (cible ${d.cible}).`
-          : effet > 0 ? `+${effet} pts attribués pour l’instant (cible ${d.cible}) ; encore attendu : environ +${Math.max(0, r1(theorique - effet))}.`
+        detail: !ps.length ? 'Aucun projet lancé dans la région.' : effet >= d.cible ? `+${r1(effet)} pts attribués à vos projets (cible ${d.cible}).`
+          : effet > 0 ? `+${r1(effet)} pts attribués pour l’instant (cible ${d.cible}) ; encore attendu : environ +${Math.max(0, r1(theorique - effet))}.`
           : enService ? 'En service : premiers effets attendus le mois prochain.' : `Chantier en cours : mise en service au mois ${Math.min(...ps.map((p) => p.service))}.`,
       };
     }

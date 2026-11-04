@@ -32,7 +32,7 @@ export function render(racine, etat, dispatch, ctx) {
     ${elu ? '<p class="mt-2 text-sm text-doux">Résultat issu d’un scrutin simulé, sans lien avec une élection réelle.</p>' : ''}
     ${etat.mission?.debrief ? `<p class="mt-3 text-sm border-l-4 border-laiton bg-carte p-2" id="fin-mission"><strong>Mission d’initiation :</strong> ${esc(RESULTATS_MISSION[etat.mission.debrief.resultat])}. Elle n’entre pas dans le score de bilan.</p>` : ''}
     ${etat.scenario?.bilan ? `<section class="mt-3 text-sm border-l-4 border-laiton bg-carte p-2" id="fin-scenario" aria-labelledby="h-fin-scenario"><h2 id="h-fin-scenario" class="font-semibold">Scénario « Douze mois pour convaincre » : ${esc(RESULTATS_SCENARIO[etat.scenario.bilan.resultat])}</h2>
-      <p class="text-doux">Partie arrêtée au mois ${etat.scenario.bilan.tour}${etat.scenario.bilan.tour < etat.scenario.echeance ? ', avant l’échéance' : ''} : conclusion sur ce qui a été fait. Le scénario n’entre pas dans le score de bilan.</p>
+      <p class="text-doux">${etat.scenario.bilan.tour < etat.scenario.echeance ? `Partie arrêtée au mois ${etat.scenario.bilan.tour}, avant l’échéance : conclusion sur ce qui a été fait.` : `Scénario conclu au mois ${etat.scenario.bilan.tour}.`} Le scénario n’entre pas dans le score de bilan.</p>
       <ul class="mt-1">${etat.scenario.bilan.engagements.map((e) => `<li class="py-0.5"><span class="text-xs font-bold border rounded px-1.5 mr-1">${esc(ETATS_ENGAGEMENT[e.etat])}</span>${esc(e.titre)} <span class="text-doux">— ${esc(e.detail)}</span></li>`).join('')}</ul>
       ${etat.scenario.bilan.roleChange ? '<p class="mt-1">Vous aviez quitté Matignon après la présidentielle.</p>' : ''}</section>` : ''}
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
