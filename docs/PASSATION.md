@@ -35,7 +35,8 @@
 - **Simulations** (`node scripts/sim-partie-courte.mjs`, 5 partis × 10 graines, résultats de simulation et non preuve d'intérêt) :
   constructive 39 complets / 11 partiels / 0 échec ; compromis 36 / 14 / 0 ; inaction 0 / 0 / 50 ; « tout lancer » 16 / 34 / 0 (garde-fou
   financier dépassé). Matignon perdu à la présidentielle dans environ la moitié des parties (règle existante : vainqueur à plus de 60 d'écart).
-- **Tests** : voir la PR (Vitest et Playwright, nombres exacts dans la description).
+- **Tests** (commit `afc78a1`) : Vitest 207/207 (21 fichiers), Playwright 72/72 (ordinateur et mobile), `npm run build` et `npm run build:mobile` OK, CI verte.
+  Défaut préexistant corrigé au passage : l'onglet Parlement ne s'affichait plus dès qu'un texte était en navette (`r493` indéfini).
 - **À confirmer par le propriétaire** : durée réelle (10 à 20 minutes visées, non mesurée automatiquement), compréhension par un débutant
   (parcours chronométré dans `docs/PARTIE-COURTE.md`), lecteur d'écran réel, appareil physique.
 
