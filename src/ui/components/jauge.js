@@ -13,7 +13,7 @@ export const META = {
 export const INDICATEURS_JAUGE = Object.keys(META);
 
 /** Sparkline SVG simple. */
-export function sparkline(valeurs, couleur = '#1F3A6E') {
+export function sparkline(valeurs, couleur = '#1E4ED8') {
   if (valeurs.length < 2) return '<span class="text-xs text-doux">—</span>';
   const w = 100, h = 24;
   const min = Math.min(...valeurs), max = Math.max(...valeurs), pas = max - min || 1;
@@ -28,14 +28,14 @@ export function jauge(id, etat) {
   const [min, max] = BORNES[id];
   const pct = Math.round(((v - min) / (max - min)) * 100);
   const bon = m.sens > 0 ? pct >= 50 : pct <= 50;
-  const couleur = bon ? '#1F6E43' : '#B3262B';
+  const couleur = bon ? '#157A48' : '#C0262B';
   const hist = etat.historique.map((h) => h[id]);
   return `<div class="bg-carte border border-bord rounded-lg p-3">
     <div class="flex justify-between items-baseline gap-2">
       <span class="text-sm text-doux">${esc(m.label)}</span>
       <span class="font-semibold tabular-nums">${fmt(v)}${esc(m.unite)}</span>
     </div>
-    <div class="h-2 bg-[#E8E1CD] rounded mt-2" role="meter" aria-label="${esc(m.label)}" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${v}" aria-valuetext="${fmt(v)}${esc(m.unite)}">
+    <div class="h-2 bg-[#E3E8F0] rounded mt-2" role="meter" aria-label="${esc(m.label)}" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${v}" aria-valuetext="${fmt(v)}${esc(m.unite)}">
       <div class="h-2 rounded" style="width:${pct}%;background:${couleur}"></div>
     </div>
     <div class="mt-2">${sparkline(hist, couleur)}</div>

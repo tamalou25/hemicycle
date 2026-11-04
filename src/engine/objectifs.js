@@ -20,7 +20,8 @@ export function valeurObjectif(o, etat, { regions } = {}) {
 }
 
 /** Valide et normalise un choix d'objectifs (exactement N ids connus, sans doublon ; sinon le choix par défaut). */
-export const objectifPossible = (o, role) => !o.role || o.role === role;
+// Les objectifs du gouvernement (programmes) sont aussi accessibles au président, qui agit par son gouvernement
+export const objectifPossible = (o, role) => !o.role || o.role === role || (o.role === 'premier_ministre' && role === 'president');
 
 export function normaliserObjectifs(choix, catalogue, role) {
   if (!catalogue) return [];

@@ -186,7 +186,7 @@ export function tenirElections(etat, { partis, calendrier, regions }, intentions
 
 export function raisonRefusDissolution(etat) {
   if (etat.fin) return 'La partie est terminée.';
-  if (etat.joueur.role !== 'premier_ministre') return 'Seul le Premier ministre peut proposer une dissolution au Président.';
+  if (!['premier_ministre', 'president'].includes(etat.joueur.role)) return 'Seul le Premier ministre peut proposer une dissolution au Président.';
   if (etat.derniereDissolution != null && etat.tour - etat.derniereDissolution < DELAI_DISSOLUTION) return 'Pas de nouvelle dissolution dans l’année qui suit la précédente (art. 12).';
   if ((etat.electionsAnticipees ?? []).some((e) => e.tour >= etat.tour)) return 'Des législatives anticipées sont déjà prévues.';
   return null;
@@ -197,13 +197,14 @@ export function proposerDissolution(etat) {
   const refus = raisonRefusDissolution(etat);
   if (refus) throw new Error(refus);
   let [r, g] = aleatoire(etat.graine);
-  const accepte = r < 0.3 + etat.indicateurs.popularite / 100;
+  // Président·e : la dissolution est sa décision (art. 12) ; Premier ministre : le Président l'accorde selon la popularité
+  const accepte = etat.joueur.role === 'president' || r < 0.3 + etat.indicateurs.popularite / 100;
   const journal = [...etat.journal];
   if (!accepte) {
     journal.push({ tour: etat.tour, type: 'dissolution', texte: 'Le Président refuse de dissoudre l’Assemblée.' });
     return { ...etat, graine: g, journal, joueur: { ...etat.joueur, capital: Math.max(0, etat.joueur.capital - 2) } };
   }
-  journal.push({ tour: etat.tour, type: 'dissolution', texte: 'Le Président dissout l’Assemblée nationale : législatives anticipées dans deux mois.' });
+  journal.push({ tour: etat.tour, type: 'dissolution', texte: etat.joueur.role === 'president' ? 'Vous dissolvez l’Assemblée nationale : législatives anticipées dans deux mois.' : 'Le Président dissout l’Assemblée nationale : législatives anticipées dans deux mois.' });
   const anticipee = { id: `legislatives-anticipees-${etat.tour}`, type: 'legislatives', tour: etat.tour + 2, titre: 'Législatives anticipées' };
   return {
     ...etat, graine: g, journal, derniereDissolution: etat.tour,

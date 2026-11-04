@@ -3,6 +3,7 @@
 import { groupesAssemblee, voterChambre, voterCensure } from './parliament.js';
 import { risqueConstitutionnel } from './navette.js';
 import { evaluerObjectifs } from './objectifs.js';
+import { gouverne } from './presidence.js';
 
 /** Sens favorable d'une variation, par indicateur (inflation : proche de 2 %, non tranché ici). */
 const SENS = { chomage: -1, croissance: 1, deficit: -1, dette: -1, inflation: 0, popularite: 1, tensions: -1, emploi: 1, sante: 1, transports: 1 };
@@ -43,7 +44,7 @@ export function ficheDecision(etat, item, donnees) {
       risques: [
         v ? `Vote estimé à l’Assemblée aujourd’hui : ${v.pour} pour, ${v.contre} contre (${v.adoptee ? 'adoption probable' : 'rejet probable'}). Estimation, pas un résultat.` : null,
         `Censure par le Conseil constitutionnel : environ ${Math.round(risqueConstitutionnel(l) * 100)} %.`,
-        etat.joueur.role === 'premier_ministre' && AN.length ? `Le 49.3 évite le vote, mais expose à une motion de censure (${voterCensure(etat, AN).pour} voix estimées sur 289 requises).` : null,
+        gouverne(etat) && AN.length ? `Le 49.3 évite le vote, mais expose à une motion de censure (${voterCensure(etat, AN).pour} voix estimées sur 289 requises).` : null,
       ].filter(Boolean),
       blocage: item.raison ?? null,
       objectifs: liensObjectifs(etat, donnees, 'loi', l.effets.map((e) => e.indicateur)),

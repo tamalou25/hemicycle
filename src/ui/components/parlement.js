@@ -3,7 +3,7 @@ import { ETAPES, groupesAssemblee, groupesSenat, accordActif, apercuAmendement }
 
 const ETAPES_LIB = { assemblee: 'Assemblée', senat: 'Sénat', cmp: 'CMP', lecture_definitive: 'Lecture définitive', conseil: 'Conseil constitutionnel' };
 const OPTIONNELLES = ['cmp', 'lecture_definitive'];
-const ROLES_LIB = { depute: 'Député·e', premier_ministre: 'Premier ministre (fictif)' };
+const ROLES_LIB = { depute: 'Député·e', premier_ministre: 'Premier ministre (fictif)', president: 'Président·e de la République (fictif)' };
 export const libelleRole = (r) => ROLES_LIB[r] ?? r;
 
 const raison = (id, msg) => (msg ? `<p id="${id}" class="text-xs text-doux mt-1">${esc(msg)}</p>` : '');
@@ -14,7 +14,7 @@ function frise(texte) {
   return `<ol class="flex flex-wrap gap-1.5 my-3" aria-label="Étapes du texte">${ETAPES.map((e, i) => {
     const courante = i === idx, passee = i < idx, opt = OPTIONNELLES.includes(e);
     const cls = courante ? 'bg-encre text-white border-encre font-bold'
-      : passee ? 'bg-[#E8E1CD] text-doux border-bord line-through'
+      : passee ? 'bg-[#E3E8F0] text-doux border-bord line-through'
         : `bg-carte text-encre border-bord ${opt ? 'border-dashed' : ''}`;
     return `<li class="text-xs px-2 py-1 rounded border ${cls}" ${courante ? 'aria-current="step"' : ''}>${i + 1}. ${esc(ETAPES_LIB[e])}${opt ? ' <span class="opacity-80">(optionnelle)</span>' : ''}</li>`;
   }).join('')}</ol>`;
@@ -66,11 +66,11 @@ function hemicycle(titre, groupes, couleurDe, estAllie, joueurParti) {
     const moi = g.parti && g.parti === joueurParti, allie = estAllie(g);
     return `<li class="flex items-center gap-2 text-sm ${moi || allie ? 'font-semibold' : ''}">
       <span class="inline-block w-3 h-3 rounded-sm shrink-0" style="background:${esc(couleurDe(g))}" aria-hidden="true"></span>
-      <span class="grow">${esc(g.sigle)}${moi ? ' ★ <span class="text-xs font-normal">votre parti</span>' : allie ? ' <span class="text-xs rounded bg-[#DCEBDD] text-[#1F6E43] px-1.5 py-0.5">allié</span>' : ''}</span>
+      <span class="grow">${esc(g.sigle)}${moi ? ' ★ <span class="text-xs font-normal">votre parti</span>' : allie ? ' <span class="text-xs rounded bg-[#DDF3E6] text-[#157A48] px-1.5 py-0.5">allié</span>' : ''}</span>
       <span class="tabular-nums">${g.sieges}</span></li>`;
   }).join('');
   return `<div><h3 class="font-semibold mb-1">${esc(titre)} <span class="text-doux font-normal">(${total} sièges)</span></h3>
-    <div class="h-5 flex rounded overflow-hidden bg-[#E8E1CD]" role="img" aria-label="${esc(titre)} : ${tri.map((g) => `${g.sigle} ${g.sieges}`).join(', ')}">${barres}</div>
+    <div class="h-5 flex rounded overflow-hidden bg-[#E3E8F0]" role="img" aria-label="${esc(titre)} : ${tri.map((g) => `${g.sigle} ${g.sieges}`).join(', ')}">${barres}</div>
     <ul class="mt-2 space-y-0.5">${lignes}</ul></div>`;
 }
 
@@ -87,15 +87,15 @@ function accords(etat, partis) {
 export function sectionParlement(etat, ctx) {
   const { lois, partis, senat } = ctx;
   const joueurParti = etat.joueur.parti;
-  const couleurParti = (id) => partis.find((p) => p.id === id)?.couleur ?? '#8A8A8A';
-  const couleurDe = (g) => (g.parti ? couleurParti(g.parti) : '#8A8A8A');
+  const couleurParti = (id) => partis.find((p) => p.id === id)?.couleur ?? '#8A94A6';
+  const couleurDe = (g) => (g.parti ? couleurParti(g.parti) : '#8A94A6');
   const estAllie = (g) => !!g.parti && g.parti !== joueurParti && accordActif(etat, g.parti);
   return `<section aria-labelledby="h-parl" class="mb-6">
     <h2 id="h-parl" class="font-serif font-bold text-xl mb-2">Parlement</h2>
     <div class="grid lg:grid-cols-2 gap-4">
       <div class="bg-carte border border-bord rounded-lg p-4"><h3 class="font-semibold text-sm text-doux uppercase tracking-wide mb-1">Texte en cours</h3><div aria-live="polite">${texteEnCours(etat, lois, ctx)}</div></div>
       <div class="bg-carte border border-bord rounded-lg p-4 space-y-4">
-        ${etat.sieges ? '<p class="text-xs"><span class="font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-1.5 py-0.5">Simulation</span> Assemblée issue des législatives simulées</p>' : ''}
+        ${etat.sieges ? '<p class="text-xs"><span class="font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-1.5 py-0.5">Simulation</span> Assemblée issue des législatives simulées</p>' : ''}
         ${hemicycle('Assemblée nationale', groupesAssemblee(partis, etat.sieges), couleurDe, estAllie, joueurParti)}
         ${hemicycle('Sénat', groupesSenat(senat, partis), couleurDe, estAllie, joueurParti)}
       </div>

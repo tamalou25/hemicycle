@@ -157,7 +157,7 @@ function passage(etatInitial, donnees) {
 
   // 6. Fin de partie
   let fin = null;
-  if (ind.popularite < SEUIL_DEFAITE) fin = { type: 'defaite', texte: 'Votre popularité s’est effondrée : votre parti vous retire son investiture.' };
+  if (ind.popularite < SEUIL_DEFAITE) fin = { type: 'defaite', texte: etat.joueur.role === 'president' ? 'Votre popularité s’est effondrée : vous démissionnez (simplification du jeu).' : 'Votre popularité s’est effondrée : votre parti vous retire son investiture.' };
   else if (tour >= DUREE_MANDAT) fin = { type: 'mandat', texte: 'Cinq ans se sont écoulés : fin de la législature.' };
 
   const apres = {
@@ -172,7 +172,7 @@ function passage(etatInitial, donnees) {
     campagneCeMois: false,
     accords: (etat.accords ?? []).filter((a) => a.jusqua >= tour),
     // Le Premier ministre dispose de l'appareil d'État : +1 capital/mois
-    joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + (etat.joueur.role === 'premier_ministre' ? 1 : 0)) },
+    joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + (['premier_ministre', 'president'].includes(etat.joueur.role) ? 1 : 0)) },
     sondage,
     historique: [...etat.historique, { tour, ...ind }],
     journal: fin ? [...etat.journal, { tour, type: 'fin', texte: fin.texte }] : etat.journal,

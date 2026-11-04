@@ -96,6 +96,9 @@ npm run build:css
   échec (distinct du score de bilan), puis « rejouer avec d'autres choix » (même graine) ou « poursuivre la simulation ».
   Règles et limites : [`docs/PARTIE-COURTE.md`](docs/PARTIE-COURTE.md). L'ancienne mission d'initiation (6 mois) reste jouable sur les
   sauvegardes v13 qui l'avaient.
+- **Campagne présidentielle** (30 à 90 minutes visées) : vous êtes président·e (fictif) à partir de mai 2027, vous agissez par votre
+  gouvernement (lois, programmes, budget, 49.3), vous le nommez après une censure, vous dissolvez l'Assemblée ; le temps est continu
+  (pause, vitesses ×1 ×2 ×3, pause automatique aux événements). Vision et feuille de route : [`docs/VISION-CAMPAGNE.md`](docs/VISION-CAMPAGNE.md).
 - **Comment jouer cette version** : `npm install` puis `npx serve .` (ou `python3 -m http.server`), ouvrir l'adresse affichée, cocher
   l'avertissement, **Découvrir en jouant**, choisir une famille politique, **Commencer la découverte**.
 - **Bureau en trois questions** : Que se passe-t-il ? (bilan du mois, « Ce mois-ci », état du pays et ressources) ·

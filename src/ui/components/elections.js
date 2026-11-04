@@ -6,7 +6,7 @@ import {
 } from '../../engine/index.js';
 import { TOTAL_DEPUTES } from '../../engine/elections.js';
 
-const BADGE_SIM = '<span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5">Simulation</span>';
+const BADGE_SIM = '<span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-2 py-0.5">Simulation</span>';
 const TYPES_LIB = { presidentielle: 'Présidentielle', legislatives: 'Législatives', europeennes: 'Européennes' };
 
 const raison = (id, msg) => (msg ? `<p id="${id}" class="text-xs text-doux mt-1">${esc(msg)}</p>` : '');
@@ -44,8 +44,9 @@ function blocCampagne(etat, ctx) {
 }
 
 function blocCandidature(etat, ctx) {
-  const badge = '<p class="mt-3"><span class="text-xs font-bold uppercase rounded bg-[#DCEBDD] text-[#1F6E43] px-2 py-1">Candidat·e à la présidentielle</span></p>';
+  const badge = '<p class="mt-3"><span class="text-xs font-bold uppercase rounded bg-[#DDF3E6] text-[#157A48] px-2 py-1">Candidat·e à la présidentielle</span></p>';
   if (etat.candidat) return badge;
+  if (etat.joueur.role === 'president') return ''; // déjà à l'Élysée : pas de candidature pendant le mandat
   if (prochainesElections(etat, ctx.calendrier)[0]?.type !== 'presidentielle') return '';
   return `<div class="mt-3"><button type="button" class="btn btn-p" id="btn-candidat" data-candidat>Se déclarer candidat·e</button>
     <p class="text-xs text-doux mt-1">Popularité d’au moins 15 % requise pour réunir les parrainages.</p></div>`;
@@ -54,12 +55,12 @@ function blocCandidature(etat, ctx) {
 // ---------- Résultats ----------
 
 const sigle = (ctx, id) => ctx.partis.find((p) => p.id === id)?.sigle ?? id;
-const couleur = (ctx, id) => ctx.partis.find((p) => p.id === id)?.couleur ?? '#8A8A8A';
+const couleur = (ctx, id) => ctx.partis.find((p) => p.id === id)?.couleur ?? '#8A94A6';
 
 function barres(ctx, entrees, max, suffixe = ' %') {
   return `<ul class="space-y-1">${entrees.map(([id, v, marque]) => `<li class="flex items-center gap-2 text-sm">
     <span class="w-12 shrink-0 font-semibold">${esc(sigle(ctx, id))}</span>
-    <span class="grow h-4 bg-[#E8E1CD] rounded overflow-hidden"><span class="block h-full" style="width:${Math.min(100, (v / max) * 100)}%;background:${esc(couleur(ctx, id))}"></span></span>
+    <span class="grow h-4 bg-[#E3E8F0] rounded overflow-hidden"><span class="block h-full" style="width:${Math.min(100, (v / max) * 100)}%;background:${esc(couleur(ctx, id))}"></span></span>
     <span class="w-14 text-right tabular-nums shrink-0">${fmt(v)}${suffixe}</span>${marque ?? ''}</li>`).join('')}</ul>`;
 }
 
@@ -78,7 +79,7 @@ function resultatLegislatives(r, ctx) {
   const tri = Object.entries(r.sieges).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
   const resume = tri.map(([id, n]) => `${sigle(ctx, id)} ${n}`).join(', ');
   return `<h4 class="font-semibold mt-2 mb-1">Nouvelle composition (${TOTAL_DEPUTES} sièges)</h4>
-    <div class="h-5 flex rounded overflow-hidden bg-[#E8E1CD]" role="img" aria-label="Sièges : ${esc(resume)}">${tri.map(([id, n]) => `<div style="width:${(n / TOTAL_DEPUTES) * 100}%;background:${esc(couleur(ctx, id))}" title="${esc(sigle(ctx, id))} : ${n}"></div>`).join('')}</div>
+    <div class="h-5 flex rounded overflow-hidden bg-[#E3E8F0]" role="img" aria-label="Sièges : ${esc(resume)}">${tri.map(([id, n]) => `<div style="width:${(n / TOTAL_DEPUTES) * 100}%;background:${esc(couleur(ctx, id))}" title="${esc(sigle(ctx, id))} : ${n}"></div>`).join('')}</div>
     <ul class="mt-2 grid grid-cols-2 gap-x-3 gap-y-0.5">${tri.map(([id, n]) => `<li class="flex items-center gap-2 text-sm"><span class="inline-block w-3 h-3 rounded-sm shrink-0" style="background:${esc(couleur(ctx, id))}" aria-hidden="true"></span><span class="grow">${esc(sigle(ctx, id))}</span><span class="tabular-nums">${n}</span></li>`).join('')}</ul>`;
 }
 

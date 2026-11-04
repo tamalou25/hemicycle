@@ -9,7 +9,7 @@ const NOM_ETAPE = {
   service: 'Mise en service', effet: 'Premiers effets observés', debrief: 'Débrief',
 };
 const LIB_ETAT = { fait: 'Fait', en_cours: 'En cours', a_faire: 'À faire', impossible: 'Non réalisé' };
-const CLS_ETAT = { fait: 'text-[#1F6E43] border-[#1F6E43]', en_cours: 'text-[#8A5A00] border-[#8A5A00]', a_faire: 'text-doux border-bord', impossible: 'text-rouge border-rouge' };
+const CLS_ETAT = { fait: 'text-[#157A48] border-[#157A48]', en_cours: 'text-[#8A5A00] border-[#8A5A00]', a_faire: 'text-doux border-bord', impossible: 'text-rouge border-rouge' };
 
 /** « mars 2027 » pour un numéro de mois de jeu. */
 export const moisDe = (etat, tour) => { const d = dateDuTour({ ...etat, tour }); return `${MOIS[d.mois - 1]} ${d.annee}`; };

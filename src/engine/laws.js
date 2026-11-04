@@ -3,6 +3,7 @@
 import { CAPITAL_MAX, DELAI_493, DUREE_ACCORD, borner } from './constants.js';
 import { ecartIdeologique, accordActif } from './parliament.js';
 import { bonusTolerance, reagir } from './relations.js';
+import { gouverne } from './presidence.js';
 
 export { SEUIL_SOUTIEN } from './parliament.js';
 
@@ -24,7 +25,7 @@ export function proposerLoi(etat, loiId, { lois }) {
   if (!loi) throw new Error(`Loi inconnue : ${loiId}`);
   const refus = raisonRefus(etat, loi);
   if (refus) throw new Error(refus);
-  const nature = etat.joueur.role === 'premier_ministre' ? 'Projet de loi' : 'Proposition de loi';
+  const nature = gouverne(etat) ? 'Projet de loi' : 'Proposition de loi';
   return {
     ...etat,
     actionCeMois: true,
@@ -53,7 +54,7 @@ export function amenderTexte(etat, { lois }) {
 
 /** 49.3 : réservé au Premier ministre, en lecture à l'Assemblée. Déclenche une motion de censure. */
 export function raisonRefus493(etat) {
-  if (etat.joueur.role !== 'premier_ministre') return 'Seul le Premier ministre peut engager la responsabilité du gouvernement.';
+  if (!gouverne(etat)) return etat.joueur.role === 'president' ? 'Sans gouvernement en place, le 49.3 est impossible : nommez un Premier ministre.' : 'Seul le Premier ministre peut engager la responsabilité du gouvernement.';
   if (!etat.texte || !['assemblee', 'lecture_definitive'].includes(etat.texte.etape)) return 'Le 49.3 ne s’utilise que lors d’une lecture à l’Assemblée.';
   if (etat.texte.recours493) return '49.3 déjà engagé sur ce texte.';
   // Exception : le 49.3 peut suivre le dépôt dans le même mois (sinon le vote aurait déjà eu lieu).
@@ -87,6 +88,7 @@ export function raisonRefusAccord(etat, partiId) {
   if (etat.fin) return 'La partie est terminée.';
   if (etat.negoCeMois) return 'Une seule négociation par mois.';
   if (partiId === etat.joueur.parti) return 'C’est votre propre parti.';
+  if (etat.joueur.role === 'president' && etat.gouvernement?.statut === 'en_place' && etat.gouvernement.parti === partiId) return 'Ce parti dirige déjà votre gouvernement.';
   if (accordActif(etat, partiId)) return 'Accord déjà en vigueur.';
   if (etat.joueur.capital < 2) return 'Capital politique insuffisant (2 requis).';
   return null;

@@ -23,6 +23,8 @@ export function importerPartie(texte) {
   if (etat.version === 12) etat = { ...etat, version: 13, mission: null, objectifsInitiaux: {} };
   // v14 : scénario « Douze mois pour convaincre » ; les anciennes parties n'en ont pas (aucune activation rétroactive)
   if (etat.version === 13) etat = { ...etat, version: 14, scenario: null };
+  // v15 : présidence (gouvernement du président) ; les anciennes parties gardent leur rôle et leurs règles
+  if (etat.version === 14) etat = { ...etat, version: 15, gouvernement: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -140,6 +142,9 @@ function assainir(e) {
     journal: liste(e.journal, (x) => ({ tour: nb(x.tour), type: ch(x.type, 30), texte: ch(x.texte, 300) })),
     mission: assainirMission(e.mission),
     scenario: assainirScenario(e.scenario),
+    gouvernement: e.gouvernement && typeof e.gouvernement === 'object' && j.role === 'president'
+      ? { parti: ch(e.gouvernement.parti, 50), depuis: nb(e.gouvernement.depuis), statut: e.gouvernement.statut === 'renverse' ? 'renverse' : 'en_place', renversements: nb(e.gouvernement.renversements), nominations: nb(e.gouvernement.nominations), ...(Number.isFinite(e.gouvernement.renverseLe) ? { renverseLe: e.gouvernement.renverseLe } : {}) }
+      : null,
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),

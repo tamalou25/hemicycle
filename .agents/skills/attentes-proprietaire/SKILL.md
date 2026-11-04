@@ -6,6 +6,7 @@ description: Ce que veut le propriétaire d'Hémicycle (Gary) : vision du jeu, f
 # Attentes du propriétaire d'Hémicycle
 
 ## Vision du jeu
+- **Direction validée le 04/11/2026** (`docs/VISION-CAMPAGNE.md`) : la France seule au départ ; le joueur incarne **le président**, limité par le gouvernement, le Parlement, les élections et les ressources ; **campagnes de 30 à 90 minutes**, sauvegardables, en **temps continu** (pause, vitesses) ; politique intérieure, économie et diplomatie au premier plan, défense au niveau stratégique seulement ; inspirations HoI IV (planification, interdépendances) et Power & Revolution (gestion politique et géopolitique), avec une identité propre : expliquer les conséquences. La partie courte de 10 à 20 minutes reste une porte d'entrée, pas la campagne principale. Feuille de route : présidence et temps → économie/production/commerce → diplomatie → défense stratégique → équilibrage.
 - Hémicycle est un **jeu**, pas un tableau de bord : le joueur doit toujours savoir **quel est son but**, **ce qu'il peut faire**, **ce que coûte une décision**, **quand elle agit** et **ce qu'elle a changé**.
 - Retour joueur à garder en tête : « On ne comprend pas grand-chose, il faut un but. » Toute évolution doit rendre le jeu plus compréhensible et plus intéressant, pas seulement plus riche.
 - Une seule simulation : pas de version factice pour un tutoriel, pas de délais accélérés, pas de réussite obtenue par un simple clic.

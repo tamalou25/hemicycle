@@ -1,9 +1,10 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique, differerMission } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique, differerMission, nommerGouvernement, horlogeInitiale, basculer, pauser, changerVitesse, avancer, raisonPause, jourDuMois } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
 import { render as decouverte } from './ui/screens/decouverte.js';
+import { render as presidence } from './ui/screens/presidence.js';
 import { render as tableau } from './ui/screens/tableau.js';
 import { render as fin } from './ui/screens/fin.js';
 import { render as defi } from './ui/screens/defi.js';
@@ -16,7 +17,7 @@ const CLE_ACCORD = 'hemicycle.accord';
 const CLE_CLASSEMENT = 'hemicycle.classement';
 const CLE_IDS = 'hemicycle.classement.ids';
 const CLE_ONGLET = 'hemicycle.onglet';
-const ECRANS = { accueil, creation, decouverte, choixElu, tableau, fin, defi, classement };
+const ECRANS = { accueil, creation, decouverte, presidence, choixElu, tableau, fin, defi, classement };
 
 const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const ecrire = (k, v) => { try { localStorage.setItem(k, v); } catch { /* stockage indisponible */ } };
@@ -49,6 +50,7 @@ function afficher({ focus = true } = {}) {
   const y = window.scrollY;
   ctx.sauvegardeExiste = !!lire(CLE);
   document.body.classList.toggle('avec-barres', ecran === 'tableau');
+  document.body.classList.toggle('avec-temps', ecran === 'tableau' && !!ctx.horloge);
   ECRANS[ecran](racine, etat, dispatch, ctx);
   window.scrollTo(0, y);
   const cible = actif && document.getElementById(actif);
@@ -120,6 +122,22 @@ export function dispatch(action) {
         ctx.brouillonPLF = null; ctx.scenarioReplie = false; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); toast('Nouvelle partie : même scénario, même graine. À vous d’autres choix.', 'info'); break;
       }
       case 'mission-differer': etat = differerMission(etat); ctx.focusApres = 'h-mission'; break;
+      case 'presidence': {
+        // Campagne présidentielle : président·e fictif·ve, mandat à partir de mai 2027, gouvernement du parti choisi, temps continu (en pause au départ)
+        const parti = ctx.partis.find((p) => p.id === action.parti);
+        if (!parti) throw new Error('Choisissez une famille politique.');
+        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'president', ideologie: { ...parti.positions } }, situation: ctx.situation, dateDepart: '2027-05-01', regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
+        ctx.presidence = null; ctx.brouillonPLF = null; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); break;
+      }
+      case 'nommer': etat = nommerGouvernement(etat, action.parti, donnees); ctx.focusApres = 'h-gouv'; break;
+      case 'horloge': {
+        // L'horloge ne touche jamais à l'état du jeu : elle ne fait que décider quand jouer un mois (dispatch « suivant »)
+        if (!ctx.horloge) return;
+        if (action.action === 'basculer') { const r = raisonPause(etat); if (!ctx.horloge.marche && r) { toast(`Le temps reste en pause : ${r}`); return; } ctx.horloge = basculer(ctx.horloge); }
+        else if (action.action === 'pause') ctx.horloge = pauser(ctx.horloge);
+        else if (action.action === 'vitesse') ctx.horloge = changerVitesse(ctx.horloge, action.vitesse);
+        return afficher({ focus: false });
+      }
       case 'nouvelle': {
         etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
@@ -150,13 +168,15 @@ export function dispatch(action) {
       case 'evenement': etat = resoudreEvenement(etat, action.index, donnees); break;
       case 'plf-deposer': etat = deposerPLF(etat, action.plf ?? ctx.brouillonPLF); ctx.brouillonPLF = null; break;
       case 'plf-493': etat = recourir493PLF(etat); ctx.confirm493 = false; break;
-      case 'suivant': ctx.groupesAvant = etat.groupes ?? null; etat = tourSuivant(etat, donnees); if (etat.scenario?.statut === 'termine' && etatPrecedent.scenario?.statut === 'en_cours') { ctx.scenarioReplie = false; ctx.focusApres = 'h-scenario'; } break;
+      case 'suivant': ctx.groupesAvant = etat.groupes ?? null; etat = tourSuivant(etat, donnees); if (etat.scenario?.statut === 'termine' && etatPrecedent.scenario?.statut === 'en_cours') { ctx.scenarioReplie = false; ctx.focusApres = 'h-scenario'; } if (ctx.horloge && raisonPause(etat)) ctx.horloge = pauser(ctx.horloge); break;
       case 'exporter': telecharger(exporterPartie(etat), `hemicycle-mois-${etat.tour}.json`); return;
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
       default: throw new Error(`Action inconnue : ${action.type}`);
     }
     const cible = !etat ? 'accueil' : etat.fin ? 'fin' : 'tableau';
-    if (cible !== ecran || ['nouvelle', 'decouverte', 'rejouer-scenario', 'relever', 'reprendre', 'importer'].includes(action.type)) aller(cible);
+    // Temps continu : horloge en pause pour une nouvelle partie ou une reprise ; absente hors du tableau
+    if (['presidence', 'nouvelle', 'decouverte', 'rejouer-scenario', 'relever', 'reprendre', 'importer'].includes(action.type)) ctx.horloge = etat?.joueur?.role === 'president' ? horlogeInitiale() : null;
+    if (cible !== ecran || ['nouvelle', 'decouverte', 'presidence', 'rejouer-scenario', 'relever', 'reprendre', 'importer'].includes(action.type)) aller(cible);
     else afficher({ focus: false });
     // Confirmation : ce qui a été engagé, la ressource consommée, la prochaine étape (lu dans l'état avant / après)
     const message = confirmation(action, etatPrecedent, etat, ctx);
@@ -172,6 +192,33 @@ export function dispatch(action) {
     toast(e.message || String(e));
   }
 }
+
+// ---------- Temps continu (boucle d'affichage) ----------
+// L'horloge pure (moteur) décide des pas ; ici on mesure le temps réel, on joue au plus un mois par pas,
+// on met en pause en arrière-plan et on n'effectue aucun rattrapage au retour. Les règles restent dans tourSuivant.
+let derniereMesure = null;
+function boucleTemps(maintenant) {
+  if (derniereMesure == null) derniereMesure = maintenant;
+  const dt = Math.min(1000, maintenant - derniereMesure); // un intervalle réel long (onglet inactif) ne vaut jamais plus d'une seconde
+  derniereMesure = maintenant;
+  if (ctx.horloge?.marche && ecran === 'tableau' && etat && !etat.fin && !document.hidden) {
+    const r = avancer(ctx.horloge, dt);
+    ctx.horloge = r.horloge;
+    if (r.pas) dispatch({ type: 'suivant' });
+    else { const texte = `jour ${jourDuMois(ctx.horloge)}`; document.querySelectorAll('[data-jour]').forEach((el) => { if (el.textContent !== texte) el.textContent = texte; }); }
+  }
+  requestAnimationFrame(boucleTemps);
+}
+requestAnimationFrame(boucleTemps);
+// Arrière-plan : pause (le joueur reprend lui-même, sans rattrapage)
+document.addEventListener('visibilitychange', () => { if (document.hidden && ctx.horloge?.marche) { ctx.horloge = pauser(ctx.horloge); derniereMesure = null; if (ecran === 'tableau') afficher({ focus: false }); } });
+// Raccourcis : Espace (pause / lecture), + et − (vitesse), hors champs de saisie
+document.addEventListener('keydown', (e) => {
+  if (!ctx.horloge || ecran !== 'tableau' || e.target.closest('input, textarea, select, [contenteditable]')) return;
+  if (e.key === ' ' && !e.target.closest('button, a, summary')) { e.preventDefault(); dispatch({ type: 'horloge', action: 'basculer' }); }
+  else if (e.key === '+' || e.key === '=') dispatch({ type: 'horloge', action: 'vitesse', vitesse: Math.min(3, ctx.horloge.vitesse + 1) });
+  else if (e.key === '-') dispatch({ type: 'horloge', action: 'vitesse', vitesse: Math.max(1, ctx.horloge.vitesse - 1) });
+});
 
 async function init() {
   try {

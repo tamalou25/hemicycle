@@ -1,6 +1,7 @@
 // Institutions : groupes, votes des chambres, accords, censure.
 import { AXES, BONUS_ACCORD, MAJORITE_CENSURE, SEUIL_OPPOSITION } from './constants.js';
 import { bonusVote, attitudeCensure } from './relations.js';
+import { partiGouvernement } from './presidence.js';
 
 /** Seuil de score pour qu'un groupe vote pour un texte. */
 export const SEUIL_SOUTIEN = 0.72;
@@ -33,9 +34,11 @@ export const accordActif = (etat, partiId) =>
 /** Score de soutien d'un groupe pour un texte (orientation sur un thème). */
 export function scoreGroupe(etat, groupe, theme, orientation) {
   if (groupe.parti && groupe.parti === etat.joueur.parti) return 1;
+  // Président·e : le parti du gouvernement porte les textes comme s'il avait un accord
+  const soutienGouv = groupe.parti && groupe.parti === partiGouvernement(etat) && groupe.parti !== etat.joueur.parti ? BONUS_ACCORD : 0;
   const proximite = 1 - Math.abs((groupe.positions[theme] ?? 0) - orientation) / 200;
   const nego = (etat.joueur.competences.negociation / 100) * 0.08;
-  return proximite + nego + (groupe.parti && accordActif(etat, groupe.parti) ? BONUS_ACCORD : 0) + (groupe.parti ? bonusVote(etat, groupe.parti) : 0);
+  return proximite + nego + soutienGouv + (groupe.parti && accordActif(etat, groupe.parti) ? BONUS_ACCORD : 0) + (groupe.parti ? bonusVote(etat, groupe.parti) : 0);
 }
 
 /** Vote d'une chambre. */
@@ -57,7 +60,7 @@ export function voterChambre(etat, groupes, theme, orientation) {
 export function voterCensure(etat, groupes) {
   let pour = 0;
   const detail = groupes.map((g) => {
-    const allie = g.parti === etat.joueur.parti || (g.parti && accordActif(etat, g.parti));
+    const allie = g.parti === etat.joueur.parti || (g.parti && (accordActif(etat, g.parti) || g.parti === partiGouvernement(etat)));
     const ecart = ecartIdeologique(etat.joueur.ideologie, g.positions);
     const attitude = g.parti ? attitudeCensure(etat, g.parti) : 'neutre';
     // Relation (E5) : un parti très proche protège le gouvernement, un parti hostile censure plus facilement

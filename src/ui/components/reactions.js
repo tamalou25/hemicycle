@@ -8,7 +8,7 @@ const PHRASES = {
   reserve: (n) => `${n} exprimerait probablement des réserves.`,
   opposition: (n) => `${n} s’opposerait probablement à ce texte.`,
 };
-const BADGE = '<span class="text-xs font-bold uppercase tracking-wide border-2 border-encre rounded px-2 py-0.5 bg-[#FFF3C4] text-encre whitespace-nowrap">Simulation</span>';
+const BADGE = '<span class="text-xs font-bold uppercase tracking-wide border-2 border-encre rounded px-2 py-0.5 bg-[#FFF4D6] text-encre whitespace-nowrap">Simulation</span>';
 
 /** Section « Réactions probables (simulation) » + section distincte de citations sourcées. */
 export function sectionReactions(etat, ctx) {

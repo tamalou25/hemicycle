@@ -6,6 +6,7 @@ import { regionMission } from './mission.js';
 import { eligible } from './events.js';
 import { raisonRefusPLF } from './budgetEtat.js';
 import { groupesAssemblee, groupesSenat, voterChambre } from './parliament.js';
+import { gouverne } from './presidence.js';
 
 export const RESULTATS_SCENARIO = {
   complet: 'Réussite complète : les trois engagements sont tenus',
@@ -216,7 +217,7 @@ export function priorites(etat, donnees) {
     res.push({ id: 'evenement', type: 'urgence', titre: ev?.titre ?? 'Événement', raison: 'Sans réponse ce mois-ci, l’option par défaut s’applique.', aller: { onglet: 'bureau', cible: 'evenement' } });
   }
   if (s.statut === 'en_cours') {
-    const pm = etat.joueur.role === 'premier_ministre';
+    const pm = gouverne(etat);
     for (const e of evaluerEngagements(etat, donnees)) {
       if (e.etat !== 'manque') continue;
       if (e.id === 'avenir' && !pm) continue; // plus accessible : la conclusion l'expliquera

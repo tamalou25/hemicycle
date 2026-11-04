@@ -23,7 +23,7 @@ export function render(racine, etat, dispatch, ctx) {
   }).join('');
   racine.innerHTML = `<form id="form" class="max-w-3xl mx-auto" novalidate>
     <h1 class="font-serif font-bold text-3xl mb-3">Jouer un élu réel</h1>
-    <div class="border-2 border-encre bg-[#FFF3C4] rounded-lg p-3 mb-4" role="note">
+    <div class="border-2 border-encre bg-[#FFF4D6] rounded-lg p-3 mb-4" role="note">
       <strong>Mode élu réel :</strong> positions reprises du programme du parti ; tous les événements et réactions sont simulés.</div>
     <div class="mb-4"><label for="fp" class="font-semibold mr-2">Filtrer par parti</label>
       <select id="fp" class="champ !w-auto"><option value="">Tous les partis</option>

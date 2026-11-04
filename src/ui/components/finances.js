@@ -15,7 +15,7 @@ function barres(titre, id, lib, valeurs, couleur) {
   return `<div><h3 id="${id}" class="font-serif font-bold text-lg mb-1">${titre} <span class="font-sans font-normal text-sm text-doux">· ${fmt(total, 0)} Md€</span></h3>
     <ul aria-labelledby="${id}" class="space-y-1">${Object.entries(lib).filter(([k]) => valeurs[k] != null).map(([k, nom]) => `<li class="text-sm">
       <div class="flex justify-between gap-2"><span>${nom}</span><span class="tabular-nums font-semibold">${fmt(valeurs[k], 0)} Md€</span></div>
-      <div class="h-2 bg-[#E8E1CD] rounded-sm overflow-hidden" aria-hidden="true"><div class="h-full ${couleur}" style="width:${Math.max(1, Math.round(valeurs[k] / max * 100))}%"></div></div></li>`).join('')}</ul></div>`;
+      <div class="h-2 bg-[#E3E8F0] rounded-sm overflow-hidden" aria-hidden="true"><div class="h-full ${couleur}" style="width:${Math.max(1, Math.round(valeurs[k] / max * 100))}%"></div></div></li>`).join('')}</ul></div>`;
 }
 
 export function tableauDeBord(etat) {

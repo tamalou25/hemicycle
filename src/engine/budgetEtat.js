@@ -2,6 +2,7 @@
 // annuel voté au Parlement, charge de la dette. Montants initiaux = données observées (src/data/finances.json) ;
 // sensibilités par Md€ = PARAMÈTRES D'ÉQUILIBRAGE (SENSIBILITES ci-dessous).
 import { planifierEffets } from './effects.js';
+import { gouverne, renverserGouvernement } from './presidence.js';
 import { groupesAssemblee, voterChambre, voterCensure, ecartIdeologique, accordActif } from './parliament.js';
 import { SEUIL_OPPOSITION } from './constants.js';
 import { reagir } from './relations.js';
@@ -47,7 +48,7 @@ export const solde = (b) => r2(somme(b.recettes) - somme(b.depenses));
 export function raisonRefusPLF(etat) {
   if (etat.fin) return 'La partie est terminée.';
   if (!etat.budget) return 'Données budgétaires indisponibles.';
-  if (etat.joueur.role !== 'premier_ministre') return 'Le projet de loi de finances est déposé par le gouvernement.';
+  if (!gouverne(etat)) return 'Le projet de loi de finances est déposé par le gouvernement.';
   if (etat.plf) return 'Un projet de loi de finances est déjà en discussion.';
   if (etat.dernierPLF != null && etat.tour - etat.dernierPLF < 10) return 'Un budget a déjà été voté cette année.';
   const mois = ((etat.dateDepart.mois - 1 + etat.tour) % 12) + 1;
@@ -147,7 +148,10 @@ export function voterPLF(etat, { partis }) {
   if (plf.recours493) {
     const c = voterCensure(etat, AN);
     if (c.adoptee) {
-      journal.push({ tour: etat.tour, type: 'censure', texte: `Motion de censure adoptée sur le budget (${c.pour} voix). Le gouvernement est renversé.` });
+      const texte = `Motion de censure adoptée sur le budget (${c.pour} voix). Le gouvernement est renversé.`;
+      // Président·e : le gouvernement tombe, pas la présidence ; une loi spéciale reconduit les crédits
+      if (etat.joueur.role === 'president') return { ...renverserGouvernement({ ...etat, dernierVote: { loi: 'budget', chambre: 'censure', ...c } }, texte), dernierPLF: etat.tour, chocs: { ...(etat.chocs ?? {}), censure: -2, 'loi-speciale': -1.5 } };
+      journal.push({ tour: etat.tour, type: 'censure', texte });
       return { ...etat, plf: null, journal, dernierVote: { loi: 'budget', chambre: 'censure', ...c }, fin: { type: 'censure', texte: 'Votre gouvernement a été renversé sur le budget.' } };
     }
     journal.push({ tour: etat.tour, type: 'censure', texte: `Motion de censure rejetée (${c.pour} voix) : le budget est adopté.` });

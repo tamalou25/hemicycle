@@ -48,3 +48,16 @@
 - **Budget mobile** : chiffres clés sur 2 colonnes ; les curseurs du PLF sont repliés hors de la période de dépôt.
 - **Bureau mobile** : grille « Tous les indicateurs » repliée (ses valeurs principales sont déjà dans « État du pays »).
 - **Garde-fou** : `tests/build.test.js` échoue si `sw.js` n'est pas à jour (`npm run build`).
+
+## Refonte visuelle « Salle des cartes » (11/2026, branche `campagne-presidence`)
+Captures avant / après : `docs/captures/avant-refonte/` et `docs/captures/apres-refonte/` (accueil, campagne, Bureau, Décisions, Carte, Bureau au mois 3 ; mobile 412 px et ordinateur).
+
+### Choix
+- **Palette** : fond gris-bleu clair (`#F3F5F9`) et surfaces blanches à la place de l'ivoire parchemin ; encre bleu nuit (`#111C33`) pour le texte et les bandeaux ; **bleu d'action** (`#1E4ED8`) réservé aux boutons principaux, liens et onglet actif ; **ambre** (`#F5B51C` sur fond sombre, `#9A6700` en texte) réservé au temps, aux alertes et aux échéances ; vert (`#157A48`) aux réussites, rouge (`#C0262B`) aux dangers. Les noms Tailwind historiques (`creme`, `carte`, `encre`, `bord`, `doux`, `bleu`, `rouge`, `laiton`) sont conservés avec les nouvelles valeurs ; les couleurs des partis restent des informations, sans mise en avant d'un camp.
+- **Identité** : titres en Source Serif 4, corps en sans ; cartes blanches à filet léger et ombre douce ; boutons arrondis (8 px) ; bandeau d'état sombre (date, état du temps, Lecture / Pause, vitesses, Mois suivant) en haut sur ordinateur et dans la barre d'action en bas sur mobile ; onglets soulignés.
+- **Prise en main** : l'accueil présente le but, puis trois entrées (Découvrir, Campagne présidentielle, Partie personnalisée) chacune avec une phrase ; au premier mois, « Que puis-je faire ? » (au plus trois priorités avec leur raison : première décision, budget, événement, gouvernement) précède l'état du pays ; les icônes de navigation gardent leur libellé.
+- **Temps** : le bouton Lecture pulse en ambre quand le temps est en pause et qu'une action est attendue ; l'état « en marche / en pause » est écrit à côté de la date ; les vitesses sont des boutons à état (`aria-pressed`).
+- **Animations** : apparition des messages (200 ms), pulsation du bouton Lecture ; toutes désactivées avec `prefers-reduced-motion`.
+
+### Vérifications
+Audit axe (WCAG 2.0/2.1 A et AA, contraste compris) sur l'accueil, la création et les onglets, mobile et ordinateur (`e2e/accessibilite.spec.js`) ; cibles ≥ 44 px, clavier et focus visible (`e2e/presidence.spec.js`, `e2e/cap-mandat.spec.js`) ; aucun débordement horizontal ; contenu non masqué par les barres fixes (barre de vitesse comptée dans le dégagement du bas).

@@ -8,8 +8,8 @@ const NOM_INDICE = { sante: 'accès aux soins', emploi: 'emploi', transports: 't
 const md = (n) => `${fmt(n, 2)} Md€`;
 /** Libellé d'état pendant la partie (le bilan final utilise ETATS_ENGAGEMENT). */
 const LIB_COURS = { atteint: 'Tenu', partiel: 'En cours', manque: 'À commencer' };
-const CLS_ETAT = { atteint: 'text-[#1F6E43] border-[#1F6E43] bg-[#DCEBDD]', partiel: 'text-[#8A5A00] border-[#8A5A00] bg-[#FFF3C4]', manque: 'text-doux border-bord bg-carte' };
-const CLS_RESULTAT = { complet: 'border-[#1F6E43]', partiel: 'border-[#8A5A00]', echec: 'border-rouge' };
+const CLS_ETAT = { atteint: 'text-[#157A48] border-[#157A48] bg-[#DDF3E6]', partiel: 'text-[#8A5A00] border-[#8A5A00] bg-[#FFF4D6]', manque: 'text-doux border-bord bg-carte' };
+const CLS_RESULTAT = { complet: 'border-[#157A48]', partiel: 'border-[#8A5A00]', echec: 'border-rouge' };
 const LEVIER = { soins: ['Carte', 'carte'], parlement: ['Décisions', 'decisions'], avenir: ['Décisions', 'decisions'] };
 const ETAPE_LIB = { assemblee: 'Assemblée', senat: 'Sénat', cmp: 'commission mixte', lecture_definitive: 'lecture définitive', conseil: 'Conseil constitutionnel' };
 
@@ -83,7 +83,7 @@ function cadre(etat, ctx, def) {
         <li>Fins anticipées : popularité sous ${SEUIL_DEFAITE} %, motion de censure (Premier ministre), victoire à la présidentielle. Le scénario se conclut alors avec ce qui a été fait.</li>
       </ul>
       <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Conditions exactes à l’échéance (tableau défilant)"><table class="text-xs min-w-[36rem]"><caption class="text-left font-semibold mb-1">Conditions exactes à l’échéance</caption>
-        <thead><tr><th scope="col" class="text-left pr-2">Engagement</th><th scope="col" class="text-left pr-2 text-[#1F6E43]">Tenu</th><th scope="col" class="text-left pr-2 text-[#8A5A00]">En partie</th><th scope="col" class="text-left text-rouge">Non tenu</th></tr></thead><tbody>${conditions}</tbody></table></div>
+        <thead><tr><th scope="col" class="text-left pr-2">Engagement</th><th scope="col" class="text-left pr-2 text-[#157A48]">Tenu</th><th scope="col" class="text-left pr-2 text-[#8A5A00]">En partie</th><th scope="col" class="text-left text-rouge">Non tenu</th></tr></thead><tbody>${conditions}</tbody></table></div>
       ${def.garde_fou ? `<p id="garde-fou"><strong>Garde-fou</strong> : ${esc(def.garde_fou.texte)} Aujourd’hui : ${fmt(s.deficit)} → ${fmt(etat.indicateurs.deficit)} % du PIB (${gardeFou(etat, def)?.respecte ? 'dans la limite' : 'limite dépassée'}).</p>` : ''}
       <p><strong>Résultat</strong> : complet si les trois sont tenus et le garde-fou respecté ; partiel si un ou deux le sont (ou si les trois sont en partie) ; échec sinon. Il est distinct du score de bilan du mandat (${DUREE_MANDAT} mois) et des conditions de fin.</p>
     </div></details>`;
@@ -185,7 +185,7 @@ export function brancherScenario(racine, dispatch, etat, prioritesListe = []) {
     const p = prioritesListe[Number(b.dataset.prio)];
     if (!p) return;
     if (p.aller.onglet === 'bureau') {
-      const c = racine.querySelector(p.aller.cible === 'evenement' ? '[data-evenement]' : '#scenario');
+      const c = racine.querySelector(p.aller.cible === 'evenement' ? '[data-evenement]' : p.aller.cible === 'gouvernement' ? '[data-nommer]:not([disabled])' : p.aller.cible === 'temps' ? '[data-horloge=basculer]' : '#scenario');
       c?.scrollIntoView({ block: 'center' }); c?.focus();
     } else dispatch({ type: 'onglet', haut: true, ...p.aller, ...(p.aller.decisions ? { decisions: { categorie: '', secteur: '', statut: '', type: '', ...p.aller.decisions } } : {}) });
   }));

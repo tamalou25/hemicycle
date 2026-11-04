@@ -1,6 +1,6 @@
 // Projet de loi de finances (PLF) : curseurs par poste, aperçu en direct, dépôt, 49.3.
 import { esc, fmt } from '../util.js';
-import { SECTEURS, RECETTES, VARIATION_MAX, chiffrerPLF, orientationPLF, normaliserPLF, raisonRefusPLF, groupesAssemblee, voterBudgetAssemblee } from '../../engine/index.js';
+import { SECTEURS, RECETTES, VARIATION_MAX, chiffrerPLF, orientationPLF, normaliserPLF, raisonRefusPLF, groupesAssemblee, voterBudgetAssemblee, gouverne } from '../../engine/index.js';
 import { LIB_DEPENSES, LIB_RECETTES, fmtMd, tableauDeBord, sectionFinances } from './finances.js';
 
 const sg = (n) => (n > 0 ? '+' : n < 0 ? '−' : '');
@@ -39,9 +39,9 @@ function apercu(etat, ctx, b) {
 export function sectionBudget(etat, ctx) {
   const tdb = tableauDeBord(etat);
   const suite = sectionFinances(etat, ctx);
-  if (etat.joueur.role !== 'premier_ministre') {
+  if (!gouverne(etat)) {
     return `${tdb}<section class="mb-6 bg-carte border border-bord rounded-lg p-4"><h2 class="font-serif font-bold text-xl mb-1">Budget de l’État</h2>
-      <p class="text-sm">Le budget est présenté par le gouvernement. En tant que député, vous le votez ou le combattez au Parlement.</p></section>${suite}`;
+      <p class="text-sm">${etat.joueur.role === 'president' ? 'Le budget est présenté par le gouvernement : nommez un Premier ministre pour en déposer un.' : 'Le budget est présenté par le gouvernement. En tant que député, vous le votez ou le combattez au Parlement.'}</p></section>${suite}`;
   }
   if (!etat.budget) return `${tdb}${suite}`;
   const b = brouillon(ctx);
@@ -57,7 +57,7 @@ export function sectionBudget(etat, ctx) {
   return `${tdb}
   <section aria-labelledby="h-bud" class="mb-6 bg-carte border border-bord rounded-lg p-4">
     <h2 id="h-bud" class="font-serif font-bold text-xl mb-2">Projet de loi de finances</h2>
-    ${enCours ? `<div class="border-l-4 border-laiton bg-[#FFF3C4] p-3 mb-3" role="status"><p class="font-semibold">En discussion, vote à la fin du mois.</p>
+    ${enCours ? `<div class="border-l-4 border-laiton bg-[#FFF4D6] p-3 mb-3" role="status"><p class="font-semibold">En discussion, vote à la fin du mois.</p>
       ${etat.plf.recours493 ? '<p class="text-sm">49.3 engagé : le budget passera sauf motion de censure adoptée.</p>'
         : ctx.confirm493 ? `<p class="text-sm mt-1">Le 49.3 expose le gouvernement à une motion de censure. Confirmer ?</p>
           <div class="flex flex-wrap gap-2 mt-2"><button type="button" id="plf-493-ok" class="btn btn-p">Oui, engager le 49.3</button><button type="button" id="plf-493-non" class="btn btn-s">Annuler</button></div>`

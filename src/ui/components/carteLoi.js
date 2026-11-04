@@ -5,12 +5,12 @@ export function carteLoi(loi, etat, refus) {
   const adoptee = etat.loisAdoptees.includes(loi.id);
   const rejetee = etat.loisRejetees.includes(loi.id);
   const raisonId = `raison-${esc(loi.id)}`;
-  const statut = adoptee ? '<span class="text-xs font-semibold text-[#1F6E43]">Adoptée</span>'
+  const statut = adoptee ? '<span class="text-xs font-semibold text-[#157A48]">Adoptée</span>'
     : rejetee ? '<span class="text-xs font-semibold text-rouge">Déjà rejetée</span>' : '';
   return `<article class="bg-carte border border-bord rounded-lg p-3 flex flex-col gap-2">
     <div class="flex justify-between gap-2 items-start">
       <h4 class="font-serif font-bold text-lg leading-snug">${esc(loi.titre)}</h4>
-      <span class="text-xs bg-[#E8E1CD] rounded px-2 py-1 whitespace-nowrap">${esc(THEMES[loi.theme] ?? loi.theme)}</span>
+      <span class="text-xs bg-[#E3E8F0] rounded px-2 py-1 whitespace-nowrap">${esc(THEMES[loi.theme] ?? loi.theme)}</span>
     </div>
     <p class="text-sm text-doux">${esc(loi.description)}</p>
     <div class="flex justify-between items-center gap-2 flex-wrap">

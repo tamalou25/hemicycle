@@ -10,6 +10,7 @@ import { confianceRegionsInitiale } from './confianceRegions.js';
 import { normaliserObjectifs, evaluerObjectifs } from './objectifs.js';
 import { creerMission } from './mission.js';
 import { creerScenario } from './scenario.js';
+import { gouvernementInitial } from './presidence.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -83,6 +84,8 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     fin: null,
     mission: null, // mission d'initiation (ancien mode « Découvrir en jouant », v13), sinon null
     scenario: null, // partie courte « Douze mois pour convaincre » (v14), sinon null
+    // Présidence (v15) : gouvernement du président (parti du Premier ministre fictif), null pour les autres rôles
+    gouvernement: joueur.role === 'president' ? gouvernementInitial({ parti: joueur.parti }) : null,
   };
   // Population (E3) : calculée sur l'état initial complet
   const avecGroupes = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };

@@ -17,13 +17,13 @@ function tendance(avant, apres) {
   const d = apres - avant;
   if (Math.abs(d) < 0.05) return '<span class="text-doux" title="Stable"><span aria-hidden="true">→</span><span class="sr-only">stable</span></span>';
   const hausse = d > 0;
-  return `<span class="${hausse ? 'text-[#1F6E43]' : 'text-rouge'}" title="${hausse ? 'En hausse' : 'En baisse'} depuis le mois précédent"><span aria-hidden="true">${hausse ? '↑' : '↓'}</span><span class="sr-only">${hausse ? 'en hausse' : 'en baisse'} de ${fmt(Math.abs(d))} depuis le mois précédent</span></span>`;
+  return `<span class="${hausse ? 'text-[#157A48]' : 'text-rouge'}" title="${hausse ? 'En hausse' : 'En baisse'} depuis le mois précédent"><span aria-hidden="true">${hausse ? '↑' : '↓'}</span><span class="sr-only">${hausse ? 'en hausse' : 'en baisse'} de ${fmt(Math.abs(d))} depuis le mois précédent</span></span>`;
 }
 
 function barre(libelle, v, couleur, trend = '') {
   const x = Math.max(0, Math.min(100, v ?? 0));
   return `<div class="mb-1.5"><div class="flex justify-between gap-2 text-sm"><span>${esc(libelle)}</span><span class="font-semibold tabular-nums">${fmt(v, 0)}<span class="text-doux font-normal">/100</span> ${trend}</span></div>
-    <div class="h-2.5 bg-[#E8E1CD] rounded" role="meter" aria-label="${esc(libelle)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(x)}" aria-valuetext="${Math.round(x)} sur 100"><div class="h-2.5 rounded" style="width:${x}%;background:${couleur}"></div></div></div>`;
+    <div class="h-2.5 bg-[#E3E8F0] rounded" role="meter" aria-label="${esc(libelle)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(x)}" aria-valuetext="${Math.round(x)} sur 100"><div class="h-2.5 rounded" style="width:${x}%;background:${couleur}"></div></div></div>`;
 }
 
 function carteGroupe(g, etat, ctx) {
@@ -33,15 +33,15 @@ function carteGroupe(g, etat, ctx) {
   return `<li class="bg-carte border border-bord rounded-lg p-3 filet-laiton min-w-0">
     <h3 class="font-serif font-bold text-lg leading-tight">${esc(g.nom)}</h3>
     <p class="text-sm text-doux mb-2">${fmt(g.part)} % de la population de 15 ans ou plus</p>
-    ${barre('Satisfaction', x.satisfaction, '#1F3A6E', tendance(av?.satisfaction, x.satisfaction))}
-    ${barre('Confiance', x.confiance, '#8A6A1F', tendance(av?.confiance, x.confiance))}
+    ${barre('Satisfaction', x.satisfaction, '#1E4ED8', tendance(av?.satisfaction, x.satisfaction))}
+    ${barre('Confiance', x.confiance, '#9A6700', tendance(av?.confiance, x.confiance))}
     <p class="text-sm mt-2">Intention de vote pour votre parti : <strong class="tabular-nums">${vote != null ? `${fmt(vote)} %` : '—'}</strong></p>
     <p class="text-sm text-doux">Priorités : ${esc(prioritesDe(ctx.groupesEquilibrage, g.id).join(', '))}</p></li>`;
 }
 
 function blocResultats(etat, ctx) {
   const res = resultats(etat, { regions: ctx.regions, finances: ctx.finances });
-  return `<ul class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1">${RESULTATS.map((k) => `<li>${barre(LIB_RESULTATS[k], res[k], '#14213D')}</li>`).join('')}</ul>`;
+  return `<ul class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1">${RESULTATS.map((k) => `<li>${barre(LIB_RESULTATS[k], res[k], '#111C33')}</li>`).join('')}</ul>`;
 }
 
 function blocChocs(etat) {

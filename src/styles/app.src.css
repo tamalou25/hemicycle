@@ -9,8 +9,10 @@
 
 /* Jetons de design (réutilisables hors Tailwind, ex. SVG de la carte) */
 :root {
-  --ivoire: #FAF6EC; --papier: #FFFDF7; --encre: #14213D; --filet: #D9D2BF;
-  --bleu: #1F3A6E; --rouge: #B3262B; --bordeaux: #7A1F2B; --laiton: #8A6A1F;
+  --fond: #F3F5F9; --papier: #FFFFFF; --encre: #111C33; --filet: #D5DBE7;
+  --bleu: #1E4ED8; --rouge: #C0262B; --bordeaux: #7A1F2B; --laiton: #9A6700; --ambre: #F5B51C; --succes: #157A48;
+  /* anciens noms conservés */
+  --ivoire: var(--fond);
 }
 
 @layer base {
@@ -25,32 +27,52 @@
 }
 
 @layer components {
-  body { background: #FAF6EC; color: #14213D; }
-  :focus-visible { outline: 3px solid #1F3A6E; outline-offset: 2px; border-radius: 4px; }
-  .tricolore { height: 4px; background: linear-gradient(90deg, #1F3A6E 0 33.3%, #fff 33.3% 66.6%, #B3262B 66.6%); border-bottom: 1px solid #D9D2BF; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border-radius: 6px; font-weight: 600; border: 1px solid #14213D; }
-  .btn-p { background: #14213D; color: #fff; }
-  .btn-p:hover:not(:disabled) { background: #1F3A6E; }
-  .btn-s { background: #FFFDF7; color: #14213D; }
-  .btn-s:hover:not(:disabled) { background: #EFE9D6; }
-  .btn:disabled { opacity: .55; cursor: not-allowed; }
-  .champ { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #6B7280; border-radius: 6px; background: #fff; }
-  input[type=range] { width: 100%; accent-color: #1F3A6E; min-height: 28px; }
+  body { background: var(--fond); color: var(--encre); }
+  :focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; border-radius: 6px; }
+  .tricolore { height: 4px; background: linear-gradient(90deg, #1E4ED8 0 33.3%, #fff 33.3% 66.6%, #C0262B 66.6%); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 8px; font-weight: 600; border: 1px solid var(--bleu); transition: background-color .15s ease, box-shadow .15s ease, transform .1s ease; }
+  .btn-p { background: var(--bleu); color: #fff; box-shadow: 0 1px 2px rgba(17,28,51,.15); }
+  .btn-p:hover:not(:disabled) { background: #1740B5; }
+  .btn-s { background: var(--papier); color: var(--bleu); }
+  .btn-s:hover:not(:disabled) { background: #EEF2FB; }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+  /* Bouton important sur un bandeau sombre (temps, Mois suivant) : ambre, texte encre (contraste AA) */
+  .btn-ambre { background: var(--ambre); color: var(--encre); border-color: var(--ambre); box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+  .btn-ambre:hover:not(:disabled) { background: #FFC43D; }
+  .btn-fantome { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
+  .btn-fantome:hover:not(:disabled) { background: rgba(255,255,255,.12); }
+  .champ { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #6B7280; border-radius: 8px; background: #fff; }
+  input[type=range] { width: 100%; accent-color: var(--bleu); min-height: 28px; }
   .filet-laiton { border-top: 2px solid var(--laiton); }
+  /* Cartes et panneaux : blanc, filet léger, ombre douce (identité commune à tous les écrans) */
+  .bg-carte.border { box-shadow: 0 1px 2px rgba(17,28,51,.06); }
+  /* Bandeau d'état sombre (ordinateur) : date, temps, action principale */
+  .bandeau { background: var(--encre); color: #fff; }
+  .bandeau .text-doux { color: #C7CEDC; }
+  /* Animations sobres : apparition des messages, pulsation du bouton Lecture quand le temps est en pause et qu'une action est attendue */
+  @keyframes apparition { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  #toasts > div { animation: apparition .2s ease-out; }
+  @keyframes pulsation { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,181,28,.6); } 50% { box-shadow: 0 0 0 6px rgba(245,181,28,0); } }
+  .pulse { animation: pulsation 1.6s ease-out infinite; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
   /* Navigation mobile : barre d'action (date + Mois suivant) au-dessus de la barre du bas */
-  :root { --h-nav: 3.5rem; --h-action: 3.5rem; }
-  .barre-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: #FFFDF7; border-top: 2px solid #14213D; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
-  .barre-action { position: fixed; left: 0; right: 0; bottom: calc(var(--h-nav) + env(safe-area-inset-bottom)); z-index: 40; min-height: var(--h-action); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 16px; background: #FAF6EC; border-top: 1px solid #D9D2BF; box-shadow: 0 -2px 6px rgba(20,33,61,.12); }
-  .nav-item { width: 100%; min-height: var(--h-nav); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .75rem; font-weight: 600; color: #14213D; }
-  .nav-item[aria-current=page] { color: #7A1F2B; box-shadow: inset 0 3px 0 #8A6A1F; background: #EFE9D6; }
-  .nav-scrim { position: fixed; inset: 0; z-index: 41; background: rgba(20,33,61,.35); }
+  :root { --h-nav: 3.5rem; --h-action: 3.5rem; --h-temps: 0px; }
+  body.avec-temps { --h-temps: 3.25rem; }
+  .barre-temps { position: fixed; left: 0; right: 0; bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom)); z-index: 40; min-height: var(--h-temps); display: flex; align-items: center; justify-content: center; padding: 4px 16px; background: var(--papier); border-top: 1px solid var(--filet); }
+  .barre-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--papier); border-top: 1px solid var(--filet); box-shadow: 0 -2px 8px rgba(17,28,51,.08); padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .barre-action { position: fixed; left: 0; right: 0; bottom: calc(var(--h-nav) + env(safe-area-inset-bottom)); z-index: 40; min-height: var(--h-action); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 16px; background: var(--encre); color: #fff; }
+  .barre-action .text-doux { color: #C7CEDC; }
+  .nav-item { width: 100%; min-height: var(--h-nav); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .75rem; font-weight: 600; color: var(--doux, #4B5565); }
+  .nav-item[aria-current=page] { color: var(--bleu); box-shadow: inset 0 3px 0 var(--bleu); background: #EEF2FB; }
+  .nav-scrim { position: fixed; inset: 0; z-index: 41; background: rgba(17,28,51,.4); }
   .nav-scrim[hidden], .panneau-plus[hidden] { display: none; }
-  .panneau-plus { position: fixed; z-index: 42; right: 8px; bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom) + 8px); width: min(16rem, calc(100% - 16px)); background: #FFFDF7; border: 2px solid #14213D; border-radius: 8px; box-shadow: 0 4px 16px rgba(20,33,61,.3); overflow: hidden; }
-  .plus-item { width: 100%; min-height: 48px; padding: 0 16px; text-align: left; font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 1rem; border-bottom: 1px solid #D9D2BF; }
-  .plus-item[aria-current=page] { color: #7A1F2B; background: #EFE9D6; }
+  .panneau-plus { position: fixed; z-index: 42; right: 8px; bottom: calc(var(--h-nav) + var(--h-action) + var(--h-temps) + env(safe-area-inset-bottom) + 8px); width: min(16rem, calc(100% - 16px)); background: var(--papier); border: 1px solid var(--filet); border-radius: 10px; box-shadow: 0 8px 24px rgba(17,28,51,.25); overflow: hidden; }
+  .plus-item { width: 100%; min-height: 48px; padding: 0 16px; text-align: left; font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 1rem; border-bottom: 1px solid var(--filet); }
+  .plus-item[aria-current=page] { color: var(--bleu); background: #EEF2FB; }
   @media (max-width: 639px) {
-    body.avec-barres { padding-bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom) + 8px); }
-    body.avec-barres #toasts { bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom) + 8px); }
+    body.avec-barres { padding-bottom: calc(var(--h-nav) + var(--h-action) + var(--h-temps) + env(safe-area-inset-bottom) + 8px); }
+    body.avec-barres #toasts { bottom: calc(var(--h-nav) + var(--h-action) + var(--h-temps) + env(safe-area-inset-bottom) + 8px); }
   }
 }

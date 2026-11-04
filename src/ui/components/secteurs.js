@@ -9,7 +9,7 @@ export function panneauSecteurs(etat, ctx) {
   const jauges = Object.entries(pol.secteurs).map(([id, s]) => {
     const v = Math.round(etat.secteurs[id] ?? 0);
     return `<li class="text-sm"><div class="flex justify-between"><span>${esc(s.nom)}</span><strong class="tabular-nums">${v}</strong></div>
-      <div class="h-2.5 bg-[#E8E1CD] rounded overflow-hidden" role="meter" aria-label="${esc(s.nom)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}"><div class="h-full bg-bleu" style="width:${v}%"></div></div></li>`;
+      <div class="h-2.5 bg-[#E3E8F0] rounded overflow-hidden" role="meter" aria-label="${esc(s.nom)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}"><div class="h-full bg-bleu" style="width:${v}%"></div></div></li>`;
   }).join('');
   const progs = (etat.politiques ?? []).map((x) => {
     const p = pol.politiques.find((y) => y.id === x.id);
