@@ -1,5 +1,7 @@
 # AGENTS.md
 
+Au début de chaque session, suivre le skill **`demarrage`** (`.agents/skills/demarrage/SKILL.md`).
+
 Les instructions du projet sont dans **`CLAUDE.md`** (stack, architecture, règles de contenu non négociables) : elles s'appliquent à tous les agents.
 
 **Avant tout travail**, lire `docs/PASSATION.md`, section « Travail en parallèle » :
