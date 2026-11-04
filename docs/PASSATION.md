@@ -1,5 +1,20 @@
 # Passation : Hémicycle
 
+## Correctifs et carte du monde (Claude, 04/11/2026)
+- **Fusionnées** : #28 (passation) et #29 (campagne présidentielle, temps continu, refonte visuelle) → `main` = `63e45e9`. Déploiement : le
+  workflow Pages de ce commit a d'abord été annulé par la concurrence des fusions successives, puis relancé (voir l'état en fin de section).
+- **PR #30 `correctifs-horloge-partage`** (brouillon, base `main`) : horloge en fraction de mois (changer de vitesse garde le jour, « Mois
+  suivant » manuel remet le mois à zéro, aucun double traitement) ; défi partagé avec date de départ (campagne en mai 2027 chez le
+  destinataire, anciens liens lisibles). Tests : `tests/horloge.test.js` (6), `tests/presidence.test.js` (défi), `e2e/presidence.spec.js` (+2).
+- **Branche `carte-monde`** (dépend de #30) : `scripts/generer-carte-monde.mjs` → `src/data/carte-monde.json` (Natural Earth 110m, domaine
+  public + régions IGN/france-geojson, Licence Ouverte, projetés ensemble en Mercator ; sources dans `docs/SOURCES.md`) ;
+  `src/ui/components/carteMonde.js` : écran « Monde » (onglet principal, écran d'arrivée de la campagne présidentielle), zoom et
+  déplacement (souris, tactile, clavier), recentrage France / Europe / Monde, encarts DROM, vues existantes, tableau accessible, « Votre
+  cap » (urgences, objectifs), accès aux écrans, fiche région et lancement de projets réutilisés, alertes territoriales → carte.
+  Tests : `e2e/monde.spec.js` (6). Détails : `docs/DESIGN-UI.md`, `docs/VISION-CAMPAGNE.md`.
+- **Non fait** : économie internationale, pays étrangers autonomes, défense (le fond mondial est purement géographique) ; durée réelle de la
+  campagne non mesurée.
+
 ## Campagne présidentielle et temps continu (Claude, branche `campagne-presidence`, lot 1 de `docs/VISION-CAMPAGNE.md`)
 - **Vision** validée le 04/11/2026 : `docs/VISION-CAMPAGNE.md` (préférences, boucle de jeu, réutilisations, changements, feuille de route
   en 5 lots, parcours manuel). Attentes du propriétaire mises à jour (`.agents/skills/attentes-proprietaire/SKILL.md`).

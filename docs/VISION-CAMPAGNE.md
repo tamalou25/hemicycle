@@ -47,7 +47,8 @@ mandat (la campagne s'arrête en mai 2032, avant le scrutin). La défaite par po
 ## Feuille de route par lots
 | Lot | Contenu | État |
 |---|---|---|
-| 1. Présidence et temps | rôle président, gouvernement et censure, nomination, dissolution, horloge continue, écran de campagne, tests, docs | **ce chantier (fait)** |
+| 1. Présidence et temps | rôle président, gouvernement et censure, nomination, dissolution, horloge continue, écran de campagne, tests, docs | **fait** (PR #29 fusionnée) ; correctifs horloge et partage : PR #30 |
+| 1 bis. Carte, écran principal | fond mondial Natural Earth + régions IGN projetés ensemble (Mercator), écran « Monde » zoomable cadré sur la France, cap et urgences, fiche région et projets, alertes territoriales → territoire, tableau accessible | **fait** (branche `carte-monde`, dépend de #30) |
 | 2. Économie, production, commerce | secteurs productifs et chaînes d'interdépendance (énergie → industrie → emploi), commerce extérieur simplifié (partenaires, balance), prix et inflation reliés, planification pluriannuelle lisible (inspiration HoI IV : file d'investissements et délais) | prévu |
 | 3. Diplomatie | pays étrangers autonomes (positions, relations, sanctions, accords), Union européenne comme contrainte et levier, crises internationales avec choix explicables (inspiration Power & Revolution) | prévu |
 | 4. Défense stratégique | moyens, préparation et alliances comme indicateurs ; engagements (budget, OTAN/UE) ; aucune opération détaillée | prévu |

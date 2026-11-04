@@ -35,7 +35,7 @@ test('chaque onglet est atteignable, « Mois suivant » reste visible', async ({
     await expect(plus).toHaveAttribute('aria-expanded', 'false');
     await plus.click();
     await expect(plus).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByRole('group', { name: 'Autres sections' }).getByRole('button')).toHaveCount(3);
+    await expect(page.getByRole('group', { name: 'Autres sections' }).getByRole('button')).toHaveCount(4); // Carte, Opinion, Parlement, Chronologie (« Monde » est en barre principale)
     await page.keyboard.press('Escape');
     await expect(plus).toHaveAttribute('aria-expanded', 'false');
     await expect(plus).toBeFocused();
