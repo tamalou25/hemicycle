@@ -10,8 +10,9 @@ permissions:
   pages: write
   id-token: write
 
+# Un groupe par branche : une PR n'annule plus le déploiement de main (ni les tests d'une autre PR)
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

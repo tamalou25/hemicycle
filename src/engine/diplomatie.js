@@ -84,7 +84,7 @@ function creerAccord(etat, id, type, { pays: p, finances }, { tour = etat.tour }
     ...etat,
     diplomatie: { ...etat.diplomatie, relations: { ...etat.diplomatie.relations, [id]: borne((etat.diplomatie.relations[id] ?? 50) + acc.relation) }, accords: [...etat.diplomatie.accords, { pays: id, type, debut: tour, fin: tour + acc.duree_mois }] },
     effetsEnCours: [...etat.effetsEnCours, ...planifierEffets(effets, tour + 1, `diplomatie:${type}:${id}`)],
-    journal: [...etat.journal, { tour, type: 'diplomatie', texte: `${acc.titre} conclu avec ${x.nom} pour ${acc.duree_mois} mois${acc.cout_annuel_md ? ` (${String(acc.cout_annuel_md).replace('.', ',')} Md€/an)` : ''}. ${acc.contrepartie}` }],
+    journal: [...etat.journal, { tour, type: 'diplomatie', texte: `${acc.titre} conclu avec ${x.nom} (${acc.duree_mois} mois${acc.cout_annuel_md ? `, ${String(acc.cout_annuel_md).replace('.', ',')} Md€/an` : ''}).` }],
   };
 }
 
@@ -115,7 +115,7 @@ export function sanctionner(etat, id, donnees) {
     ...etat, diploCeMois: true,
     joueur: { ...etat.joueur, capital: etat.joueur.capital - 1 },
     diplomatie: { ...d, relations: { ...d.relations, [id]: borne((d.relations[id] ?? 50) - donnees.pays.parametres.malus_sanction_subie) }, sanctions: [...d.sanctions, { pays: id, debut: etat.tour }], accords: d.accords.filter((a) => a.pays !== id) },
-    journal: [...etat.journal, { tour: etat.tour, type: 'diplomatie', texte: `Sanctions contre ${x.nom} : échanges réduits de moitié dans les deux sens dès le mois prochain, accords annulés. Levée possible après ${DELAI_LEVEE_SANCTIONS} mois.` }],
+    journal: [...etat.journal, { tour: etat.tour, type: 'diplomatie', texte: `Sanctions contre ${x.nom} : échanges réduits de moitié dès le mois prochain, accords annulés (levée après ${DELAI_LEVEE_SANCTIONS} mois).` }],
   };
 }
 
