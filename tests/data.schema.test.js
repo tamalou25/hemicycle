@@ -214,6 +214,28 @@ describe('scenario.json', () => {
   });
 });
 
+describe('carte-monde.json', () => {
+  const m = lire('carte-monde.json');
+  const regions = lire('regions.json').regions;
+  it('projection, cadrages, pays géographiques, régions du jeu toutes présentes, DROM en encarts, sources et licences', () => {
+    expect(m.projection).toMatchObject({ type: 'mercator', largeur: 8192 });
+    expect(m.viewBox).toBe('0 0 8192 8192');
+    for (const k of ['france', 'europe', 'monde']) { const c = m.cadrages[k]; expect(c.w).toBeGreaterThan(0); expect(c.h).toBeGreaterThan(0); expect(c.x).toBeGreaterThanOrEqual(0); expect(c.x + c.w).toBeLessThanOrEqual(8192); }
+    expect(m.cadrages.france.w).toBeLessThan(m.cadrages.europe.w); expect(m.cadrages.europe.w).toBeLessThan(m.cadrages.monde.w);
+    expect(m.pays.length).toBeGreaterThan(150);
+    for (const p of m.pays) { expect(p.id && p.nom).toBeTruthy(); expect(p.d).toMatch(/^M[\d.]+ [\d.]+L/); expect(Object.keys(p).sort()).toEqual(['d', 'id', 'nom']); } // aucune donnée de jeu sur les pays étrangers
+    const metro = regions.filter((r) => !['guadeloupe', 'martinique', 'guyane', 'la-reunion', 'mayotte'].includes(r.id)).map((r) => r.id).sort();
+    expect(m.regions.map((r) => r.id).sort()).toEqual(metro);
+    for (const r of m.regions) { expect(r.d).toMatch(/^M/); expect(r.cx).toBeGreaterThan(m.cadrages.france.x); expect(r.cx).toBeLessThan(m.cadrages.france.x + m.cadrages.france.w); }
+    expect(m.drom.map((d) => d.id).sort()).toEqual(['guadeloupe', 'guyane', 'la-reunion', 'martinique', 'mayotte']);
+    for (const d of m.drom) { expect(d.encart).toMatchObject({ id: d.id }); expect(d.d.length).toBeGreaterThan(10); expect(d.cx).toBeGreaterThan(0); }
+    expect(m.france.d).toMatch(/^M/);
+    expect(m.sources.length).toBe(2);
+    for (const s of m.sources) expect(s.source && s.url && s.licence && s.date).toBeTruthy();
+    expect(m.attribution).toMatch(/Natural Earth/);
+  });
+});
+
 describe('mission.json', () => {
   it('cadre, options vers des projets existants, acteur fictif, avertissement sur l’indice', () => {
     const m = lire('mission.json');

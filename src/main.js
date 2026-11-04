@@ -11,6 +11,7 @@ import { render as defi } from './ui/screens/defi.js';
 import { render as classement } from './ui/screens/classement.js';
 import { toast } from './ui/components/toast.js';
 import { confirmation } from './ui/components/confirmations.js';
+import { cadrageInitial, cadrageRegion } from './ui/components/carteMonde.js';
 
 const CLE = 'hemicycle.save';
 const CLE_ACCORD = 'hemicycle.accord';
@@ -128,7 +129,7 @@ export function dispatch(action) {
         const parti = ctx.partis.find((p) => p.id === action.parti);
         if (!parti) throw new Error('Choisissez une famille politique.');
         etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'president', ideologie: { ...parti.positions } }, situation: ctx.situation, dateDepart: '2027-05-01', regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
-        ctx.presidence = null; ctx.brouillonPLF = null; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); break;
+        ctx.presidence = null; ctx.brouillonPLF = null; ctx.region = null; ctx.onglet = 'monde'; ecrire(CLE_ONGLET, 'monde'); if (ctx.monde) ctx.monde.cadrage = cadrageInitial(ctx.monde.donnees); break;
       }
       case 'nommer': etat = nommerGouvernement(etat, action.parti, donnees); ctx.focusApres = 'h-gouv'; break;
       case 'horloge': {
@@ -152,6 +153,9 @@ export function dispatch(action) {
       case 'onglet':
         ctx.onglet = action.onglet; ecrire(CLE_ONGLET, action.onglet);
         if (action.region) ctx.region = action.region;
+        // Carte du monde : rejoindre directement le territoire demandé (navigation de carte, hors état de simulation)
+        if (action.onglet === 'monde' && action.region && ctx.monde) ctx.monde.cadrage = cadrageRegion(ctx.monde.donnees, action.region, ctx.monde.ratio);
+        if (action.cible) ctx.focusApres = { gouvernement: 'h-gouv', evenement: 'h-ev', temps: 'horloge-bascule', scenario: 'h-scenario' }[action.cible] ?? null;
         if (action.vue) ctx.vue = action.vue;
         if (action.decisions) ctx.decisions = action.decisions; // filtre posé par une piste du mandat
         afficher({ focus: !!action.haut }); if (action.haut) window.scrollTo(0, 0); return;
@@ -223,13 +227,15 @@ document.addEventListener('keydown', (e) => {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs, ctx.mission, ctx.scenario] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'), chargerJson('./data/mission.json'), chargerJson('./data/scenario.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs, ctx.mission, ctx.scenario, ctx.carteMonde] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'), chargerJson('./data/mission.json'), chargerJson('./data/scenario.json'), chargerJson('./data/carte-monde.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';
     return;
   }
+  // Carte du monde : données géographiques et cadrage courant (navigation de carte, jamais sauvegardée dans la partie)
+  ctx.monde = { donnees: ctx.carteMonde, cadrage: cadrageInitial(ctx.carteMonde), ratio: 1.5 };
   // Défi reçu par lien (#defi=...) : écran d'accueil du défi, puis hash nettoyé.
   const code = location.hash.slice(1).split('&').find((p) => p.startsWith('defi='));
   if (code !== undefined) {

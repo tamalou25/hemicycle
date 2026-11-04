@@ -84,7 +84,7 @@ npm run build:css
 |---|---|
 | `src/engine/` | Moteur pur, testé, sans accès au DOM : effets différés, vote, tour, sondage, sauvegarde |
 | `src/ui/` | Écrans et composants (JavaScript vanilla, Tailwind via CDN) |
-| `src/data/` | Partis, situation de départ et lois, au format JSON |
+| `src/data/` | Partis, situation de départ, lois, carte des régions et carte du monde (`carte-monde.json`, générée par `scripts/generer-carte-monde.mjs`), au format JSON |
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
@@ -99,6 +99,8 @@ npm run build:css
 - **Campagne présidentielle** (30 à 90 minutes visées) : vous êtes président·e (fictif) à partir de mai 2027, vous agissez par votre
   gouvernement (lois, programmes, budget, 49.3), vous le nommez après une censure, vous dissolvez l'Assemblée ; le temps est continu
   (pause, vitesses ×1 ×2 ×3, pause automatique aux événements). Vision et feuille de route : [`docs/VISION-CAMPAGNE.md`](docs/VISION-CAMPAGNE.md).
+- **Écran « Monde »** : carte mondiale zoomable cadrée sur la France (fond Natural Earth, régions IGN), écran d'arrivée de la campagne
+  présidentielle : cap et urgences, fiche région et projets, accès au gouvernement, aux décisions, au Parlement, au budget et au journal.
 - **Comment jouer cette version** : `npm install` puis `npx serve .` (ou `python3 -m http.server`), ouvrir l'adresse affichée, cocher
   l'avertissement, **Découvrir en jouant**, choisir une famille politique, **Commencer la découverte**.
 - **Bureau en trois questions** : Que se passe-t-il ? (bilan du mois, « Ce mois-ci », état du pays et ressources) ·

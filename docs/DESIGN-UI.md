@@ -61,3 +61,10 @@ Captures avant / après : `docs/captures/avant-refonte/` et `docs/captures/apres
 
 ### Vérifications
 Audit axe (WCAG 2.0/2.1 A et AA, contraste compris) sur l'accueil, la création et les onglets, mobile et ordinateur (`e2e/accessibilite.spec.js`) ; cibles ≥ 44 px, clavier et focus visible (`e2e/presidence.spec.js`, `e2e/cap-mandat.spec.js`) ; aucun débordement horizontal ; contenu non masqué par les barres fixes (barre de vitesse comptée dans le dégagement du bas).
+
+## Écran « Monde » (chantier carte, branche `carte-monde`)
+- **Organisation** : carte mondiale zoomable au centre, cadrée à l'arrivée sur la France et ses voisins ; bandeau fixe (date, Lecture / Pause, vitesses, Mois suivant) ; sous le titre, les indicateurs essentiels (chômage, déficit, popularité, tensions, capital, enveloppe) ; à droite (ou dessous sur mobile) : « Votre cap » (urgences + objectifs du mandat), accès Gouvernement / Bureau / Décisions / Parlement / Budget / Journal, panneau « Région » repliable avec la fiche existante (indices, projets en cours, lancement).
+- **Carte** : SVG unique (`carte-monde.json`), navigation par `viewBox` (`ctx.monde`, jamais dans l'état de simulation) ; glisser et pincement (pointer events), molette, boutons + / − / FR / EU / Monde, flèches et + / − au clavier sur le cadre ; régions focalisables (Entrée / Espace) ; encarts DROM cliquables ; repères ambre aux positions réelles des DROM ; « Afficher en tableau » pour une lecture sans interaction graphique. Le cadrage et la sélection survivent aux re-rendus (passage du mois).
+- **Couleurs** : mer `#D6E2F0`, pays `#F7F9FC` filet `#AEB8CC`, France hors régions `#E3E8F0`, régions en 5 classes séquentielles (légende textuelle), sélection filet ambre épais ; vue Législatives : couleurs des partis avec badge SIMULATION (motifs dans la carte des régions classique).
+- **Mobile** : carte de 52 vh en tête, panneaux en dessous, défilement automatique vers la fiche à la sélection ; cibles ≥ 44 px ; barre de vitesse comptée dans le dégagement du bas.
+- Captures : `docs/captures/monde-*.png`.
