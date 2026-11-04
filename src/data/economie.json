@@ -1,0 +1,60 @@
+{
+  "note": "Économie de jeu (lot 2). DONNÉES RÉELLES (ordres de grandeur 2025, voir sources) : échanges extérieurs en Md€/an par filière et parts des partenaires. PARAMÈTRES D'ÉQUILIBRAGE : indices de capacité et de demande (100 = 2025), dépendances entre filières, sensibilités, investissements (coûts, délais, gains). Les identifiants de partenaires sont ISO 3166-1 alpha-2 (ceux de carte-monde.json) ; « ue » désigne l'Union européenne.",
+  "date_collecte": "2026-11-04",
+  "filieres": {
+    "energie": { "nom": "Énergie", "production_md": 130, "capacite_initiale": 100, "demande_initiale": 100, "part_pib": 0.04, "part_emploi": 0.02, "sensibilite_prix": 4, "poste_budget": "infrastructures_environnement", "usure_mensuelle": 0.06 },
+    "agriculture": { "nom": "Agriculture et alimentation", "production_md": 95, "capacite_initiale": 100, "demande_initiale": 100, "part_pib": 0.02, "part_emploi": 0.03, "sensibilite_prix": 2, "poste_budget": "infrastructures_environnement", "usure_mensuelle": 0.03 },
+    "industrie": { "nom": "Industrie", "production_md": 1100, "capacite_initiale": 100, "demande_initiale": 100, "part_pib": 0.13, "part_emploi": 0.12, "sensibilite_prix": 1, "poste_budget": "infrastructures_environnement", "usure_mensuelle": 0.04 },
+    "services": { "nom": "Services", "production_md": 2300, "capacite_initiale": 100, "demande_initiale": 100, "part_pib": 0.78, "part_emploi": 0.80, "sensibilite_prix": 0.5, "poste_budget": "infrastructures_environnement", "usure_mensuelle": 0.01 }
+  },
+  "dependances": {
+    "agriculture": { "energie": 0.3 },
+    "industrie": { "energie": 0.6 },
+    "services": { "energie": 0.3, "industrie": 0.2 }
+  },
+  "commerce": {
+    "filieres": {
+      "energie": { "importations_md": 60, "exportations_md": 20 },
+      "agriculture": { "importations_md": 75, "exportations_md": 76 },
+      "industrie": { "importations_md": 520, "exportations_md": 500 },
+      "services": { "importations_md": 320, "exportations_md": 365 }
+    },
+    "partenaires": [
+      { "id": "de", "nom": "Allemagne", "parts_importations": { "energie": 0.08, "agriculture": 0.14, "industrie": 0.17, "services": 0.11 }, "parts_exportations": { "energie": 0.1, "agriculture": 0.13, "industrie": 0.15, "services": 0.11 } },
+      { "id": "be", "nom": "Belgique", "parts_importations": { "energie": 0.14, "agriculture": 0.11, "industrie": 0.08, "services": 0.05 }, "parts_exportations": { "energie": 0.12, "agriculture": 0.11, "industrie": 0.08, "services": 0.05 } },
+      { "id": "it", "nom": "Italie", "parts_importations": { "energie": 0.02, "agriculture": 0.09, "industrie": 0.09, "services": 0.05 }, "parts_exportations": { "energie": 0.04, "agriculture": 0.1, "industrie": 0.08, "services": 0.05 } },
+      { "id": "es", "nom": "Espagne", "parts_importations": { "energie": 0.06, "agriculture": 0.15, "industrie": 0.07, "services": 0.05 }, "parts_exportations": { "energie": 0.08, "agriculture": 0.1, "industrie": 0.08, "services": 0.05 } },
+      { "id": "nl", "nom": "Pays-Bas", "parts_importations": { "energie": 0.1, "agriculture": 0.09, "industrie": 0.05, "services": 0.04 }, "parts_exportations": { "energie": 0.05, "agriculture": 0.06, "industrie": 0.04, "services": 0.04 } },
+      { "id": "gb", "nom": "Royaume-Uni", "parts_importations": { "energie": 0.03, "agriculture": 0.03, "industrie": 0.03, "services": 0.09 }, "parts_exportations": { "energie": 0.09, "agriculture": 0.09, "industrie": 0.06, "services": 0.1 } },
+      { "id": "us", "nom": "États-Unis", "parts_importations": { "energie": 0.12, "agriculture": 0.03, "industrie": 0.08, "services": 0.12 }, "parts_exportations": { "energie": 0.03, "agriculture": 0.07, "industrie": 0.09, "services": 0.12 } },
+      { "id": "cn", "nom": "Chine", "parts_importations": { "energie": 0.01, "agriculture": 0.02, "industrie": 0.12, "services": 0.03 }, "parts_exportations": { "energie": 0.01, "agriculture": 0.03, "industrie": 0.04, "services": 0.03 } },
+      { "id": "dz", "nom": "Algérie", "parts_importations": { "energie": 0.07, "agriculture": 0.0, "industrie": 0.0, "services": 0.0 }, "parts_exportations": { "energie": 0.0, "agriculture": 0.03, "industrie": 0.01, "services": 0.0 } },
+      { "id": "no", "nom": "Norvège", "parts_importations": { "energie": 0.1, "agriculture": 0.01, "industrie": 0.0, "services": 0.0 }, "parts_exportations": { "energie": 0.0, "agriculture": 0.0, "industrie": 0.0, "services": 0.0 } },
+      { "id": "ma", "nom": "Maroc", "parts_importations": { "energie": 0.0, "agriculture": 0.03, "industrie": 0.01, "services": 0.01 }, "parts_exportations": { "energie": 0.01, "agriculture": 0.03, "industrie": 0.01, "services": 0.01 } },
+      { "id": "in", "nom": "Inde", "parts_importations": { "energie": 0.01, "agriculture": 0.01, "industrie": 0.02, "services": 0.02 }, "parts_exportations": { "energie": 0.0, "agriculture": 0.0, "industrie": 0.02, "services": 0.01 } }
+    ],
+    "note_partenaires": "Parts en fraction des importations ou exportations de la filière. Ordres de grandeur d'après la structure géographique des échanges (Douanes, Trésor) ; le reste du monde complète à 1. Paramètres d'équilibrage pour les filières où la ventilation n'est pas publiée."
+  },
+  "parametres": {
+    "croissance_par_point_production": 0.5,
+    "chomage_par_point_production": 0.3,
+    "inflation_par_penurie": 0.3,
+    "seuil_alerte_penurie": 0.02,
+    "seuil_dependance": 0.2
+  },
+  "investissements": [
+    { "id": "grand-carenage", "filiere": "energie", "titre": "Grand carénage du parc nucléaire", "description": "Prolonger et moderniser les réacteurs existants pour maintenir la production électrique.", "cout_total_md": 12, "delai_mois": 30, "montee_mois": 6, "gain_capacite": 6, "entretien_md": 0.4, "contrepartie": "Coûteux et long ; la capacité ne monte qu'à la fin du chantier." },
+    { "id": "eolien-offshore", "filiere": "energie", "titre": "Parcs éoliens en mer", "description": "Mettre en service de nouveaux parcs éoliens au large.", "cout_total_md": 8, "delai_mois": 24, "montee_mois": 12, "gain_capacite": 5, "entretien_md": 0.3, "contrepartie": "Production variable : le gain réel dépend de la demande et des interconnexions." },
+    { "id": "nouveaux-reacteurs", "filiere": "energie", "titre": "Lancement de nouveaux réacteurs", "description": "Engager la construction d'une nouvelle paire de réacteurs.", "cout_total_md": 30, "delai_mois": 54, "montee_mois": 6, "gain_capacite": 10, "entretien_md": 0.8, "contrepartie": "Le chantier dépasse presque le mandat : la dette monte avant le premier kilowattheure." },
+    { "id": "stocks-strategiques", "filiere": "energie", "titre": "Stocks stratégiques d'énergie", "description": "Renforcer les réserves de gaz et de carburants pour amortir une rupture d'approvisionnement.", "cout_total_md": 2, "delai_mois": 10, "montee_mois": 2, "gain_capacite": 0, "amortissement_penurie": 0.4, "entretien_md": 0.3, "contrepartie": "N'augmente pas la production : amortit seulement les ruptures d'importation." },
+    { "id": "electrification-industrie", "filiere": "industrie", "titre": "Électrification de l'industrie", "description": "Aider les usines à remplacer les procédés gaziers par l'électricité et l'efficacité énergétique.", "cout_total_md": 7, "delai_mois": 30, "montee_mois": 12, "gain_capacite": 2, "reduction_dependance": { "energie": 0.15 }, "entretien_md": 0.2, "contrepartie": "Réduit la dépendance énergétique de l'industrie, mais lentement." },
+    { "id": "relocalisation", "filiere": "industrie", "titre": "Relocalisation industrielle", "description": "Subventionner l'implantation d'usines de composants et de médicaments en France.", "cout_total_md": 6, "delai_mois": 24, "montee_mois": 12, "gain_capacite": 8, "entretien_md": 0.5, "contrepartie": "Les usines produisent plus cher que les importations : effet limité sur les prix." },
+    { "id": "souverainete-agricole", "filiere": "agriculture", "titre": "Plan de souveraineté agricole", "description": "Investir dans les filières déficitaires (fruits, légumes, protéines) et l'irrigation.", "cout_total_md": 3, "delai_mois": 18, "montee_mois": 12, "gain_capacite": 5, "entretien_md": 0.2, "contrepartie": "Pression sur l'eau et les prix à court terme." },
+    { "id": "numerique-services", "filiere": "services", "titre": "Infrastructures numériques", "description": "Fibre, centres de données et formation aux métiers du numérique.", "cout_total_md": 4, "delai_mois": 18, "montee_mois": 12, "gain_capacite": 4, "entretien_md": 0.3, "contrepartie": "Consomme de l'énergie : la demande énergétique augmente." , "demande_supplementaire": { "energie": 1 } }
+  ],
+  "sources": [
+    { "donnee": "Déficit des échanges de biens 2025 : 58,0 Md€ (61,4 en 2024) ; excédent des services 45,4 Md€ (50,8 en 2024) ; déficit courant 11,6 Md€", "source": "Banque de France, Rapport annuel 2025 de la balance des paiements (communiqué)", "url": "https://www.banque-france.fr/fr/communiques-de-presse/rapport-annuel-2025-de-la-balance-des-paiements-un-deficit-courant-quasi-stable-116-milliards-deuros", "date": "2026-07-08" },
+    { "donnee": "Résultats du commerce extérieur 2025 : amélioration du solde liée à la baisse de la facture énergétique ; excédent agroalimentaire au plus bas (+0,2 Md€) ; baisse des exportations vers les États-Unis après les droits de douane d'août 2025", "source": "Douanes (DGDDI), résultats du commerce extérieur pour décembre et l'année 2025", "url": "https://www.douane.gouv.fr/actualites/resultats-du-commerce-exterieur-de-la-france-pour-le-mois-de-decembre-et-pour-lannee", "date": "2026-02-09" },
+    { "donnee": "Ventilation par filière (énergie, agroalimentaire, industrie, services) et parts par partenaire : ordres de grandeur dérivés des publications ci-dessus ; non reproduits à l'unité", "source": "Hypothèse de jeu (paramètres d'équilibrage)", "url": "https://www.douane.gouv.fr/actualites/resultats-du-commerce-exterieur-de-la-france-pour-le-mois-de-decembre-et-pour-lannee", "date": "2026-11-04" }
+  ]
+}

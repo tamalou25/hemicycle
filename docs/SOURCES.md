@@ -78,3 +78,11 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Fond mondial : Natural Earth, Admin 0 – Countries, échelle 1:110m — domaine public — https://www.naturalearthdata.com/downloads/110m-cultural-vectors/ (fichier GeoJSON récupéré via https://github.com/nvkelso/natural-earth-vector) — collecté le 2026-11-04.
 - Régions de France métropolitaine : IGN ADMIN EXPRESS / INSEE via gregoiredavid/france-geojson, `regions-version-simplifiee.geojson` — Licence Ouverte / Open Licence (Etalab) — https://github.com/gregoiredavid/france-geojson — collecté le 2026-11-04.
 - Transformations : projection Mercator commune (largeur 8 192 unités pour 360°, latitude bornée à ±84°), arrondi au dixième, suppression des points confondus ; script `scripts/generer-carte-monde.mjs` → `src/data/carte-monde.json` (≈ 240 Ko, embarqué hors ligne). Les DROM gardent les tracés existants de `carte-regions.json` (encarts) et sont repérés par leurs coordonnées approximatives. Les frontières étrangères sont purement géographiques : aucune donnée de jeu n'y est attachée.
+
+## Économie et commerce extérieur (lot 2, collecte 2026-11-04)
+
+Données de `src/data/economie.json` (ordres de grandeur 2025 ; la ventilation par filière et par partenaire est une hypothèse de jeu dérivée de ces publications).
+
+- Déficit des échanges de biens 2025 : 58,0 Md€ (61,4 en 2024) ; excédent des services 45,4 Md€ (50,8 en 2024) ; déficit courant 11,6 Md€ — Banque de France, Rapport annuel 2025 de la balance des paiements — https://www.banque-france.fr/fr/communiques-de-presse/rapport-annuel-2025-de-la-balance-des-paiements-un-deficit-courant-quasi-stable-116-milliards-deuros — 2026-07-08
+- Résultats du commerce extérieur 2025 (facture énergétique en baisse, excédent agroalimentaire au plus bas, effet des droits de douane américains) — Douanes (DGDDI) — https://www.douane.gouv.fr/actualites/resultats-du-commerce-exterieur-de-la-france-pour-le-mois-de-decembre-et-pour-lannee — 2026-02-09
+- Indices de capacité et de demande, dépendances entre filières, sensibilités, investissements (coûts, délais, gains) : **paramètres d'équilibrage**, pas des données observées.
