@@ -1,5 +1,26 @@
 # Passation : Hémicycle
 
+## Lot 2 : économie, production et commerce (Claude, branche `lot2-economie`, 04/11/2026)
+- **Plan et décisions** : `docs/PLAN-LOTS-2-5.md`, `docs/adr/0003-economie-diplomatie-defense.md` (unités, ordre des calculs, pas de double compte).
+- **Moteur** : `src/engine/economie.js` : 4 filières (énergie, agriculture, industrie, services ; indices 100 = 2025) avec capacité, production,
+  demande et dépendances (une pénurie d'énergie réduit la capacité effective des filières qui en dépendent) ; importations et exportations en
+  Md€/an par partenaire (identifiants ISO alpha-2 de la carte, `disponibilite` / `debouches` prêts pour la diplomatie) ; 8 investissements
+  (coût total étalé sur le chantier → déficit et poste budgétaire, délai, montée en charge, entretien) ; usure lente des capacités ; effets
+  attribués (`economie`, `commerce`, `investissement`) sur croissance, chômage et inflation. Intégré dans `turn.js` (étape 2 a).
+  Données : `src/data/economie.json` (échanges sourcés Banque de France / Douanes, paramètres d'équilibrage étiquetés).
+- **Sauvegarde v16** (`economie`, et champs `diplomatie`, `defense`, `difficulte` à null pour les lots suivants), migration v15 → v16 sans
+  activation rétroactive ; `assurerTerritoires` complète une ancienne partie au niveau de départ ; assainissement strict.
+- **Interface** : onglet « Économie » (dans « Plus » sur mobile) : filières, alertes (pénurie, dépendance nette), commerce, investissements
+  avec coût, délai, contrepartie et raison de refus ; priorité « Dépendance aux importations » au Bureau et « À surveiller » sur la carte ;
+  investissements au catalogue des Décisions avec fiche ; confirmation après lancement ; « Ce mois-ci » explique les variations.
+  Captures : `docs/captures/lot2/` (ordinateur, 412 px, 390 px).
+- **Tests** : `tests/economie.test.js` (18), schéma `economie.json` (4), `e2e/economie.spec.js` (3 : boucle complète dépendance → investissement
+  → mise en service, catalogue et refus, mobile). Résultats : Vitest **246/246** (24 fichiers), Playwright **101 passed / 4 skipped / 0 failed**
+  (exécution lancée avant l'ajout des 3 derniers parcours ; les 5 parcours économie passent séparément, suite complète relancée au lot 3),
+  `npm run build` OK.
+- **Limites** : pas de prix par produit ni de taux de change ; sans diplomatie, les pénuries sont rares (dépendance et usure seulement) ;
+  mobile : l'onglet Économie est long (environ 5 écrans) ; équilibrage des sensibilités à confirmer en lot 5.
+
 ## État au 04/11/2026, soir : `main` = `7c33177`, déployé (Claude)
 - **Fusionnées dans l'ordre** : #28 (passation), #29 (campagne présidentielle, temps continu, refonte visuelle), #30 (correctifs horloge et
   défi partagé), #31 (carte du monde, écran principal). `main` = `7c33177`.
