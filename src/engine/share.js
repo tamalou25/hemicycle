@@ -12,7 +12,9 @@ const depuisB64 = (b64) => {
 };
 
 /** Encode un défi en chaîne courte (pour l'URL : #defi=...). */
-export function encoderDefi({ graine, joueur }) {
+export function encoderDefi({ graine, joueur, dateDepart }) {
+  // Date de départ (AAAA-MM) : une campagne présidentielle commence en mai 2027, pas à la date de collecte par défaut
+  const d = dateDepart && Number.isFinite(dateDepart.annee) && Number.isFinite(dateDepart.mois) ? `${dateDepart.annee}-${String(dateDepart.mois).padStart(2, '0')}` : undefined;
   const j = {
     n: joueur.nom, a: joueur.age, p: joueur.parti, r: joueur.role, e: joueur.politicienId ?? undefined,
     i: AXES.map((x) => joueur.ideologie?.[x] ?? 0), c: COMPETENCES.map((x) => joueur.competences?.[x] ?? 50),
@@ -20,7 +22,7 @@ export function encoderDefi({ graine, joueur }) {
     m: joueur.mission ? 1 : undefined, // ancienne découverte (v13) : même mission d'initiation
     s: joueur.scenario ? 1 : undefined, // partie courte « Douze mois pour convaincre » : même scénario
   };
-  return versB64(JSON.stringify({ v: VERSION_DEFI, g: graine >>> 0, j }));
+  return versB64(JSON.stringify({ v: VERSION_DEFI, g: graine >>> 0, j, ...(d ? { d } : {}) }));
 }
 
 /** Décode et valide un défi. Lève une erreur explicite si invalide. */
@@ -29,8 +31,10 @@ export function decoderDefi(code) {
   try { d = JSON.parse(depuisB64(String(code).trim())); } catch { throw new Error('Code de défi illisible.'); }
   if (d?.v !== VERSION_DEFI || !Number.isInteger(d.g) || !d.j?.n) throw new Error('Code de défi invalide.');
   const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
+  const date = typeof d.d === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(d.d) ? `${d.d}-01` : undefined; // anciens liens : sans date (défaut de la partie)
   return {
     graine: d.g >>> 0,
+    ...(date ? { dateDepart: date } : {}),
     joueur: {
       nom: String(d.j.n).slice(0, 60), age: borne(d.j.a, 18, 99), parti: String(d.j.p),
       role: ROLES.includes(d.j.r) ? d.j.r : 'depute', politicienId: d.j.e ?? null,

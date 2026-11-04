@@ -1,7 +1,7 @@
 // Horloge de simulation : pure, déterministe, un mois au plus par pas, résultats indépendants de la vitesse.
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { creerPartie, tourSuivant, proposerLoi, lancerProjet, horlogeInitiale, demarrer, pauser, basculer, changerVitesse, avancer, jourDuMois, raisonPause, VITESSES } from '../src/engine/index.js';
+import { creerPartie, tourSuivant, proposerLoi, lancerProjet, horlogeInitiale, demarrer, pauser, basculer, changerVitesse, reinitialiserMois, avancer, jourDuMois, raisonPause, VITESSES } from '../src/engine/index.js';
 
 const lire = (f) => JSON.parse(readFileSync(new URL(`../src/data/${f}`, import.meta.url)));
 const noms = ['parties', 'laws', 'senat', 'calendrier', 'regions', 'projets', 'finances', 'groupes', 'politiques', 'events', 'objectifs'];
@@ -37,16 +37,44 @@ describe('horloge', () => {
     // Retour d'arrière-plan : 10 minutes réelles → un seul mois, et l'avancement repart de zéro (aucun rattrapage)
     const r = avancer(h, 600_000);
     expect(r.pas).toBe(1);
-    expect(r.horloge.ecoule).toBe(0);
+    expect(r.horloge.avancement).toBe(0);
     expect(avancer(r.horloge, 1).pas).toBe(0);
-    // Changement de vitesse : l'avancement est conservé, la durée du mois change
-    let m = avancer(h, 10_000).horloge; // 10 s sur 30
-    m = changerVitesse(m, 3); // mois de 5 s : déjà dépassé
-    expect(avancer(m, 1).pas).toBe(1);
     expect(changerVitesse(h, 9).vitesse).toBe(1); // vitesse inconnue ignorée
     expect(basculer(basculer(h)).marche).toBe(true);
     expect(jourDuMois(horlogeInitiale())).toBe(1);
-    expect(jourDuMois({ ...h, ecoule: VITESSES[1] - 1 })).toBe(30);
+    expect(jourDuMois({ ...h, avancement: 0.999 })).toBe(30);
+  });
+
+  it('régression : changer de vitesse conserve la progression dans le mois (le jour ne recule ni n’avance), seule la vitesse future change', () => {
+    let h = demarrer(changerVitesse(horlogeInitiale(), 3));
+    h = avancer(h, 3_500).horloge; // 70 % du mois à ×3 → jour 22
+    expect(jourDuMois(h)).toBe(22);
+    const lent = changerVitesse(h, 1);
+    expect(jourDuMois(lent)).toBe(22); // avant : retombait au jour 4 (3,5 s sur 30)
+    expect(lent.avancement).toBeCloseTo(0.7, 6);
+    expect(avancer(lent, 1).pas).toBe(0); // aucun mois franchi artificiellement
+    expect(avancer(lent, 9_000 - 1).pas).toBe(0); // il reste 30 % de 30 s = 9 s
+    expect(avancer(lent, 9_000).pas).toBe(1);
+    // Dans l'autre sens : 70 % à ×1 puis ×3 → toujours jour 22, et 1,5 s restent (30 % de 5 s)
+    let g = avancer(demarrer(horlogeInitiale()), 21_000).horloge;
+    expect(jourDuMois(g)).toBe(22);
+    g = changerVitesse(g, 3);
+    expect(jourDuMois(g)).toBe(22);
+    expect(avancer(g, 1_499).pas).toBe(0);
+    expect(avancer(g, 1_500).pas).toBe(1);
+  });
+
+  it('régression : « Mois suivant » manuel joue un mois et remet la progression du nouveau mois à zéro, sans double traitement', () => {
+    let h = demarrer(horlogeInitiale());
+    h = avancer(h, 20_000).horloge; // jour 21
+    expect(jourDuMois(h)).toBe(21);
+    const apres = reinitialiserMois(h); // ce que fait l'interface après un « Mois suivant » manuel
+    expect(apres.avancement).toBe(0);
+    expect(apres.marche).toBe(true); // l'état lecture / pause n'est pas modifié
+    expect(jourDuMois(apres)).toBe(1);
+    expect(avancer(apres, VITESSES[1] - 1).pas).toBe(0); // un mois entier à nouveau nécessaire
+    expect(avancer(apres, VITESSES[1]).pas).toBe(1);
+    expect(reinitialiserMois(pauser(h)).marche).toBe(false);
   });
 
   it('pause automatique expliquée : événement, gouvernement renversé, fin de partie, conclusion de scénario', () => {
