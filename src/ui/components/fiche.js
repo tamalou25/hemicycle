@@ -3,14 +3,14 @@ import { esc, fmt } from '../util.js';
 import { META } from './jauge.js';
 
 const NOMS = { emploi: 'Emploi (région)', sante: 'Accès aux soins (région)', transports: 'Transports (région)' };
-const nomIndicateur = (k) => (k.startsWith('secteur:') ? `Niveau du secteur ${k.slice(8)}` : NOMS[k] ?? META[k]?.label ?? k);
+const nomIndicateur = (k, e) => (e?.libelle ? e.libelle : k.startsWith('secteur:') ? `Niveau du secteur ${k.slice(8)}` : k.startsWith('filiere:') ? `Capacité de la filière ${k.slice(8)}` : NOMS[k] ?? META[k]?.label ?? k);
 const signe = (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fmt(Math.abs(v), Math.abs(v) < 1 ? 2 : 1)}`;
 /** null = non chiffré par le modèle (ex. une loi : son coût passe par le déficit), 0 = vraiment gratuit. */
 const montant = (v) => (v == null ? 'non chiffré (effets via le déficit)' : v ? `${fmt(v, 2)} Md€` : 'aucun');
 const sens = (f) => (f === true ? 'favorable' : f === false ? 'défavorable' : 'à surveiller');
 
 export function blocFiche(f, id) {
-  const effets = f.effets.map((e) => `<li><strong>${esc(nomIndicateur(e.indicateur))}</strong> : ${signe(e.valeur)}${e.regional ? ' pts' : ''}
+  const effets = f.effets.map((e) => `<li><strong>${esc(nomIndicateur(e.indicateur, e))}</strong> : ${signe(e.valeur)}${e.regional ? ' pts' : ''}
       <span class="text-doux">(${e.delaiMois ? `après ${e.delaiMois} mois, ` : ''}réparti sur ${e.duree} mois · ${sens(e.favorable)})</span></li>`).join('');
   const lignes = [
     ['Coût immédiat', montant(f.coutImmediatMd)],

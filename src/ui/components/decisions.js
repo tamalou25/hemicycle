@@ -12,7 +12,7 @@ const STATUT_CLS = {
   disponible: 'bg-[#DDF3E6] text-[#157A48] border-[#157A48]', en_cours: 'bg-[#DEE8FB] text-bleu border-bleu',
   bloque: 'bg-[#FBE4E4] text-rouge border-rouge', fait: 'bg-[#EAEEF5] text-doux border-bord', urgent: 'bg-bordeaux text-white border-bordeaux',
 };
-const BOUTONS = { loi: 'Proposer', programme: 'Engager', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
+const BOUTONS = { loi: 'Proposer', programme: 'Engager', investissement: 'Lancer', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
 const CONFIRMATIONS = {
   '493': ['Engager le 49.3 ?', 'Le texte est adopté sans vote, mais le gouvernement s’expose à une motion de censure.'],
   dissolution: ['Proposer une dissolution ?', 'Le Président peut refuser (vous perdriez 2 capital). S’il accepte, des législatives anticipées auront lieu dans deux mois et le texte en cours tombera.'],
@@ -20,7 +20,7 @@ const CONFIRMATIONS = {
 };
 
 /** Données nécessaires au catalogue, à partir du contexte de l'interface. */
-export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, objectifs: ctx.objectifs });
+export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, objectifs: ctx.objectifs, economie: ctx.economie });
 export const catalogue = (etat, ctx) => catalogueDecisions(etat, donneesCatalogue(ctx));
 
 const filtres = (ctx) => ({ categorie: '', secteur: '', statut: 'disponible', ...(ctx.decisions ?? {}) });

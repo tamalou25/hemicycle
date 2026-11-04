@@ -56,6 +56,7 @@ function panneauCap(etat, ctx, priorites) {
   return `<section aria-labelledby="h-cap" class="bg-carte border border-bord rounded-xl p-3">
     <h2 id="h-cap" class="font-serif font-bold text-base">Votre cap <span class="font-sans font-normal text-xs text-doux">· ${reste} mois restants</span></h2>
     ${urgences.length ? `<ul class="mt-1 space-y-1" aria-label="Urgences">${urgences.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#FFF4D6] border border-laiton rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-laiton mr-1">!</span><strong>${esc(p.titre)}</strong></span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-prio="${i}">Traiter</button></li>`).join('')}</ul>` : '<p class="text-xs text-succes mt-1">Rien d’urgent ce mois-ci.</p>'}
+    ${(() => { const veille = priorites.filter((p) => p.type === 'territoire').slice(0, 2); return veille.length ? `<ul class="mt-1 space-y-1" aria-label="À surveiller">${veille.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#EAEEF5] border border-bord rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-doux mr-1">◎</span>${esc(p.titre)}</span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-veille="${i}">${esc(p.bouton ?? 'Voir')}</button></li>`).join('')}</ul>` : ''; })()}
     <ul class="mt-1 divide-y divide-bord" aria-label="Objectifs du mandat">${lignes}</ul>
     <p class="text-xs text-doux mt-1">Détail et pistes : Bureau.</p>
   </section>`;
@@ -64,7 +65,7 @@ function panneauCap(etat, ctx, priorites) {
 /** Liens vers les autres écrans (gouvernement, décisions, Parlement, budget, journal, Bureau). */
 function liensEcrans(etat) {
   const gouv = etat.gouvernement ? (etat.gouvernement.statut === 'en_place' ? 'Gouvernement en place' : 'Gouvernement renversé !') : null;
-  const l = [['bureau', 'Bureau', 'synthèse'], ['decisions', 'Décisions', 'lois, programmes, accords'], ['parlement', 'Parlement', 'majorité, textes'], ['budget', 'Budget', 'finances'], ['chronologie', 'Journal', 'historique']];
+  const l = [['bureau', 'Bureau', 'synthèse'], ['decisions', 'Décisions', 'lois, programmes, accords'], ['parlement', 'Parlement', 'majorité, textes'], ['budget', 'Budget', 'finances'], ['economie', 'Économie', 'filières, commerce'], ['chronologie', 'Journal', 'historique']];
   return `<nav aria-label="Écrans" class="grid grid-cols-3 gap-1.5">${gouv ? `<button type="button" class="col-span-3 btn ${etat.gouvernement.statut === 'renverse' ? 'btn-ambre' : 'btn-s'} !justify-between text-sm" data-monde-aller="bureau" data-cible="gouvernement"><span>${esc(gouv)}</span><span class="text-xs font-normal">${etat.gouvernement.statut === 'renverse' ? 'nommer un Premier ministre' : 'voir'} →</span></button>` : ''}${l.map(([id, nom, aide]) => `<button type="button" class="btn btn-s !min-h-[48px] !px-1 flex-col !gap-0 leading-tight min-w-0" data-monde-aller="${id}"><span class="text-xs font-bold truncate max-w-full">${esc(nom)}</span><span class="text-[0.6rem] font-normal text-doux truncate max-w-full">${esc(aide)}</span></button>`).join('')}</nav>`;
 }
 
@@ -202,6 +203,10 @@ export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null
   racine.querySelector('#bascule-tableau')?.addEventListener('click', () => dispatch({ type: 'ui', patch: { tableauCarte: !ctx.tableauCarte } }));
   racine.querySelectorAll('[data-lancer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'projet', projetId: b.dataset.lancer, regionId: ctx.region })));
   racine.querySelectorAll('[data-monde-aller]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: b.dataset.mondeAller, haut: true, cible: b.dataset.cible })));
+  racine.querySelectorAll('#monde [data-veille]').forEach((b) => b.addEventListener('click', () => {
+    const p = priorites.filter((x) => x.type === 'territoire')[Number(b.dataset.veille)];
+    if (p?.aller) dispatch({ type: 'onglet', haut: true, ...p.aller });
+  }));
   racine.querySelectorAll('#monde [data-prio]').forEach((b) => b.addEventListener('click', () => {
     const p = priorites.filter((x) => x.type === 'urgence')[Number(b.dataset.prio)];
     if (!p) return;

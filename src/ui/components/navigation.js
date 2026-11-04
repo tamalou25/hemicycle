@@ -4,7 +4,7 @@ import { jourDuMois, VITESSES } from '../../engine/index.js';
 
 // « Monde » : carte mondiale cadrée sur la France, écran principal ; l'ancienne carte des régions reste dans « Plus »
 export const ONGLETS_PRINCIPAUX = [['monde', 'Monde'], ['bureau', 'Bureau'], ['decisions', 'Décisions'], ['budget', 'Budget']];
-export const ONGLETS_PLUS = [['carte', 'Carte'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+export const ONGLETS_PLUS = [['economie', 'Économie'], ['carte', 'Carte'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
 export const ONGLETS = [...ONGLETS_PRINCIPAUX, ...ONGLETS_PLUS];
 
 const ICONES = {

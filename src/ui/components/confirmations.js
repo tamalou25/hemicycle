@@ -41,6 +41,12 @@ export function confirmation(action, avant, apres, ctx) {
       parts.push(`Programme engagé : ${def?.titre ?? p?.id}.`, capital(avant, apres), `${fmt(def?.cout_annuel_md ?? 0, 1)} Md€/an inscrits au déficit dès le mois prochain. Premiers effets en ${moisDe(apres, p.enService)}.`, def?.contrepartie ? `Contrepartie : ${def.contrepartie}` : '');
       break;
     }
+    case 'investissement': {
+      const x = apres.economie.investissements[apres.economie.investissements.length - 1];
+      const def = ctx.economie?.investissements.find((i) => i.id === x?.id);
+      parts.push(`Investissement lancé : ${def?.titre ?? x?.id}.`, capital(avant, apres), `${fmt(def?.cout_total_md ?? 0, 0)} Md€ étalés sur le chantier, au déficit dès le mois prochain. Capacité en hausse à partir de ${moisDe(apres, x.enService)} (Économie).`, def?.contrepartie ? `Contrepartie : ${def.contrepartie}` : '');
+      break;
+    }
     case 'evenement': {
       const ev = ctx.evenements?.find((e) => e.id === avant.evenement);
       const choix = ev?.choix?.[action.index];
