@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-ef54e64df61e';
+const CACHE = 'hemicycle-96d804de3967';
 const FICHIERS = [
   "./",
   "./index.html",

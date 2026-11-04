@@ -41,7 +41,7 @@ function texteEnCours(etat, lois, ctx) {
     <div class="flex gap-2 flex-wrap mt-3">
       <button type="button" class="btn btn-s" id="btn-amender" data-amender ${peutAmender ? '' : 'disabled aria-describedby="r-amender"'}>Amender (1 capital)</button>
     </div>
-    ${peutAmender ? '' : raison('r-amender', refusAmend)}${raison('r-493', r493)}
+    ${peutAmender ? '' : raison('r-amender', refusAmend)}
     <p class="text-xs text-doux mt-2">Le 49.3 se trouve dans l’onglet Décisions. Le vote a lieu en fin de mois, au passage au mois suivant.</p>`;
 }
 

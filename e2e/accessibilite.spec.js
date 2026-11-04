@@ -33,20 +33,21 @@ test('tous les onglets de jeu, après 2 mois', async ({ page }) => {
   }
 });
 
-test('découverte : écran de configuration, mission (choix, suivi, débrief) et fiche ouverte', async ({ page }) => {
+test('découverte : écran de configuration, scénario (choix, suivi, cadre) et fiche ouverte', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
   await page.getByRole('button', { name: 'Découvrir en jouant' }).click();
   await auditer(page, 'Découverte');
   await page.getByRole('radio').first().check();
   await page.getByRole('button', { name: 'Commencer la découverte' }).click();
+  await expect(page.locator('#scenario')).toBeVisible();
   await page.getByText('Que mesure cet indice ?').click();
-  await auditer(page, 'Mission : choix');
+  await auditer(page, 'Scénario : choix');
   await page.getByRole('button', { name: 'Choisir : Recrutement de soignants' }).click();
+  await page.locator('#cadre-scenario summary').click();
+  await auditer(page, 'Scénario : suivi et cadre ouvert');
   await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').first().click();
-  await auditer(page, 'Mission : suivi et bilan du mois');
-  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').first().click();
-  await auditer(page, 'Mission : débrief');
+  await auditer(page, 'Scénario : bilan du mois');
   await ouvrirOnglet(page, 'Décisions');
   await page.locator('#panneau details summary', { hasText: 'Fiche détaillée' }).first().click();
   await auditer(page, 'Fiche détaillée');

@@ -82,7 +82,7 @@ function cadre(etat, ctx, def) {
         <li>Échéance : <strong>${esc(moisDe(etat, s.echeance))}</strong> (mois ${s.echeance}). Présidentielle en avril 2027 : selon le vainqueur, vous pouvez redevenir député·e ; vous pouvez aussi être candidat·e (Parlement).</li>
         <li>Fins anticipées : popularité sous ${SEUIL_DEFAITE} %, motion de censure (Premier ministre), victoire à la présidentielle. Le scénario se conclut alors avec ce qui a été fait.</li>
       </ul>
-      <div class="overflow-x-auto"><table class="text-xs min-w-[36rem]"><caption class="text-left font-semibold mb-1">Conditions exactes à l’échéance</caption>
+      <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Conditions exactes à l’échéance (tableau défilant)"><table class="text-xs min-w-[36rem]"><caption class="text-left font-semibold mb-1">Conditions exactes à l’échéance</caption>
         <thead><tr><th scope="col" class="text-left pr-2">Engagement</th><th scope="col" class="text-left pr-2 text-[#1F6E43]">Tenu</th><th scope="col" class="text-left pr-2 text-[#8A5A00]">En partie</th><th scope="col" class="text-left text-rouge">Non tenu</th></tr></thead><tbody>${conditions}</tbody></table></div>
       ${def.garde_fou ? `<p id="garde-fou"><strong>Garde-fou</strong> : ${esc(def.garde_fou.texte)} Aujourd’hui : ${fmt(s.deficit)} → ${fmt(etat.indicateurs.deficit)} % du PIB (${gardeFou(etat, def)?.respecte ? 'dans la limite' : 'limite dépassée'}).</p>` : ''}
       <p><strong>Résultat</strong> : complet si les trois sont tenus et le garde-fou respecté ; partiel si un ou deux le sont (ou si les trois sont en partie) ; échec sinon. Il est distinct du score de bilan du mandat (${DUREE_MANDAT} mois) et des conditions de fin.</p>
