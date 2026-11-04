@@ -2,6 +2,9 @@
 
 Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans le navigateur, déployée sur GitHub Pages.
 
+## Attentes du propriétaire
+Lire `.agents/skills/attentes-proprietaire/SKILL.md` en début de session (politique de choix des modèles et de délégation). Ne pas dupliquer ces règles ici.
+
 ## Stack
 - HTML + JavaScript vanilla, modules ES, sans framework. Tailwind **compilé localement** : `npm run build:css` → `assets/app.css` (à commiter ; la CI vérifie). Aucun CDN (jeu jouable hors ligne).
 - Données JSON dans `src/data/`, séparées du moteur
