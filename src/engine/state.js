@@ -9,6 +9,7 @@ import { relationsInitiales } from './relations.js';
 import { confianceRegionsInitiale } from './confianceRegions.js';
 import { normaliserObjectifs, evaluerObjectifs } from './objectifs.js';
 import { creerMission } from './mission.js';
+import { creerScenario } from './scenario.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -18,7 +19,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null, scenario = null }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -80,13 +81,15 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     historique: [],
     journal: [{ tour: 0, type: 'debut', texte: `${joueur.nom.trim()} entre en politique.` }],
     fin: null,
-    mission: null, // mission d'initiation (mode « Découvrir en jouant »), sinon null
+    mission: null, // mission d'initiation (ancien mode « Découvrir en jouant », v13), sinon null
+    scenario: null, // partie courte « Douze mois pour convaincre » (v14), sinon null
   };
   // Population (E3) : calculée sur l'état initial complet
   const avecGroupes = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
   // Valeurs de départ des objectifs (pour afficher départ, actuel et cible : la jauge n'est pas un progrès accompli)
   const complet = { ...avecGroupes, objectifsInitiaux: Object.fromEntries(evaluerObjectifs(avecGroupes, { objectifs, regions }).filter((o) => o.valeur != null).map((o) => [o.id, o.valeur])) };
-  return mission ? { ...complet, mission: creerMission(complet, mission) } : complet;
+  const avecMission = mission ? { ...complet, mission: creerMission(complet, mission) } : complet;
+  return scenario ? { ...avecMission, scenario: creerScenario(avecMission, scenario) } : avecMission;
 }
 
 /** Date affichable du tour courant. */

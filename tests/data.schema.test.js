@@ -175,6 +175,45 @@ describe('objectifs.json', () => {
   });
 });
 
+describe('scenario.json', () => {
+  const s = lire('scenario.json');
+  const projets = lire('projets.json');
+  const evenements = lire('events.json');
+  it('cadre, engagements typés, options vers des projets agissant sur l’indice, crises vers des événements connus, acteur fictif', () => {
+    expect(s.id && s.titre && s.situation && s.avertissement_indice).toBeTruthy();
+    expect(s.duree_mois).toBe(12);
+    expect(['emploi', 'sante', 'transports']).toContain(s.indice);
+    expect(s.acteur.fictif).toBe(true);
+    expect(s.garde_fou.indicateur).toBe('deficit'); expect(s.garde_fou.hausse_max).toBeGreaterThan(0); expect(s.garde_fou.texte).toBeTruthy();
+    expect(s.engagements).toHaveLength(3);
+    expect(new Set(s.engagements.map((e) => e.id)).size).toBe(3);
+    for (const e of s.engagements) {
+      expect(['indice_region', 'loi_promulguee', 'programme_effets']).toContain(e.type);
+      expect(e.titre && e.resume && e.lever).toBeTruthy();
+      if (e.type === 'indice_region') {
+        expect(e.cible).toBeGreaterThan(0);
+        expect(e.options.length).toBeGreaterThanOrEqual(2);
+        for (const o of e.options) expect(projets.projets.find((p) => p.id === o.projetId)?.effets?.[s.indice], o.projetId).toBeGreaterThan(0);
+      }
+    }
+    for (const c of s.crises) {
+      expect(Number.isInteger(c.mois) && c.mois > 0 && c.mois < s.duree_mois).toBe(true);
+      expect(c.candidats.length).toBeGreaterThan(0);
+      for (const id of c.candidats) expect(evenements.some((e) => e.id === id), id).toBe(true);
+      if (c.suite) {
+        expect(Array.isArray(c.suite.siChoix) && c.suite.delaiMois > 0).toBe(true);
+        expect(evenements.find((e) => e.id === c.suite.evenement)?.declenchement).toBe('scenario');
+      }
+    }
+  });
+  it('un événement réservé au scénario a un poids nul et des effets locaux typés', () => {
+    for (const e of evenements.filter((x) => x.declenchement === 'scenario')) {
+      expect(e.poids).toBe(0);
+      for (const c of e.choix) for (const r of c.effets_region ?? []) expect(['emploi', 'sante', 'transports', 'confiance']).toContain(r.indice);
+    }
+  });
+});
+
 describe('mission.json', () => {
   it('cadre, options vers des projets existants, acteur fictif, avertissement sur l’indice', () => {
     const m = lire('mission.json');

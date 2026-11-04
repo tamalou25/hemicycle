@@ -1,5 +1,6 @@
 // Passage au mois suivant.
 import { avancerMission } from './mission.js';
+import { avancerScenario, criseDue } from './scenario.js';
 import { appliquerEffets } from './effects.js';
 import { bruit } from './rng.js';
 import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DEFAITE } from './constants.js';
@@ -25,8 +26,8 @@ import { dateDuTour } from './state.js';
  * 3. popularité  4. sondage  5. capital politique  6. conditions de fin
  */
 export function tourSuivant(etatInitial, donnees) {
-  // Mission d'initiation : clôturée à l'échéance ou en cas de fin de partie (même moteur)
-  return avancerMission(tourDeBase(etatInitial, donnees), donnees);
+  // Mission d'initiation (v13) et scénario « Douze mois » : clôturés à l'échéance ou en cas de fin de partie (même moteur)
+  return avancerScenario(avancerMission(tourDeBase(etatInitial, donnees), donnees), donnees);
 }
 
 function tourDeBase(etatInitial, donnees) {
@@ -183,7 +184,9 @@ function passage(etatInitial, donnees) {
   const r = tenirElections(apres, donnees, sondage.intentions, apres.graine);
   if (r.etat.fin || !donnees.evenements) return { ...r.etat, graine: r.graine };
 
-  // 8. Événement du mois (auquel le joueur répondra pendant le mois)
+  // 8. Crise programmée du scénario (remplace le tirage du mois), sinon événement du mois tiré au hasard
+  const crise = criseDue(r.etat, donnees, tour);
+  if (crise) return { ...r.etat, graine: r.graine, evenement: crise.evenementId, evenementRegion: crise.region ?? null, scenario: { ...r.etat.scenario, crises: [...(r.etat.scenario.crises ?? []), { id: crise.evenementId, tour }] } };
   const t = tirerEvenement(r.etat, donnees.evenements, r.graine);
   return { ...r.etat, graine: t.graine, evenement: t.evenementId, evenementRegion: t.region ?? null }
 }

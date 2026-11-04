@@ -1,0 +1,79 @@
+{
+  "note": "Partie courte « Douze mois pour convaincre » (scénario de jeu). La région est choisie par une règle (indice de santé de jeu le plus bas), pas par un jugement sur une région réelle. Les personnages sont fictifs. Cibles, délais et coûts sont des paramètres d'équilibrage ; les effets viennent du moteur (projets.json, laws.json, politiques.json, events.json).",
+  "id": "douze-mois",
+  "titre": "Douze mois pour convaincre",
+  "duree_mois": 12,
+  "indice": "sante",
+  "acteur": {
+    "nom": "Inès Garnier",
+    "fonction": "directrice de votre cabinet",
+    "fictif": true
+  },
+  "situation": "Vous venez d'être nommé·e à Matignon. Dans douze mois, la presse et votre majorité jugeront sur trois engagements publics. Le pays : chômage élevé, déficit au-dessus de 5 %, une région où l'accès aux soins est le plus faible du jeu.",
+  "engagements": [
+    {
+      "id": "soins",
+      "type": "indice_region",
+      "titre": "Améliorer l'accès aux soins là où il est le plus faible",
+      "resume": "Faire progresser l'indice d'accès aux soins de la région la plus fragile d'au moins 8 points grâce à vos projets.",
+      "cible": 8,
+      "lever": "Lancer un projet dans la région (enveloppe d'investissement, sans vote). Les projets se cumulent.",
+      "options": [
+        {
+          "projetId": "recrutement-soignants",
+          "libelle": "Voie courte",
+          "resume": "Moins cher, en service après 3 mois, montée progressive sur un an. Une partie des postes peut rester non pourvue."
+        },
+        {
+          "projetId": "centres-sante",
+          "libelle": "Investissement lent",
+          "resume": "Plus cher, 8 mois de chantier, puis un effet plus fort et plus rapide. Peut prendre du retard."
+        }
+      ]
+    },
+    {
+      "id": "parlement",
+      "type": "loi_promulguee",
+      "titre": "Faire promulguer une loi",
+      "resume": "Une loi de votre choix, déposée pendant ces douze mois, doit être promulguée : Assemblée, Sénat, Conseil constitutionnel (au moins 3 mois).",
+      "lever": "Déposer une loi (capital politique). Sans majorité : négocier un accord, amender pour un compromis, ou engager le 49.3 au risque d'une censure."
+    },
+    {
+      "id": "avenir",
+      "type": "programme_effets",
+      "titre": "Engager l'avenir avec un programme national",
+      "resume": "Un programme national engagé pendant ces douze mois doit avoir commencé à produire ses effets à l'échéance.",
+      "lever": "Engager un programme (1 capital). Contrepartie : un coût annuel inscrit au déficit et la réaction des partis."
+    }
+  ],
+  "crises": [
+    {
+      "mois": 3,
+      "candidats": [
+        "fermeture-maternite"
+      ],
+      "region": "scenario",
+      "suite": {
+        "siChoix": [
+          1,
+          2
+        ],
+        "delaiMois": 2,
+        "evenement": "maternite-fermee"
+      }
+    },
+    {
+      "mois": 7,
+      "candidats": [
+        "procedure-deficit-excessif",
+        "tensions-commerciales"
+      ]
+    }
+  ],
+  "avertissement_indice": "L'indice de santé est un indice de jeu (0 à 100) calculé à partir de la densité de médecins généralistes (Drees). Un indice bas ou nul ne signifie pas qu'il n'existe aucun accès aux soins dans la région réelle.",
+  "garde_fou": {
+    "indicateur": "deficit",
+    "hausse_max": 1,
+    "texte": "Réussite complète seulement si le déficit à l'échéance ne dépasse pas celui du départ de plus de 1 point de PIB : chaque programme, projet ou loi a un coût."
+  }
+}

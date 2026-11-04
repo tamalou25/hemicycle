@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   creerPartie, tourSuivant, prochainesElections, enCampagne, actionCampagne, seDeclarerCandidat,
-  proposerDissolution, repartirSieges, secondTour, tourDeDate, importerPartie, groupesAssemblee,
+  proposerDissolution, repartirSieges, secondTour, tourDeDate, importerPartie, groupesAssemblee, VERSION_SAUVEGARDE,
 } from '../src/engine/index.js';
 
 const lire = (f) => JSON.parse(readFileSync(new URL(`../src/data/${f}`, import.meta.url)));
@@ -84,7 +84,7 @@ describe('migration', () => {
     const v2 = { ...partie(), version: 2 };
     delete v2.resultatsElections; delete v2.sieges;
     const e = importerPartie(JSON.stringify(v2));
-    expect(e.version).toBe(13);
+    expect(e.version).toBe(VERSION_SAUVEGARDE);
     expect(e.resultatsElections).toEqual([]);
   });
 });

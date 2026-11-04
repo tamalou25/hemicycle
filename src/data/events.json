@@ -1756,5 +1756,89 @@
         ]
       }
     ]
+  },
+  {
+    "id": "maternite-fermee",
+    "titre": "La maternité a fermé",
+    "theme": "sante",
+    "region_cible": {
+      "indice": "sante"
+    },
+    "declenchement": "scenario",
+    "description": "Faute de réponse nationale, la maternité a fermé. Les naissances se font désormais à plus d'une heure de route ; des habitants et des soignants manifestent devant la préfecture.",
+    "conditions": {},
+    "poids": 0,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Financer une maison de naissance et des transports sanitaires",
+        "cout_capital": 1,
+        "cout_md": 0.1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.01,
+            "delaiMois": 0,
+            "duree": 1
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": 3
+          },
+          {
+            "indice": "confiance",
+            "valeur": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Recevoir les manifestants et promettre un plan régional",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "confiance",
+            "valeur": 1
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas réagir",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ],
+        "effets_region": [
+          {
+            "indice": "sante",
+            "valeur": -2
+          },
+          {
+            "indice": "confiance",
+            "valeur": -4
+          }
+        ]
+      }
+    ]
   }
 ]

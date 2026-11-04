@@ -8,12 +8,14 @@ export const PROBA_EVENEMENT = 0.35;
 export const DELAI_REPETITION = 12;
 
 /** L'événement est-il possible dans l'état courant ? */
-export function eligible(ev, etat) {
+export function eligible(ev, etat, { scenario = false } = {}) {
+  // Un événement réservé au scénario (crise programmée ou sa suite) n'est jamais tiré au hasard
+  if (ev.declenchement === 'scenario' && !scenario) return false;
   // Un événement régional n'a de sens que si la partie a des territoires
   if (ev.region_cible && !etat.territoires) return false;
   if (ev.role === 'premier_ministre' && etat.joueur.role !== 'premier_ministre') return false;
   const dernier = (etat.evenementsPasses ?? []).filter((e) => e.id === ev.id).at(-1);
-  if (dernier && etat.tour - dernier.tour < DELAI_REPETITION) return false;
+  if (dernier && etat.tour - dernier.tour < DELAI_REPETITION && !scenario) return false;
   return Object.entries(ev.conditions ?? {}).every(([ind, { min, max }]) => {
     const v = etat.indicateurs[ind];
     return (min == null || v >= min) && (max == null || v <= max);
