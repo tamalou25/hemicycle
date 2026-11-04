@@ -96,3 +96,38 @@ describe('équilibrage : politique', () => {
     expect(ecolo).toBeLessThan(0.3);
   });
 });
+
+describe('équilibrage de la campagne présidentielle (lots 2 à 5, 8 graines, 3 niveaux)', async () => {
+  const { economie, pays, defense, difficulte, objectifs } = Object.fromEntries(['economie', 'pays', 'defense', 'difficulte', 'objectifs'].map((n) => [n, lire(`${n}.json`)]));
+  const dd = { ...donnees, economie, pays, defense, difficulte, objectifs };
+  const { lancerInvestissement, raisonRefusInvestissement, proposerAccord, raisonRefusAccordPays, repondreInitiative, raisonRefusReponseInitiative, evaluerFin } = await import('../src/engine/index.js');
+  const G = [1, 8, 15, 22, 29, 36, 43, 50];
+  const campagne = (g, niveau) => creerPartie({ joueur: { nom: 'Sim', parti: 'epr', role: 'president', ideologie: partis.find((p) => p.id === 'epr').positions, difficulte: niveau }, situation, graine: g, dateDepart: '2027-05-01', ...dd });
+  const repondre = (e) => { if (e.evenement) { const ev = evenements.find((x) => x.id === e.evenement); e = resoudreEvenement(e, Math.max(0, ev.choix.findIndex((c) => (c.cout_capital ?? 0) <= e.joueur.capital)), dd); } if (e.diplomatie?.initiative) { for (let k = 0; k < 4; k++) if (!raisonRefusReponseInitiative(e, k, dd)) { e = repondreInitiative(e, k, dd); break; } } return e; };
+  const jouer = (g, niveau, strat) => { let e = campagne(g, niveau); for (let m = 0; m < 60 && !e.fin; m++) e = tourSuivant(strat(e), dd); return e; };
+  const investisseur = (e) => { e = repondre(e); for (const inv of economie.investissements) if (!raisonRefusInvestissement(e, inv, economie)) return lancerInvestissement(e, inv.id, dd); return e; };
+  const negociateur = (e) => { e = repondre(e); for (const x of pays.pays) for (const a of ['energie', 'commerce']) if (!raisonRefusAccordPays(e, x.id, a, dd)) return proposerAccord(e, x.id, a, dd); return e; };
+  it('aucune valeur invalide ; les systèmes restent dans leurs bornes (relations, disponibilité, capacités)', () => {
+    for (const niveau of ['facile', 'difficile']) for (const g of G) {
+      const e = jouer(g, niveau, (x) => x);
+      for (const i of INDICATEURS) expect(Number.isFinite(e.indicateurs[i])).toBe(true);
+      for (const v of Object.values(e.diplomatie.relations)) { expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThanOrEqual(100); }
+      expect(e.defense.disponibilite).toBeGreaterThanOrEqual(0); expect(e.defense.disponibilite).toBeLessThanOrEqual(100);
+      for (const f of Object.values(e.economie.filieres)) { expect(f.capacite).toBeGreaterThan(80); expect(f.production).toBeGreaterThan(80); }
+    }
+  });
+  it('pas de spirale irréversible pour un joueur réactif : popularité moyenne finale > 20 % en difficile ; dette < 150 % en normal', () => {
+    const d = G.map((g) => jouer(g, 'difficile', repondre));
+    expect(moyenne(d.map((e) => e.indicateurs.popularite))).toBeGreaterThan(20);
+    const n = G.map((g) => jouer(g, 'normal', repondre));
+    expect(moyenne(n.map((e) => e.indicateurs.dette))).toBeLessThan(150);
+  });
+  it('pas de stratégie gratuite : tout investir améliore l’emploi mais creuse nettement le déficit ; négocier partout rapproche les alliés sans effacer le déficit', () => {
+    const base = G.map((g) => jouer(g, 'normal', repondre)), inv = G.map((g) => jouer(g, 'normal', investisseur)), neg = G.map((g) => jouer(g, 'normal', negociateur));
+    expect(moyenne(inv.map((e) => e.indicateurs.chomage))).toBeLessThan(moyenne(base.map((e) => e.indicateurs.chomage)));
+    expect(moyenne(inv.map((e) => e.indicateurs.deficit))).toBeGreaterThan(moyenne(base.map((e) => e.indicateurs.deficit)) + 1);
+    const allies = (e) => moyenne(pays.pays.filter((p) => p.otan || p.ue).map((p) => e.diplomatie.relations[p.id]));
+    expect(moyenne(neg.map(allies))).toBeGreaterThan(moyenne(base.map(allies)) + 10);
+    expect(moyenne(neg.map((e) => evaluerFin(e, { regions, objectifs }).score))).toBeLessThan(moyenne(inv.map((e) => evaluerFin(e, { regions, objectifs }).score)) + 15);
+  });
+});

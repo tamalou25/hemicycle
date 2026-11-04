@@ -15,7 +15,7 @@ Analyse d'impact et décisions de modèle : `docs/adr/0003-economie-diplomatie-d
 - **Critères d'acceptation** : 4 filières (énergie, agriculture, industrie, services) avec capacité, demande et dépendances ; importations, exportations et partenaires identifiés (`de`, `us`, `cn`…, mêmes identifiants que la carte) ; investissements avec coût, délai, entretien ; un manque identifiable (fiche « Économie »), une décision finançable, un effet différé et une explication dans « Ce mois-ci ».
 - **Dépendances** : budget (coût des investissements), explications, catalogue des décisions, carte (lot 3 pour la vue partenaires).
 - **Tests** : `tests/economie.test.js` (ordre des calculs, contrainte énergétique, investissement complet, commerce, explications, immutabilité), schéma `economie.json`, migration v16, e2e `economie.spec.js`.
-- **Avancement** : voir passation.
+- **Avancement** : fait (PR #34), limites dans la passation.
 
 ## Lot 3 : diplomatie
 - **État actuel** : fond de carte purement géographique, événements « crise internationale » sans acteur.
@@ -32,3 +32,6 @@ Analyse d'impact et décisions de modèle : `docs/adr/0003-economie-diplomatie-d
 ## Lot 5 : équilibrage et prise en main
 - **Critères** : difficultés Facile / Normal / Difficile (paramètres explicites dans `difficulte.json`), conservées par la sauvegarde et les défis ; Facile proposée aux débutants ; initiation progressive (repères à la première apparition d'un système) ; bilan de fin enrichi ; simulations multi-graines et multi-stratégies (`scripts/sim-campagne.mjs`) sans spirale irréversible ni action abusivement répétable.
 - **Tests** : `tests/difficulte.test.js`, `tests/equilibrage.test.js` étendu, e2e.
+
+## État final (04/11/2026)
+Lots 2 à 5 réalisés dans des PR en brouillon empilées (#34 → #37) ; détails, résultats exacts et limites dans `docs/PASSATION.md`.

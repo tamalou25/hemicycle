@@ -350,3 +350,16 @@ describe('defense.json (lot 4)', () => {
     for (const s of d.sources) { expect(s.url).toMatch(/^https?:\/\//); expect(s.date).toMatch(/^\d{4}-\d{2}/); }
   });
 });
+
+describe('difficulte.json (lot 5)', () => {
+  const d = lire('difficulte.json');
+  it('trois niveaux, normal neutre, libellé par paramètre, facile conseillé', () => {
+    expect(Object.keys(d.niveaux)).toEqual(['facile', 'normal', 'difficile']);
+    expect(d.niveaux.normal).toMatchObject({ capital_bonus: 0, bruit: 1, evenements: 1, initiatives: 1, enveloppe: 1, usure: 1 });
+    for (const k of Object.keys(d.libelles)) for (const n of Object.keys(d.niveaux)) expect(typeof d.niveaux[n][k], `${n}.${k}`).toBe('number');
+    expect(d.niveaux.facile.capital_bonus).toBeGreaterThan(d.niveaux.difficile.capital_bonus);
+    expect(d.niveaux.facile.evenements).toBeLessThan(d.niveaux.difficile.evenements);
+    expect(d.conseille_debutant).toBe('facile');
+    for (const n of Object.values(d.niveaux)) expect(n.description.length).toBeGreaterThan(20);
+  });
+});

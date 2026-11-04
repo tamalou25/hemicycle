@@ -51,9 +51,9 @@ export function engagerPolitique(etat, id, { politiques: pol, finances, partis }
 }
 
 /** Évolution mensuelle des niveaux : usure, puis montée en charge des programmes en œuvre. */
-export function evoluerSecteurs(etat, { politiques: pol }, tour) {
+export function evoluerSecteurs(etat, { politiques: pol }, tour, usure = 1) {
   if (!etat.secteurs || !pol) return { etat, entrees: [] };
-  const niveaux = Object.fromEntries(Object.entries(etat.secteurs).map(([s, v]) => [s, borne(v - EROSION_SECTEURS)]));
+  const niveaux = Object.fromEntries(Object.entries(etat.secteurs).map(([s, v]) => [s, borne(v - EROSION_SECTEURS * usure)]));
   const entrees = Object.keys(niveaux).map((s) => ({ tour, secteur: s, indicateur: `secteur:${s}`, delta: r2(niveaux[s] - etat.secteurs[s]), source: 'usure', type: 'usure', nature: 'observe' })).filter((e) => e.delta);
   const journal = [...etat.journal];
   const liste = (etat.politiques ?? []).map((x) => {

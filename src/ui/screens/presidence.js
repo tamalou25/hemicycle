@@ -1,10 +1,11 @@
 // « Campagne présidentielle » : présidence d'un mandat de 5 ans en temps continu (pause et vitesses), un seul choix politique.
 import { esc } from '../util.js';
+import { fieldsetDifficulte } from '../components/difficulte.js';
 
 export const NOM_PRESIDENCE = 'Camille Morel';
 
 export function render(racine, etat, dispatch, ctx) {
-  const st = ctx.presidence ??= { nom: NOM_PRESIDENCE, parti: '', remplacer: false };
+  const st = ctx.presidence ??= { nom: NOM_PRESIDENCE, parti: '', remplacer: false, difficulte: ctx.difficulte?.conseille_debutant ?? 'normal' };
   const partis = [...ctx.partis].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
   const options = partis.map((p) => `<li><label class="flex items-start gap-3 min-h-[44px] py-1 cursor-pointer">
       <input type="radio" name="parti" value="${esc(p.id)}" class="mt-1 w-5 h-5 shrink-0" ${st.parti === p.id ? 'checked' : ''}>
@@ -22,7 +23,7 @@ export function render(racine, etat, dispatch, ctx) {
         <li><strong>Vous dissolvez l’Assemblée</strong> si vous le décidez (art. 12), au risque d’une majorité hostile. Législatives en juin 2029 ; européennes en juin 2029.</li>
         <li><strong>Limites</strong> : capital politique (+3 par mois, plafond 10), enveloppe d’investissement pour les régions, ressources du pays (déficit, dette), opinion. Fin anticipée si la popularité passe sous 8 % (démission : simplification du jeu).</li>
       </ul>
-      <p class="text-xs text-doux mt-2">Simplifications : le gouvernement est représenté par le parti de son Premier ministre ; il soutient vos textes et ne vote pas la censure ; la diplomatie, l’économie internationale et la défense détaillées arriveront dans les lots suivants (voir docs/VISION-CAMPAGNE.md).</p>
+      <p class="text-xs text-doux mt-2">Simplifications : le gouvernement est représenté par le parti de son Premier ministre ; il soutient vos textes et ne vote pas la censure ; économie (filières, commerce, investissements), diplomatie (partenaires simulés, accords, sanctions, initiatives) et défense stratégique (disponibilité, programmes, engagements) sont jouables ; les comportements étrangers sont des paramètres de simulation.</p>
       <label for="pres-nom" class="font-semibold block mt-3">Nom du personnage (fictif)</label>
       <input id="pres-nom" class="champ" type="text" maxlength="40" autocomplete="off" value="${esc(st.nom)}">
     </section>
@@ -31,6 +32,7 @@ export function render(racine, etat, dispatch, ctx) {
       <p id="pres-parti-aide" class="text-sm text-doux mb-2">Choix obligatoire, aucun n’est proposé par défaut (ordre alphabétique). Votre premier gouvernement en est issu ; vos positions reprennent celles du parti (programmes publics).</p>
       <ul>${options}</ul>
     </fieldset>
+    ${fieldsetDifficulte(ctx, st.difficulte)}
     <p class="text-sm mb-4">Objectifs de mandat par défaut : chômage, déficit et territoires (modifiables en partie personnalisée). La campagne se conclut à la fin du mandat (60 mois) avec le bilan.</p>
     ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF4D6] p-3 mb-4" role="note">
       <p class="font-semibold">Une partie est déjà sauvegardée sur cet appareil.</p>
@@ -47,6 +49,7 @@ export function render(racine, etat, dispatch, ctx) {
   const f = racine.querySelector('#form-pres');
   f.querySelector('#pres-nom').addEventListener('input', (e) => { st.nom = e.target.value; });
   f.querySelectorAll('[name=parti]').forEach((r) => r.addEventListener('change', () => { st.parti = r.value; }));
+  f.querySelectorAll('[name=difficulte]').forEach((r) => r.addEventListener('change', () => { st.difficulte = r.value; }));
   f.querySelector('#pres-remplacer')?.addEventListener('change', (e) => { st.remplacer = e.target.checked; });
   f.querySelector('#pres-exporter')?.addEventListener('click', () => dispatch({ type: 'exporterSauvegarde' }));
   f.querySelector('#pres-retour').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'accueil' }));
@@ -56,6 +59,6 @@ export function render(racine, etat, dispatch, ctx) {
     if (!st.nom.trim()) { err.textContent = 'Indiquez un nom.'; f.querySelector('#pres-nom').focus(); return; }
     if (!st.parti) { err.textContent = 'Choisissez une famille politique.'; f.querySelector('[name=parti]').focus(); return; }
     if (sauv && !st.remplacer) { err.textContent = 'Cochez « Je remplace ma partie sauvegardée », ou exportez-la d’abord.'; f.querySelector('#pres-remplacer').focus(); return; }
-    dispatch({ type: 'presidence', nom: st.nom.trim(), parti: st.parti });
+    dispatch({ type: 'presidence', nom: st.nom.trim(), parti: st.parti, difficulte: st.difficulte });
   });
 }

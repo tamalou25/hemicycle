@@ -21,6 +21,7 @@ import { dateDuTour } from './state.js';
 import { evoluerEconomie } from './economie.js';
 import { evoluerDiplomatie } from './diplomatie.js';
 import { evoluerDefense } from './defense.js';
+import { parametresDifficulte } from './difficulte.js';
 
 /**
  * Ordre d'un tour :
@@ -49,6 +50,7 @@ function passage(etatInitial, donnees) {
   let n;
 
   // 0. Institutions (au mois courant, avant de passer au suivant)
+  const dif = parametresDifficulte(etatInitial, donnees);
   let etat = { ...etatInitial, motion: null };
   // Événement ignoré : on applique automatiquement le dernier choix (option passive)
   if (etat.evenement && donnees.evenements) {
@@ -84,19 +86,19 @@ function passage(etatInitial, donnees) {
   const ind = { ...apresLois };
 
   // 2. Dynamique : retour lent vers l'équilibre + petits chocs aléatoires
-  [n, g] = bruit(g, 0.15); ind.croissance = borner('croissance', ind.croissance + (EQUILIBRE.croissance - ind.croissance) * 0.03 + n);
-  [n, g] = bruit(g, 0.08); ind.inflation = borner('inflation', ind.inflation + (EQUILIBRE.inflation - ind.inflation) * 0.05 + n);
+  [n, g] = bruit(g, 0.15 * dif.bruit); ind.croissance = borner('croissance', ind.croissance + (EQUILIBRE.croissance - ind.croissance) * 0.03 + n);
+  [n, g] = bruit(g, 0.08 * dif.bruit); ind.inflation = borner('inflation', ind.inflation + (EQUILIBRE.inflation - ind.inflation) * 0.05 + n);
   // Loi d'Okun simplifiée : croissance faible → chômage qui monte
-  [n, g] = bruit(g, 0.04); ind.chomage = borner('chomage', ind.chomage - (ind.croissance - 1.2) * 0.03 + n);
-  [n, g] = bruit(g, 0.05); ind.deficit = borner('deficit', ind.deficit - (ind.croissance - 1) * 0.02 + n);
+  [n, g] = bruit(g, 0.04 * dif.bruit); ind.chomage = borner('chomage', ind.chomage - (ind.croissance - 1.2) * 0.03 + n);
+  [n, g] = bruit(g, 0.05 * dif.bruit); ind.deficit = borner('deficit', ind.deficit - (ind.croissance - 1) * 0.02 + n);
   // Dette en % du PIB : + déficit, − effet de la croissance nominale (réelle + inflation) sur le ratio
   ind.dette = borner('dette', ind.dette + ind.deficit / 12 - ((ind.croissance + ind.inflation) / 1200) * ind.dette);
-  [n, g] = bruit(g, 1.5); ind.tensions = borner('tensions', ind.tensions + (EQUILIBRE.tensions - ind.tensions) * 0.05 + n);
+  [n, g] = bruit(g, 1.5 * dif.bruit); ind.tensions = borner('tensions', ind.tensions + (EQUILIBRE.tensions - ind.tensions) * 0.05 + n);
 
   // 2 a. Économie réelle (lot 2, ADR 0003) : production par filière, commerce, pénuries → croissance, chômage, inflation
   let entreesEconomie = [];
   if (etat.economie && donnees.economie) {
-    const ec = evoluerEconomie({ ...etat, indicateurs: ind }, donnees, tour);
+    const ec = evoluerEconomie({ ...etat, indicateurs: ind }, donnees, tour, dif.usure);
     etat = ec.etat; entreesEconomie = ec.entrees;
     for (const k of ['croissance', 'chomage', 'inflation']) if (ec.deltas[k]) ind[k] = borner(k, ind[k] + ec.deltas[k]);
   }
@@ -113,7 +115,7 @@ function passage(etatInitial, donnees) {
     misesEnService = (p.etat.projets ?? []).filter((x) => x.statut !== 'chantier' && (etat.projets ?? []).find((y) => y.uid === x.uid)?.statut === 'chantier').map((x) => x.region);
     entreesTerritoires = [...evo.entrees, ...bt.entrees, ...p.entrees];
     const { mois } = dateDuTour({ ...etat, tour });
-    etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md) };
+    etat = { ...p.etat, finances: renouvelerEnveloppe(p.etat.finances, mois, donnees.projets.enveloppe_annuelle_md * dif.enveloppe) };
     // La satisfaction des territoires (pondérée par la population) tire la popularité
     bonusTerritoires = satisfactionNationale(etat.territoires, donnees.regions.regions) - (etat.satisfactionInitiale ?? 50);
   }
@@ -124,7 +126,7 @@ function passage(etatInitial, donnees) {
   // 2 ter bis. Secteurs (E4) : usure et montée en charge des programmes nationaux
   let entreesSecteurs = [];
   if (etat.secteurs && donnees.politiques) {
-    const sc = evoluerSecteurs(etat, donnees, tour);
+    const sc = evoluerSecteurs(etat, donnees, tour, dif.usure);
     etat = sc.etat; entreesSecteurs = sc.entrees;
   }
 
@@ -147,13 +149,13 @@ function passage(etatInitial, donnees) {
   // 2 quater bis. Défense stratégique (lot 4) : usure, budget, programmes, engagements, OTAN, disponibilité (après les secteurs : la préparation est à jour)
   let entreesDefense = [];
   if (etat.defense && donnees.defense) {
-    const dd = evoluerDefense(etat, donnees, tour);
+    const dd = evoluerDefense(etat, donnees, tour, dif.usure);
     etat = dd.etat; entreesDefense = dd.entrees;
   }
   // 2 quinquies. Diplomatie (lot 3) : initiative ignorée, échéances, convergence des relations, modificateurs commerciaux, nouvelle initiative
   let entreesDiplomatie = [];
   if (etat.diplomatie && donnees.pays) {
-    const dp = evoluerDiplomatie({ ...etat, indicateurs: ind }, donnees, tour, g);
+    const dp = evoluerDiplomatie({ ...etat, indicateurs: ind }, donnees, tour, g, dif.initiatives);
     etat = dp.etat; entreesDiplomatie = dp.entrees; g = dp.graine;
   }
   etat = { ...etat, chocs: {}, relations: estomperRelations(etat.relations) };
@@ -196,7 +198,7 @@ function passage(etatInitial, donnees) {
     campagneCeMois: false,
     accords: (etat.accords ?? []).filter((a) => a.jusqua >= tour),
     // Le Premier ministre dispose de l'appareil d'État : +1 capital/mois
-    joueur: { ...etat.joueur, capital: Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + (['premier_ministre', 'president'].includes(etat.joueur.role) ? 1 : 0)) },
+    joueur: { ...etat.joueur, capital: Math.max(0, Math.min(CAPITAL_MAX, etat.joueur.capital + CAPITAL_MENSUEL + dif.capital_bonus + (['premier_ministre', 'president'].includes(etat.joueur.role) ? 1 : 0))) },
     sondage,
     historique: [...etat.historique, { tour, ...ind }],
     journal: fin ? [...etat.journal, { tour, type: 'fin', texte: fin.texte }] : etat.journal,
@@ -211,6 +213,6 @@ function passage(etatInitial, donnees) {
   // 8. Crise programmée du scénario (remplace le tirage du mois), sinon événement du mois tiré au hasard
   const crise = criseDue(r.etat, donnees, tour);
   if (crise) return { ...r.etat, graine: r.graine, evenement: crise.evenementId, evenementRegion: crise.region ?? null, scenario: { ...r.etat.scenario, crises: [...(r.etat.scenario.crises ?? []), { id: crise.evenementId, tour }] } };
-  const t = tirerEvenement(r.etat, donnees.evenements, r.graine);
+  const t = tirerEvenement(r.etat, donnees.evenements, r.graine, dif.evenements);
   return { ...r.etat, graine: t.graine, evenement: t.evenementId, evenementRegion: t.region ?? null }
 }

@@ -1,3 +1,4 @@
+import { fieldsetDifficulte } from '../components/difficulte.js';
 import { esc } from '../util.js';
 import { fieldsetObjectifs, brancherObjectifs } from '../components/objectifs.js';
 import { AXES, COMPETENCES } from '../../engine/index.js';
@@ -47,6 +48,7 @@ export function render(racine, etat, dispatch, ctx) {
       <label class="flex items-start gap-2 cursor-pointer"><input type="radio" name="role" value="premier_ministre" class="mt-1" ${brouillon.role === 'premier_ministre' ? 'checked' : ''}>
         <span><strong>Premier ministre (fictif)</strong><br><span class="text-sm text-doux">49.3 possible et +1 capital politique par mois, mais vous êtes exposé·e aux motions de censure.</span></span></label>
     </fieldset>
+    ${fieldsetDifficulte(ctx, brouillon.difficulte ?? 'normal')}
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Idéologie</legend>
       <p class="text-sm text-doux mb-3">Positions de −100 à +100 sur six axes, comme pour les partis.</p>${axes}</fieldset>
     <fieldset class="bg-carte border border-bord rounded-lg p-4 mb-4"><legend class="font-serif font-bold px-1">Compétences</legend>
@@ -63,6 +65,7 @@ export function render(racine, etat, dispatch, ctx) {
   racine.querySelector('#age').addEventListener('input', (e) => { brouillon.age = e.target.value; });
   racine.querySelector('#parti').addEventListener('change', (e) => { brouillon.parti = e.target.value; });
   racine.querySelectorAll('[name=role]').forEach((el) => el.addEventListener('change', () => { if (el.checked) brouillon.role = el.value; }));
+  racine.querySelectorAll('[name=difficulte]').forEach((el) => el.addEventListener('change', () => { if (el.checked) brouillon.difficulte = el.value; }));
   racine.querySelectorAll('[data-axe]').forEach((el) => el.addEventListener('input', () => {
     brouillon.ideologie[el.dataset.axe] = Number(el.value);
     racine.querySelector(`#o-ax-${el.dataset.axe}`).textContent = el.value;

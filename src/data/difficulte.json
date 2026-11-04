@@ -1,0 +1,45 @@
+{
+  "note": "Niveaux de difficulté (lot 5) : PARAMÈTRES EXPLICITES multipliant ou ajustant des règles du moteur. « normal » = règles de base (parties antérieures). Les valeurs sont des paramètres d'équilibrage.",
+  "defaut": "normal",
+  "conseille_debutant": "facile",
+  "niveaux": {
+    "facile": {
+      "nom": "Facile",
+      "description": "Pour découvrir : plus de capital politique, une conjoncture plus calme, moins de crises, une enveloppe régionale plus généreuse et une usure plus lente.",
+      "capital_bonus": 1,
+      "bruit": 0.7,
+      "evenements": 0.75,
+      "initiatives": 0.7,
+      "enveloppe": 1.5,
+      "usure": 0.7
+    },
+    "normal": {
+      "nom": "Normal",
+      "description": "Les règles de base : conjoncture, crises et ressources telles que calibrées par les simulations.",
+      "capital_bonus": 0,
+      "bruit": 1,
+      "evenements": 1,
+      "initiatives": 1,
+      "enveloppe": 1,
+      "usure": 1
+    },
+    "difficile": {
+      "nom": "Difficile",
+      "description": "Pour les joueurs aguerris : moins de capital, une conjoncture plus agitée, plus de crises intérieures et internationales, une enveloppe réduite et une usure plus rapide.",
+      "capital_bonus": -1,
+      "bruit": 1.3,
+      "evenements": 1.3,
+      "initiatives": 1.4,
+      "enveloppe": 0.75,
+      "usure": 1.4
+    }
+  },
+  "libelles": {
+    "capital_bonus": "Capital politique gagné chaque mois (en plus de la base)",
+    "bruit": "Amplitude des aléas de conjoncture",
+    "evenements": "Fréquence des événements intérieurs",
+    "initiatives": "Fréquence des initiatives étrangères",
+    "enveloppe": "Enveloppe annuelle d'investissement régional",
+    "usure": "Vitesse d'usure des secteurs, capacités et équipements"
+  }
+}
