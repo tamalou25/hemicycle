@@ -68,13 +68,13 @@
           },
           {
             "indicateur": "popularite",
-            "valeur": -2.0,
+            "valeur": -2,
             "delaiMois": 0,
             "duree": 3
           },
           {
             "indicateur": "tensions",
-            "valeur": 3.0,
+            "valeur": 3,
             "delaiMois": 1,
             "duree": 2
           }
@@ -155,7 +155,7 @@
           },
           {
             "indicateur": "popularite",
-            "valeur": -2.0,
+            "valeur": -2,
             "delaiMois": 0,
             "duree": 3
           },
@@ -402,7 +402,7 @@
         "effets": [
           {
             "indicateur": "popularite",
-            "valeur": -2.0,
+            "valeur": -2,
             "delaiMois": 0,
             "duree": 3
           },
@@ -414,7 +414,7 @@
           },
           {
             "indicateur": "tensions",
-            "valeur": 3.0,
+            "valeur": 3,
             "delaiMois": 0,
             "duree": 2
           }
@@ -568,7 +568,7 @@
         "effets": [
           {
             "indicateur": "popularite",
-            "valeur": -3.0,
+            "valeur": -3,
             "delaiMois": 0,
             "duree": 4
           },
@@ -979,13 +979,13 @@
         "effets": [
           {
             "indicateur": "popularite",
-            "valeur": -3.0,
+            "valeur": -3,
             "delaiMois": 0,
             "duree": 4
           },
           {
             "indicateur": "tensions",
-            "valeur": 3.0,
+            "valeur": 3,
             "delaiMois": 0,
             "duree": 3
           }
@@ -1149,7 +1149,7 @@
           },
           {
             "indicateur": "popularite",
-            "valeur": -1.0,
+            "valeur": -1,
             "delaiMois": 0,
             "duree": 2
           }
@@ -1220,7 +1220,7 @@
         "effets": [
           {
             "indicateur": "popularite",
-            "valeur": -2.0,
+            "valeur": -2,
             "delaiMois": 0,
             "duree": 3
           },
@@ -1451,7 +1451,7 @@
         "effets": [
           {
             "indicateur": "tensions",
-            "valeur": 6.0,
+            "valeur": 6,
             "delaiMois": 0,
             "duree": 4
           },
@@ -1836,6 +1836,632 @@
           {
             "indice": "confiance",
             "valeur": -4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pigeons-greve",
+    "titre": "Les pigeons font grève",
+    "theme": "insolite",
+    "description": "Des milliers de pigeons refusent de quitter le parvis de l’Assemblée. Les images font le tour des réseaux.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Les évacuer avec des graines",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Nommer un Haut-Commissaire aux pigeons",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 2.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.3,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Ignorer",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ministre-dossiers",
+    "titre": "Le ministre a perdu ses dossiers",
+    "theme": "insolite",
+    "description": "Le ministre Dugenou jure avoir laissé tous ses dossiers dans un TGV Paris–Quimper. Retrouvés dans une boulangerie.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Le défendre publiquement",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Le remplacer par son chef de cabinet",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne rien dire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rond-point-geant",
+    "titre": "Le plus grand rond-point du monde",
+    "theme": "insolite",
+    "description": "Un maire inaugure un rond-point de 4 km, déjà classé « labyrinthe » par les automobilistes.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Couper le ruban en personne",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "croissance",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Exiger des panneaux",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "melanchaud-micro",
+    "titre": "Un tribun cherche son micro",
+    "theme": "insolite",
+    "description": "Jean-Luc Mélanchaud, tribun imaginaire inspiré de la vie politique, perd son micro en plein meeting et improvise à la voix. La salle adore.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Proposer un débat sans micro",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": -3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Offrir un micro à son équipe",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 0.5,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne rien dire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "macaroni-cravate",
+    "titre": "La cravate du centre",
+    "theme": "insolite",
+    "description": "Emmanuel Macaroni, centriste imaginaire, hésite 20 minutes entre deux cravates identiques avant une conférence de presse.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Trancher à sa place",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Lancer un sondage sur la cravate",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "deficit",
+            "valeur": 0.1,
+            "delaiMois": 1,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": 1.5,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser faire",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lepine-chat",
+    "titre": "Le chat de la droite nationale",
+    "theme": "insolite",
+    "description": "Marine Lépine, figure imaginaire, voit son chat s’endormir sur le pupitre pendant une interview. Il fait plus d’audience qu’elle.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Inviter le chat à l’Élysée",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Publier une photo de votre propre animal",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Laisser le chat gagner",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cantine-fromage",
+    "titre": "La guerre du fromage à la cantine",
+    "theme": "insolite",
+    "description": "Un député imaginaire exige 400 variétés de fromage dans toutes les cantines. Le Sénat se divise entre brie et comté.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Créer une commission du fromage",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Trancher pour le camembert",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Renvoyer à plus tard",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ia-discours",
+    "titre": "Le discours écrit par une IA",
+    "theme": "insolite",
+    "description": "Votre discours de vœux contient trois phrases identiques. Les internautes s’en donnent à cœur joie.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Prononcer un deuxième discours",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 0.5,
+            "delaiMois": 1,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Accuser un stagiaire imaginaire",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Faire comme si de rien n’était",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tgv-retard-fanfare",
+    "titre": "Un train en retard… avec une fanfare",
+    "theme": "insolite",
+    "description": "Pour faire patienter les usagers, une fanfare improvisée joue dans le TGV bloqué. La vidéo devient virale.",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Subventionner les fanfares de gare",
+        "cout_capital": 2,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "deficit",
+            "valeur": 0.2,
+            "delaiMois": 1,
+            "duree": 3
+          }
+        ]
+      },
+      {
+        "libelle": "Féliciter les musiciens",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ignorer",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sondage-licorne",
+    "titre": "Le sondage sur les licornes",
+    "theme": "insolite",
+    "description": "Un institut imaginaire publie : 38 % des Français jugent la licorne « plus fiable qu’un ministre ».",
+    "conditions": {},
+    "poids": 1,
+    "role": "tous",
+    "choix": [
+      {
+        "libelle": "Nommer une licorne mascotte",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": 1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": -2,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Contester la méthodologie",
+        "cout_capital": 1,
+        "effets": [
+          {
+            "indicateur": "tensions",
+            "valeur": 3,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "popularite",
+            "valeur": -0.5,
+            "delaiMois": 0,
+            "duree": 2
+          }
+        ]
+      },
+      {
+        "libelle": "Ne pas commenter",
+        "cout_capital": 0,
+        "effets": [
+          {
+            "indicateur": "popularite",
+            "valeur": -1.5,
+            "delaiMois": 0,
+            "duree": 2
+          },
+          {
+            "indicateur": "tensions",
+            "valeur": 2,
+            "delaiMois": 0,
+            "duree": 2
           }
         ]
       }

@@ -321,3 +321,9 @@ Règles :
    - fiche région ;
    - briefing de 3 alertes.
 4. Critère d'acceptation : le parcours « problème → projet → mois → effet expliqué » fonctionne à 390 px et au clavier, et les 71 tests restent verts.
+
+## 2026-11-04 — Événements insolites et règles de contenu allégées (branche `claude/epic-hamilton-4neew9`)
+- `CLAUDE.md` : humour autorisé ; personnages inventés libres (sans badge ni source) ; parodies de personnalités réelles avec nom déformé et trait absurde inoffensif uniquement (jamais crime, scandale, santé, famille, fausse citation). Règle sur les personnes réelles toujours stricte.
+- `events.json` : +10 événements `insolite` (poids 1, dernière option passive coûteuse pour garder l'équilibrage). Thème « Insolite » dans `evenement.js`.
+- Tests : graines des 2 scénarios changées (4 et 10) car le tirage seedé dépend de la taille du pool. Vitest 224/224, Playwright 101 passés (3 ignorés).
+- Skills ECC copiés dans `.agents/skills/` (voir `ECC.md`).
