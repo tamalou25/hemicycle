@@ -28,7 +28,7 @@ export function sectionCeMois(etat, donnees, avant = '') {
   const liste = (l, signe) => (l.length ? `<ul class="text-[0.8125rem] leading-snug space-y-1 max-sm:[&>li:nth-child(n+3)]:hidden">${l.map((e) => `<li class="flex gap-1.5"><span aria-hidden="true" class="font-bold shrink-0">${signe}</span><span>${phrase(e)}</span></li>`).join('')}</ul>` : '<p class="text-sm text-doux">Rien de notable.</p>');
   const li = (e) => `<li class="py-1 border-b border-bord last:border-0">${phrase(e)}</li>`;
   return `<section aria-labelledby="h-bilan" class="mb-3">
-    <h3 id="h-bilan" class="font-serif font-bold text-lg mb-1">Ce mois-ci</h3>${avant}
+    <h3 id="h-bilan" class="font-serif font-bold text-lg mb-1 max-sm:sr-only">Ce mois-ci</h3>${avant}
     <div class="grid sm:grid-cols-2 gap-3">
       <div class="bg-carte border border-bord border-l-4 border-l-[#1F6E43] rounded-lg px-3 py-2 ${bonnes.length ? '' : 'max-sm:py-1 max-sm:flex max-sm:items-baseline max-sm:gap-2'}"><h3 class="font-semibold text-[#1F6E43] mb-1"><span aria-hidden="true">✓ </span>Bonnes nouvelles</h3>${liste(bonnes, '↑')}</div>
       <div class="bg-carte border border-bord border-l-4 border-l-rouge rounded-lg px-3 py-2 ${vigilance.length ? '' : 'max-sm:py-1 max-sm:flex max-sm:items-baseline max-sm:gap-2'}"><h3 class="font-semibold text-rouge mb-1"><span aria-hidden="true">! </span>Points de vigilance</h3>${liste(vigilance, '↓')}</div>

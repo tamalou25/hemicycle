@@ -5,7 +5,8 @@ import { bilanMois, engagements, phraseExplication } from '../../engine/index.js
 import { moisDe } from './mission.js';
 
 const MAX = 3;
-const liste = (l, vide) => (l.length ? `<ul class="list-disc pl-5 text-sm space-y-0.5">${l.map((x) => `<li>${x}</li>`).join('')}</ul>` : `<p class="text-sm text-doux">${vide}</p>`);
+// Mobile : 2 éléments par liste (le reste dans « Tout le mois écoulé »), texte compact comme « Ce mois-ci »
+const liste = (l, vide) => (l.length ? `<ul class="list-disc pl-5 text-[0.8125rem] sm:text-sm leading-snug space-y-0.5 max-sm:[&>li:nth-child(n+3)]:hidden">${l.map((x) => `<li>${x}</li>`).join('')}</ul>` : vide ? `<p class="text-sm text-doux">${vide}</p>` : '');
 
 export function sectionBilanMois(etat, ctx) {
   const donnees = { lois: ctx.lois, partis: ctx.partis, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques };
@@ -19,8 +20,8 @@ export function sectionBilanMois(etat, ctx) {
   // Intégré en tête de « Ce mois-ci » : vos décisions d'abord, puis bonnes nouvelles et vigilance (toutes causes)
   return `<div id="bilan-mois" class="mb-2" aria-label="Vos décisions de ${esc(moisDe(etat, b.tour - 1))} et leurs effets" role="group">
     ${suites.length || vos.length ? `<div class="grid sm:grid-cols-2 gap-x-4 gap-y-1 mt-1">
-      <div><h4 class="font-semibold text-sm">Vos décisions et leurs suites</h4>${liste(suites.slice(0, MAX).map(esc), 'Aucune décision ni résultat ce mois-là.')}</div>
-      <div><h4 class="font-semibold text-sm">Ce que vos décisions ont changé</h4>${liste(vos.slice(0, MAX).map(ph), 'Pas encore d’effet observé (délais en cours ?).')}</div>
+      <div><h4 class="font-semibold text-xs sm:text-sm">Vos décisions et leurs suites</h4>${liste(suites.slice(0, MAX).map(esc), 'Aucune décision ni résultat ce mois-là.')}</div>
+      ${vos.length ? `<div><h4 class="font-semibold text-xs sm:text-sm">Ce que vos décisions ont changé</h4>${liste(vos.slice(0, MAX).map(ph), '')}</div>` : '<p class="text-xs text-doux hidden sm:block">Pas encore d’effet observé de vos décisions (délais en cours).</p>'}
     </div>` : '<p class="text-sm mt-1">Aucune décision ni effet de vos décisions ce mois-là. Les variations viennent de la conjoncture et des événements (ci-dessous).</p>'}
     ${b.mission ? `<p class="text-sm mt-2"><strong>Mission :</strong> prochaine étape, ${esc(b.mission.detail)}</p>` : ''}
     ${suites.length > MAX || vos.length > MAX ? `<details class="mt-1"><summary class="min-h-[44px] flex items-center cursor-pointer text-sm text-bleu underline">Tout le mois écoulé</summary>
