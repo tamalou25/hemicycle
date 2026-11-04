@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-3d038945e35c';
+const CACHE = 'hemicycle-8154114e1aa0';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -15,6 +15,7 @@ const FICHIERS = [
   "./src/data/calendrier.json",
   "./src/data/carte-monde.json",
   "./src/data/carte-regions.json",
+  "./src/data/economie.json",
   "./src/data/events.json",
   "./src/data/finances.json",
   "./src/data/groupes-equilibrage.json",
@@ -37,6 +38,7 @@ const FICHIERS = [
   "./src/engine/confianceRegions.js",
   "./src/engine/constants.js",
   "./src/engine/decisions.js",
+  "./src/engine/economie.js",
   "./src/engine/effects.js",
   "./src/engine/elections.js",
   "./src/engine/events.js",
@@ -75,6 +77,7 @@ const FICHIERS = [
   "./src/ui/components/ceMois.js",
   "./src/ui/components/confirmations.js",
   "./src/ui/components/decisions.js",
+  "./src/ui/components/economie.js",
   "./src/ui/components/elections.js",
   "./src/ui/components/etatPays.js",
   "./src/ui/components/evenement.js",

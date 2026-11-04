@@ -25,6 +25,8 @@ export function importerPartie(texte) {
   if (etat.version === 13) etat = { ...etat, version: 14, scenario: null };
   // v15 : présidence (gouvernement du président) ; les anciennes parties gardent leur rôle et leurs règles
   if (etat.version === 14) etat = { ...etat, version: 15, gouvernement: null };
+  // v16 : économie, diplomatie, défense, difficulté (lots 2 à 5) ; complétés à la reprise par assurerTerritoires, sans activation rétroactive des décisions
+  if (etat.version === 15) etat = { ...etat, version: 16, economie: null, diplomatie: null, defense: null, difficulte: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -104,6 +106,21 @@ function assainirScenario(s) {
   };
 }
 
+/** Économie (v16) : filières, investissements, disponibilités ; null si absente ou invalide. */
+function assainirEconomie(ec) {
+  if (!ec || typeof ec !== 'object' || !ec.filieres || typeof ec.filieres !== 'object') return null;
+  const fil = (x) => ({ capacite: nb(x?.capacite, 100), production: nb(x?.production, 100), demande: nb(x?.demande, 100), dependances: nombres(x?.dependances) ?? {}, amortissement: nb(x?.amortissement) });
+  const c = ec.commerce && typeof ec.commerce === 'object' ? ec.commerce : {};
+  return {
+    mois: nb(ec.mois),
+    filieres: Object.fromEntries(Object.entries(ec.filieres).slice(0, 8).map(([k, v]) => [k.slice(0, 30), fil(v)])),
+    investissements: liste(ec.investissements, (x) => ({ id: ch(x.id, 60), debut: nb(x.debut), enService: nb(x.enService), statut: ['chantier', 'montee', 'service'].includes(x.statut) ? x.statut : 'service' })),
+    disponibilite: nombres(ec.disponibilite) ?? {}, debouches: nombres(ec.debouches) ?? {},
+    commerce: { importations: nombres(c.importations) ?? {}, exportations: nombres(c.exportations) ?? {}, solde: nb(c.solde) },
+    penuries: nombres(ec.penuries) ?? {}, couverture: nombres(ec.couverture) ?? {},
+  };
+}
+
 function assainir(e) {
   const j = e.joueur;
   const texte = e.texte && typeof e.texte === 'object' && ETAPES.includes(e.texte.etape) ? {
@@ -146,6 +163,8 @@ function assainir(e) {
       ? { parti: ch(e.gouvernement.parti, 50), depuis: nb(e.gouvernement.depuis), statut: e.gouvernement.statut === 'renverse' ? 'renverse' : 'en_place', renversements: nb(e.gouvernement.renversements), nominations: nb(e.gouvernement.nominations), ...(Number.isFinite(e.gouvernement.renverseLe) ? { renverseLe: e.gouvernement.renverseLe } : {}) }
       : null,
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
+    economie: assainirEconomie(e.economie),
+    diplomatie: null, defense: null, difficulte: null,
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({
@@ -204,7 +223,8 @@ function assainir(e) {
       ...(typeof x.parti === 'string' ? { parti: x.parti.slice(0, 40) } : {}),
       ...(typeof x.libelle === 'string' ? { libelle: x.libelle.slice(0, 120) } : {}),
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
+      ...(typeof x.filiere === 'string' ? { filiere: x.filiere.slice(0, 40) } : {}),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation|filiere|commerce):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),

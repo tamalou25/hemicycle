@@ -18,11 +18,12 @@ import { reagir, estomperRelations } from './relations.js';
 import { evoluerConfianceRegions } from './confianceRegions.js';
 import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGroupe } from './groupes.js';
 import { dateDuTour } from './state.js';
+import { evoluerEconomie } from './economie.js';
 
 /**
  * Ordre d'un tour :
  * 0. navette du texte en cours (votes du mois écoulé) + censure spontanée
- * 1. effets différés des lois  2. dynamique économique + bruit
+ * 1. effets différés des lois  2. dynamique économique + bruit  2 a. économie réelle (filières, commerce)
  * 3. popularité  4. sondage  5. capital politique  6. conditions de fin
  */
 export function tourSuivant(etatInitial, donnees) {
@@ -90,6 +91,14 @@ function passage(etatInitial, donnees) {
   ind.dette = borner('dette', ind.dette + ind.deficit / 12 - ((ind.croissance + ind.inflation) / 1200) * ind.dette);
   [n, g] = bruit(g, 1.5); ind.tensions = borner('tensions', ind.tensions + (EQUILIBRE.tensions - ind.tensions) * 0.05 + n);
 
+  // 2 a. Économie réelle (lot 2, ADR 0003) : production par filière, commerce, pénuries → croissance, chômage, inflation
+  let entreesEconomie = [];
+  if (etat.economie && donnees.economie) {
+    const ec = evoluerEconomie({ ...etat, indicateurs: ind }, donnees, tour);
+    etat = ec.etat; entreesEconomie = ec.entrees;
+    for (const k of ['croissance', 'chomage', 'inflation']) if (ec.deltas[k]) ind[k] = borner(k, ind[k] + ec.deltas[k]);
+  }
+
   // 2 bis. Territoires et projets (E1) : usure, emploi régional, chantiers, mises en service
   let entreesTerritoires = [];
   let misesEnService = [];
@@ -141,7 +150,7 @@ function passage(etatInitial, donnees) {
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesEconomie, ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };
