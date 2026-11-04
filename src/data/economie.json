@@ -36,8 +36,8 @@
     "note_partenaires": "Parts en fraction des importations ou exportations de la filière. Ordres de grandeur d'après la structure géographique des échanges (Douanes, Trésor) ; le reste du monde complète à 1. Paramètres d'équilibrage pour les filières où la ventilation n'est pas publiée."
   },
   "parametres": {
-    "croissance_par_point_production": 0.5,
-    "chomage_par_point_production": 0.3,
+    "croissance_par_point_production": 0.35,
+    "chomage_par_point_production": 0.15,
     "inflation_par_penurie": 0.3,
     "seuil_alerte_penurie": 0.02,
     "seuil_dependance": 0.2
@@ -50,7 +50,7 @@
     { "id": "electrification-industrie", "filiere": "industrie", "titre": "Électrification de l'industrie", "description": "Aider les usines à remplacer les procédés gaziers par l'électricité et l'efficacité énergétique.", "cout_total_md": 7, "delai_mois": 30, "montee_mois": 12, "gain_capacite": 2, "reduction_dependance": { "energie": 0.15 }, "entretien_md": 0.2, "contrepartie": "Réduit la dépendance énergétique de l'industrie, mais lentement." },
     { "id": "relocalisation", "filiere": "industrie", "titre": "Relocalisation industrielle", "description": "Subventionner l'implantation d'usines de composants et de médicaments en France.", "cout_total_md": 6, "delai_mois": 24, "montee_mois": 12, "gain_capacite": 8, "entretien_md": 0.5, "contrepartie": "Les usines produisent plus cher que les importations : effet limité sur les prix." },
     { "id": "souverainete-agricole", "filiere": "agriculture", "titre": "Plan de souveraineté agricole", "description": "Investir dans les filières déficitaires (fruits, légumes, protéines) et l'irrigation.", "cout_total_md": 3, "delai_mois": 18, "montee_mois": 12, "gain_capacite": 5, "entretien_md": 0.2, "contrepartie": "Pression sur l'eau et les prix à court terme." },
-    { "id": "numerique-services", "filiere": "services", "titre": "Infrastructures numériques", "description": "Fibre, centres de données et formation aux métiers du numérique.", "cout_total_md": 4, "delai_mois": 18, "montee_mois": 12, "gain_capacite": 4, "entretien_md": 0.3, "contrepartie": "Consomme de l'énergie : la demande énergétique augmente." , "demande_supplementaire": { "energie": 1 } }
+    { "id": "numerique-services", "filiere": "services", "titre": "Infrastructures numériques", "description": "Fibre, centres de données et formation aux métiers du numérique.", "cout_total_md": 4, "delai_mois": 18, "montee_mois": 12, "gain_capacite": 3, "entretien_md": 0.3, "contrepartie": "Consomme de l'énergie : la demande énergétique augmente." , "demande_supplementaire": { "energie": 1 } }
   ],
   "sources": [
     { "donnee": "Déficit des échanges de biens 2025 : 58,0 Md€ (61,4 en 2024) ; excédent des services 45,4 Md€ (50,8 en 2024) ; déficit courant 11,6 Md€", "source": "Banque de France, Rapport annuel 2025 de la balance des paiements (communiqué)", "url": "https://www.banque-france.fr/fr/communiques-de-presse/rapport-annuel-2025-de-la-balance-des-paiements-un-deficit-courant-quasi-stable-116-milliards-deuros", "date": "2026-07-08" },
