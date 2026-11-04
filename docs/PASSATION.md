@@ -11,7 +11,9 @@
   `src/ui/components/carteMonde.js` : écran « Monde » (onglet principal, écran d'arrivée de la campagne présidentielle), zoom et
   déplacement (souris, tactile, clavier), recentrage France / Europe / Monde, encarts DROM, vues existantes, tableau accessible, « Votre
   cap » (urgences, objectifs), accès aux écrans, fiche région et lancement de projets réutilisés, alertes territoriales → carte.
-  Tests : `e2e/monde.spec.js` (6). Détails : `docs/DESIGN-UI.md`, `docs/VISION-CAMPAGNE.md`.
+  Tests : `e2e/monde.spec.js` (6) ; `e2e/presidence.spec.js` adapté (arrivée sur la carte, puis Bureau). Résultats sur `carte-monde` :
+  Vitest 224/224 (24 fichiers), Playwright 101 passed / 3 skipped (sauts voulus par projet) / 0 failed, `npm run build` et `build:mobile` OK.
+  Détails : `docs/DESIGN-UI.md`, `docs/VISION-CAMPAGNE.md`.
 - **Non fait** : économie internationale, pays étrangers autonomes, défense (le fond mondial est purement géographique) ; durée réelle de la
   campagne non mesurée.
 

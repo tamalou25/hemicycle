@@ -27,10 +27,13 @@ async function campagne(page, parti = 'EPR', graine = 4242) {
   await page.getByRole('button', { name: 'Campagne présidentielle' }).click();
   await page.getByRole('radio', { name: new RegExp(`^${parti} ·`) }).check();
   await page.getByRole('button', { name: 'Commencer le mandat' }).click();
-  await expect(page.locator('#gouvernement')).toBeVisible();
+  // La campagne arrive sur la carte du monde (e2e/monde.spec.js) ; ces tests portent sur le Bureau
+  await expect(page.locator('#monde')).toBeVisible();
   await modifierSauvegarde(page, `e.graine = ${graine};`);
   await page.reload();
   await page.getByRole('button', { name: /Reprendre/ }).click();
+  await expect(page.locator('#monde')).toBeVisible();
+  await ouvrirOnglet(page, 'Bureau');
   await expect(page.locator('#gouvernement')).toBeVisible();
 }
 
@@ -48,6 +51,9 @@ test('accueil → campagne : rôle, pouvoirs, limites, aucun parti présélectio
   await expect(page.locator('#pres-erreur')).toContainText('Choisissez une famille politique');
   await page.getByRole('radio', { name: /^EPR ·/ }).check();
   await page.getByRole('button', { name: 'Commencer le mandat' }).click();
+  await expect(page.locator('#monde')).toBeVisible(); // arrivée sur la carte du monde
+  await expect(page.getByRole('navigation', { name: 'Écrans' })).toContainText('Gouvernement en place');
+  await ouvrirOnglet(page, 'Bureau');
   await expect(page.locator('#gouvernement')).toBeVisible();
   await expect(page.locator('#h-gouv')).toContainText('Premier ministre EPR (fictif)');
   await expect(page.getByText('Président·e de la République (fictif)').locator('visible=true').first()).toBeVisible();
