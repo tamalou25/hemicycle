@@ -85,16 +85,20 @@ function prioritesCampagne(etat, ctx) {
     liste.push({ type: 'engagement', titre: 'Ou un projet dans une région', raison: `Enveloppe ${(etat.finances?.enveloppe ?? 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€, sans vote ; effets locaux visibles sur la carte.`, aller: { onglet: 'carte', vue: 'satisfaction' } });
   }
   if (gouverne(etat) && etat.budget && !etat.plf && !raisonRefusPLF(etat)) liste.push({ type: 'decision', titre: 'Budget de l’État à déposer', raison: 'Fenêtre ouverte jusqu’en décembre ; sans budget voté, une loi spéciale reconduit les crédits.', aller: { onglet: 'budget' } });
-  // Alertes économiques (pénurie d'abord, puis dépendance) : la filière se traite dans Économie (investissements) ou par la diplomatie
-  for (const a of alertesEconomie(etat, { economie: ctx.economie }).slice(0, 1)) liste.push({ type: a.type === 'penurie' ? 'urgence' : 'territoire', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
+  // Alertes économiques : une pénurie est une urgence ; une dépendance se traite après les territoires (Économie : investissements)
+  const alertesEco = alertesEconomie(etat, { economie: ctx.economie });
+  for (const a of alertesEco.filter((x) => x.type === 'penurie').slice(0, 1)) liste.push({ type: 'urgence', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
   // Alertes territoriales (indice sous le seuil critique) : rejoindre directement le territoire sur la carte
   for (const pt of briefing(etat, { regions: ctx.regions, projets: ctx.projets, evenements: ctx.evenements }).filter((p) => p.type === 'territoire').slice(0, 2)) liste.push({ type: 'territoire', titre: pt.titre, raison: `${pt.texte} Un projet dans la région peut l’améliorer.`, aller: { onglet: 'monde', region: pt.region, vue: pt.indice } });
+  for (const a of alertesEco.filter((x) => x.type === 'dependance').slice(0, 1)) liste.push({ type: 'territoire', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
   if (!liste.length) liste.push({ type: 'echeance', titre: 'Laisser le temps courir', raison: 'Vos décisions produisent leurs effets mois après mois ; le temps s’arrête de lui-même quand une réponse est attendue.', aller: { onglet: 'bureau', cible: 'temps' } });
   const ICONE = { urgence: '!', engagement: '◎', echeance: '⏱', decision: '€', territoire: '◎' };
   const BOUTON = { urgence: 'Répondre', engagement: 'Ouvrir', echeance: 'Voir', decision: 'Ouvrir', territoire: 'Voir sur la carte' };
   for (const p of liste) if (p.aller?.onglet === 'economie') p.bouton = p.type === 'urgence' ? 'Traiter' : 'Voir l’économie';
   const l = liste.slice(0, 3);
-  return { liste: l, html: `<ul class="grid md:grid-cols-3 gap-2 mb-2" id="priorites">${l.map((p, i) => `<li class="bg-carte border border-bord rounded-lg p-2 pl-3 filet-laiton flex items-center justify-between gap-2" data-priorite="${esc(p.type)}">
+  // Carte : « À surveiller » reçoit toutes les veilles (territoires, dépendances), pas seulement celles du trio du Bureau
+  const veille = liste.filter((p) => p.type === 'territoire').slice(0, 3);
+  return { liste: l, veille, html: `<ul class="grid md:grid-cols-3 gap-2 mb-2" id="priorites">${l.map((p, i) => `<li class="bg-carte border border-bord rounded-lg p-2 pl-3 filet-laiton flex items-center justify-between gap-2" data-priorite="${esc(p.type)}">
       <p class="min-w-0 text-sm leading-snug"><span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${ICONE[p.type]}</span>${esc(p.titre)}.</span> <span class="text-doux">${esc(p.raison)}</span></p>
       <button type="button" id="prio-${i}" data-prio="${i}" class="btn btn-s shrink-0 !px-3 text-sm">${p.bouton ?? BOUTON[p.type]}<span class="sr-only"> : ${esc(p.titre)}</span></button></li>`).join('')}</ul>` };
 }
@@ -184,7 +188,7 @@ export function render(racine, etat, dispatch, ctx) {
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
     { liste: catalogue(etat, ctx), refusPLF: raisonRefusPLF(etat), dureeMandat: DUREE_MANDAT, seuilDefaite: SEUIL_DEFAITE, points: POINTS_PAR_OBJECTIF }) : null;
   const prio = ['bureau', 'monde'].includes(onglet) && etat.scenario ? sectionPriorites(etat, ctx) : (['bureau', 'monde'].includes(onglet) && prioritesCampagne(etat, ctx)) || { html: '', liste: [] };
-  const contenu = onglet === 'monde' && ctx.monde ? ecranMonde(etat, ctx, prio.liste)
+  const contenu = onglet === 'monde' && ctx.monde ? ecranMonde(etat, ctx, prio.liste, prio.veille)
     : onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief, prio)
     : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
@@ -223,7 +227,7 @@ export function render(racine, etat, dispatch, ctx) {
       else if (pt.type === 'budget') dispatch({ type: 'onglet', onglet: 'budget', haut: true });
       else { const c = racine.querySelector('[data-evenement]'); c?.scrollIntoView({ block: 'center' }); c?.focus(); }
     }));
-  } else if (onglet === 'monde' && ctx.monde) brancherMonde(racine, dispatch, ctx, prio.liste, etat);
+  } else if (onglet === 'monde' && ctx.monde) brancherMonde(racine, dispatch, ctx, prio.liste, etat, prio.veille);
   else if (onglet === 'decisions') brancherDecisions(racine, dispatch, ctx);
   else if (onglet === 'carte') brancherCarte(racine, dispatch);
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);

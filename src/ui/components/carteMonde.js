@@ -48,7 +48,7 @@ function bandeauIndicateurs(etat, ctx) {
 }
 
 /** Panneau « Cap » : objectifs du mandat et urgences, toujours visibles (repliable sur mobile). */
-function panneauCap(etat, ctx, priorites) {
+function panneauCap(etat, ctx, priorites, veille = null) {
   const objectifs = evaluerObjectifs(etat, { regions: ctx.regions, objectifs: ctx.objectifs });
   const reste = Math.max(0, 60 - etat.tour);
   const lignes = objectifs.map((o) => { const t = texteValeur(o); return `<li class="flex items-center justify-between gap-2 py-0.5 text-sm"><span class="min-w-0 truncate" title="${esc(o.titre)}">${esc(o.titre)}</span><span class="shrink-0 tabular-nums text-xs ${o.atteint ? 'text-succes font-bold' : 'text-doux'}">${esc(t.v)} / ${esc(t.c)}</span></li>`; }).join('');
@@ -56,7 +56,7 @@ function panneauCap(etat, ctx, priorites) {
   return `<section aria-labelledby="h-cap" class="bg-carte border border-bord rounded-xl p-3">
     <h2 id="h-cap" class="font-serif font-bold text-base">Votre cap <span class="font-sans font-normal text-xs text-doux">· ${reste} mois restants</span></h2>
     ${urgences.length ? `<ul class="mt-1 space-y-1" aria-label="Urgences">${urgences.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#FFF4D6] border border-laiton rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-laiton mr-1">!</span><strong>${esc(p.titre)}</strong></span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-prio="${i}">Traiter</button></li>`).join('')}</ul>` : '<p class="text-xs text-succes mt-1">Rien d’urgent ce mois-ci.</p>'}
-    ${(() => { const veille = priorites.filter((p) => p.type === 'territoire').slice(0, 2); return veille.length ? `<ul class="mt-1 space-y-1" aria-label="À surveiller">${veille.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#EAEEF5] border border-bord rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-doux mr-1">◎</span>${esc(p.titre)}</span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-veille="${i}">${esc(p.bouton ?? 'Voir')}</button></li>`).join('')}</ul>` : ''; })()}
+    ${(() => { const v = veille ?? priorites.filter((p) => p.type === 'territoire').slice(0, 2); return v.length ? `<ul class="mt-1 space-y-1" aria-label="À surveiller">${v.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#EAEEF5] border border-bord rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-doux mr-1">◎</span>${esc(p.titre)}</span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-veille="${i}">${esc(p.bouton ?? 'Voir')}</button></li>`).join('')}</ul>` : ''; })()}
     <ul class="mt-1 divide-y divide-bord" aria-label="Objectifs du mandat">${lignes}</ul>
     <p class="text-xs text-doux mt-1">Détail et pistes : Bureau.</p>
   </section>`;
@@ -101,7 +101,7 @@ function svgMonde(etat, ctx, vue, selection) {
 }
 
 /** Écran complet. `priorites` : liste du Bureau (événement, gouvernement, première décision…) pour le panneau Cap. */
-export function ecranMonde(etat, ctx, priorites = []) {
+export function ecranMonde(etat, ctx, priorites = [], veille = null) {
   const vue = vueValide(ctx.vue, etat);
   const sel = ctx.region ?? null;
   const monde = ctx.monde.donnees;
@@ -135,7 +135,7 @@ export function ecranMonde(etat, ctx, priorites = []) {
       <div class="flex flex-wrap items-center justify-between gap-2">${legendes}<span class="text-[0.65rem] text-doux">${esc(monde.attribution)}</span></div>
     </section>
     <aside class="grid gap-3 min-w-0" aria-label="Panneaux">
-      ${panneauCap(etat, ctx, priorites)}
+      ${panneauCap(etat, ctx, priorites, veille)}
       ${liensEcrans(etat)}
       <details id="panneau-region" class="bg-carte border border-bord rounded-xl" ${sel ? 'open' : ''}>
         <summary class="min-h-[44px] flex items-center justify-between px-3 cursor-pointer font-semibold text-sm">${sel ? `Région : ${esc(ctx.regions.regions.find((r) => r.id === sel)?.nom ?? sel)}` : 'Région : aucune sélection'}<span class="text-xs text-doux font-normal">${sel ? 'fiche et projets' : 'touchez une région'}</span></summary>
@@ -146,7 +146,7 @@ export function ecranMonde(etat, ctx, priorites = []) {
 }
 
 /** Branche la navigation de carte (pure présentation) : déplacement, zoom, sélection, raccourcis clavier, liens. */
-export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null) {
+export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null, veille = null) {
   const cadre = racine.querySelector('#cadre-monde');
   const svg = racine.querySelector('#svg-monde');
   const monde = ctx.monde.donnees;
@@ -204,7 +204,7 @@ export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null
   racine.querySelectorAll('[data-lancer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'projet', projetId: b.dataset.lancer, regionId: ctx.region })));
   racine.querySelectorAll('[data-monde-aller]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: b.dataset.mondeAller, haut: true, cible: b.dataset.cible })));
   racine.querySelectorAll('#monde [data-veille]').forEach((b) => b.addEventListener('click', () => {
-    const p = priorites.filter((x) => x.type === 'territoire')[Number(b.dataset.veille)];
+    const p = (veille ?? priorites.filter((x) => x.type === 'territoire'))[Number(b.dataset.veille)];
     if (p?.aller) dispatch({ type: 'onglet', haut: true, ...p.aller });
   }));
   racine.querySelectorAll('#monde [data-prio]').forEach((b) => b.addEventListener('click', () => {
