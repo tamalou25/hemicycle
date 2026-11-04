@@ -17,6 +17,19 @@
 - **Limites** : durée réelle de 30 à 90 minutes non mesurée ; diplomatie, économie internationale, défense : lots suivants ; la
   présidentielle suivante n'est pas jouée ; la défaite par popularité est une convention étiquetée.
 
+## État au 04/11/2026, après fusion et déploiement (Claude)
+- **`main` = `acfe557`** (merge de la PR #27). Fusionnées ce jour, dans l'ordre : #25 (refonte de la première expérience), #26 (skills
+  `demarrage` et `attentes-proprietaire` de Codex), #27 (partie courte « Douze mois pour convaincre », consolidation de la refonte).
+- **Déployé et vérifié** : workflow « Tests et déploiement » vert sur `acfe557`, APK Android produit ; https://tamalou25.github.io/hemicycle/
+  sert `scenario.json` et un `sw.js` à jour ; parcours « Découvrir en jouant » joué sur le site en ligne (Chromium) : feuille de route
+  affichée, 3 engagements, 0 erreur JavaScript.
+- **Tests sur `acfe557`** : Vitest 207/207 (21 fichiers), Playwright 72/72 (ordinateur et mobile).
+- **Sauvegarde v14** ; les sauvegardes v13 (mission d'initiation) et antérieures restent jouables sans scénario ajouté.
+- **Consignes** : `.agents/skills/demarrage/SKILL.md` puis `.agents/skills/attentes-proprietaire/SKILL.md` (version Codex + section
+  « Choix des modèles »), référencés par `AGENTS.md` et `CLAUDE.md`.
+- **Suite** : retours d'un vrai joueur sur la partie courte (durée réelle, compréhension d'un refus, garde-fou), parcours chronométré
+  dans `docs/PARTIE-COURTE.md` ; puis niveaux de difficulté (non commencés) et équilibrage par parties jouées.
+
 ## État au 03/11/2026 (Claude)
 - **Branche de référence** : `main`, au commit `687caa0` (merge de la PR #15). Toutes les étapes E0 à E7 et les correctifs de revue y sont intégrés.
 - **En ligne** : https://tamalou25.github.io/hemicycle/ (PWA installable, jouable hors ligne). Un APK Android de test est produit par la CI (workflow « Application Android »).
@@ -37,7 +50,7 @@
 - **Règle apprise** : toujours lancer `npm run build` avant de commiter (CSS et `sw.js`). `npm test` le vérifie désormais.
 - **Restant (hors code)** : tests sur un vrai téléphone (APK de la CI), build iOS sur Mac, publication sur les stores, recoupement des fonctions des élus, citations vérifiées (0 aujourd'hui), équilibrage par de vraies parties jouées.
 
-## Partie courte « Douze mois pour convaincre » (Claude, branche `partie-courte`, à partir de `refonte-experience`)
+## Partie courte « Douze mois pour convaincre » (Claude, PR #27, fusionnée dans `main` le 04/11/2026)
 - **Dépendance** : la branche part de `refonte-experience` (PR #25, relue au commit `e15cc0b`) et contient aussi les skills de la PR #26
   (`.agents/skills/attentes-proprietaire/SKILL.md` = version Codex + section « Choix des modèles » ; `demarrage/SKILL.md` identique).
   Ordre de fusion conseillé : #25, puis #26, puis cette PR (conflit attendu sur `SKILL.md` : garder la version de cette branche, qui est un
@@ -57,7 +70,7 @@
 - **À confirmer par le propriétaire** : durée réelle (10 à 20 minutes visées, non mesurée automatiquement), compréhension par un débutant
   (parcours chronométré dans `docs/PARTIE-COURTE.md`), lecteur d'écran réel, appareil physique.
 
-## Refonte de la première expérience (Claude, branche `refonte-experience`, PR #25 en brouillon)
+## Refonte de la première expérience (Claude, PR #25, fusionnée dans `main` le 04/11/2026)
 - **Fait** : « Découvrir en jouant » (mission d'initiation de 6 mois, même moteur), Bureau en trois questions, fiches comparables,
   bilan du mois, engagements, objectifs « départ → actuel / cible ». Détail : `docs/REFONTE-EXPERIENCE.md`.
 - **Moteur** : nouveaux `mission.js`, `fiches.js`, `bilan.js` ; `tourSuivant` clôt la mission ; réponse automatique à un événement
