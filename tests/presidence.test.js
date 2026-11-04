@@ -5,7 +5,7 @@ import {
   creerPartie, tourSuivant, proposerLoi, recourir493, raisonRefus493, engagerPolitique, raisonRefusPolitique, deposerPLF, raisonRefusPLF,
   proposerDissolution, raisonRefusDissolution, negocierAccord, nommerGouvernement, raisonRefusNommer, gouverne, partiGouvernement,
   catalogueDecisions, groupesAssemblee, voterCensure, voterChambre, scoreGroupe, exporterPartie, importerPartie, VERSION_SAUVEGARDE,
-  evaluerObjectifs, normaliserObjectifs, eligible, situationGouvernement, DELAI_NOMINATION, prochainesElections,
+  evaluerObjectifs, normaliserObjectifs, eligible, situationGouvernement, DELAI_NOMINATION, prochainesElections, encoderDefi, decoderDefi,
 } from '../src/engine/index.js';
 import { avancerNavette, censureSpontanee } from '../src/engine/navette.js';
 
@@ -127,6 +127,31 @@ describe('censure et conséquences institutionnelles', () => {
     expect(raisonRefusNommer({ ...n, actionCeMois: false, tour: DELAI_NOMINATION }, 'dr', partis)).toBeNull();
     expect(() => negocierAccord({ ...n, negoCeMois: false }, 'rn', donnees)).toThrow(/dirige déjà/);
     expect(situationGouvernement(n, partis)).toMatchObject({ sigle: 'RN', cohabitation: true, renversements: 1 });
+  });
+});
+
+describe('défi partagé', () => {
+  it('régression : une campagne présidentielle partagée repart en mai 2027 chez le destinataire, même rôle, même graine, même gouvernement', () => {
+    const e = president('ps', 21);
+    const code = encoderDefi({ graine: e.graineInitiale, dateDepart: e.dateDepart, joueur: { ...e.joueur, objectifs: e.objectifs } });
+    const d = decoderDefi(code);
+    expect(d).toMatchObject({ graine: 21, dateDepart: '2027-05-01' });
+    expect(d.joueur.role).toBe('president');
+    const r = creerPartie({ ...d, situation, ...donnees });
+    expect(r.dateDepart).toEqual({ annee: 2027, mois: 5 });
+    expect(r.joueur.role).toBe('president');
+    expect(r.gouvernement).toEqual(e.gouvernement);
+    expect(r.objectifs).toEqual(e.objectifs);
+    expect(jouer(r, 3).indicateurs).toEqual(jouer(e, 3).indicateurs);
+    // Sans date (ancien lien) : date par défaut de la partie, le lien reste lisible
+    const ancien = decoderDefi(encoderDefi({ graine: 1, joueur: { nom: 'S', parti: 'epr' } }));
+    expect(ancien.dateDepart).toBeUndefined();
+    expect(creerPartie({ ...ancien, situation, ...donnees }).dateDepart).toEqual({ annee: 2026, mois: 11 });
+    // Date invalide dans un lien forgé : ignorée
+    const forge = JSON.parse(Buffer.from(code.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString());
+    forge.d = '2027-13';
+    const b64 = Buffer.from(JSON.stringify(forge)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    expect(decoderDefi(b64).dateDepart).toBeUndefined();
   });
 });
 

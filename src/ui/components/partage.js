@@ -14,7 +14,7 @@ export function lienDefi(etat) {
     // Dans l'application mobile (Capacitor), l'adresse locale n'est pas partageable : on renvoie vers le site public
     const natif = globalThis.Capacitor?.isNativePlatform?.() === true;
     const base = natif ? URL_PUBLIQUE : `${location.origin}${location.pathname}`;
-    return `${base}#defi=${encoderDefi({ graine: etat.graineInitiale, joueur: { ...etat.joueur, objectifs: etat.objectifs, mission: !!etat.mission, scenario: !!etat.scenario } })}`;
+    return `${base}#defi=${encoderDefi({ graine: etat.graineInitiale, dateDepart: etat.dateDepart, joueur: { ...etat.joueur, objectifs: etat.objectifs, mission: !!etat.mission, scenario: !!etat.scenario } })}`;
   } catch { return null; }
 }
 
