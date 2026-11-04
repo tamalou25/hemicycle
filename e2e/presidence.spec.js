@@ -205,3 +205,43 @@ test('mobile : commandes du temps accessibles, cibles ≥ 44 px, pas de déborde
   expect(pied.y + pied.height).toBeLessThanOrEqual(haut + 1);
   expect(await debordement(page)).toBeLessThanOrEqual(0);
 });
+
+test('régression partage : le lien d’une campagne présidentielle recrée le même départ (mai 2027, président, graine, gouvernement)', async ({ page }) => {
+  await campagne(page, 'PS', 4242);
+  const avant = await sauve(page);
+  await ouvrirOnglet(page, 'Chronologie');
+  await vis(page.getByRole('button', { name: 'Partager ce défi' })).click();
+  const lien = await page.locator('#lien-defi').inputValue();
+  expect(lien).toContain('#defi=');
+  // Le destinataire ouvre le lien sur un appareil vierge
+  await page.evaluate(() => localStorage.clear());
+  await page.goto('about:blank'); // un simple changement de hash ne recharge pas l'application
+  await page.goto(`/${lien.slice(lien.indexOf('#'))}`);
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: /Relever le défi/ }).click();
+  const apres = await sauve(page);
+  expect(apres.dateDepart).toEqual({ annee: 2027, mois: 5 });
+  expect(apres.joueur.role).toBe('president');
+  expect(apres.graineInitiale).toBe(avant.graineInitiale);
+  expect(apres.gouvernement).toEqual(avant.gouvernement);
+  await expect(vis(page.getByText(/mai 2027/i))).toBeVisible();
+  await expect(bascule(page)).toHaveAttribute('aria-pressed', 'false'); // horloge en pause au départ
+});
+
+test('régression horloge : changer de vitesse garde le jour ; « Mois suivant » remet le mois au jour 1', async ({ page }) => {
+  await campagne(page, 'DR', 4242);
+  const jour = async () => Number((await vis(page.locator('[data-jour]')).textContent()).replace(/\D/g, ''));
+  await vis(page.locator('[data-vitesse="3"]')).click();
+  await bascule(page).click();
+  await expect.poll(jour, { timeout: 6000 }).toBeGreaterThanOrEqual(12); // ~2,5 s à ×3
+  await bascule(page).click(); // pause
+  const j1 = await jour();
+  await vis(page.locator('[data-vitesse="1"]')).click();
+  await page.waitForTimeout(400);
+  const j2 = await jour();
+  expect(Math.abs(j2 - j1)).toBeLessThanOrEqual(1); // avant : retombait près du jour 1
+  const tour = (await sauve(page)).tour;
+  await moisSuivant(page);
+  expect((await sauve(page)).tour).toBe(tour + 1);
+  expect(await jour()).toBe(1); // le nouveau mois repart de zéro
+});
