@@ -27,6 +27,7 @@ export function render(racine, etat, dispatch, ctx) {
       </div>
       <div class="mt-6 flex flex-col sm:flex-row gap-3">
         <button type="button" class="btn btn-p" id="decouvrir" ${ctx.accepte ? '' : 'disabled'} aria-describedby="aide-decouvrir">Découvrir en jouant</button>
+        <button type="button" class="btn btn-s" id="presidence" ${ctx.accepte ? '' : 'disabled'} aria-describedby="aide-presidence">Campagne présidentielle</button>
         <button type="button" class="btn btn-s" id="nouvelle" ${ctx.accepte ? '' : 'disabled'}>Partie personnalisée</button>
         <button type="button" class="btn btn-s" id="elu" ${ctx.accepte ? '' : 'disabled'}>Jouer un élu réel</button>
         <button type="button" class="btn btn-s" id="reprendre" ${ctx.accepte && sauv ? '' : 'disabled'}>Reprendre</button>
@@ -34,12 +35,14 @@ export function render(racine, etat, dispatch, ctx) {
         <input type="file" id="import" accept="application/json,.json" class="sr-only" ${ctx.accepte ? '' : 'disabled'}>
         <button type="button" class="btn btn-s" id="classement">Classement</button>
       </div>
-      <p id="aide-decouvrir" class="text-sm text-doux mt-2">Découvrir en jouant : une vraie partie, prête en un choix, avec une première mission guidée de six mois. Partie personnalisée : rôle, positions, compétences et objectifs au choix.</p>
+      <p id="aide-decouvrir" class="text-sm text-doux mt-2">Découvrir en jouant : une partie courte de douze mois (10 à 20 minutes), prête en un choix. Partie personnalisée : rôle, positions, compétences et objectifs au choix.</p>
+      <p id="aide-presidence" class="text-sm text-doux mt-1">Campagne présidentielle : un mandat de cinq ans en temps continu (pause et vitesses), 30 à 90 minutes, sauvegardable.</p>
       ${sauv ? '' : '<p class="text-sm text-doux mt-2">Aucune partie sauvegardée sur cet appareil.</p>'}
     </section>`;
   racine.querySelector('#accept').addEventListener('change', (e) => dispatch({ type: 'accepter', valeur: e.target.checked }));
   racine.querySelector('#decouvrir').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'decouverte' }));
   racine.querySelector('#nouvelle').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'creation' }));
+  racine.querySelector('#presidence').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'presidence' }));
   racine.querySelector('#elu').addEventListener('click', () => dispatch({ type: 'aller', ecran: 'choixElu' }));
   racine.querySelector('#classement').addEventListener('click', () => dispatch({ type: 'classement' }));
   racine.querySelector('#reprendre').addEventListener('click', () => dispatch({ type: 'reprendre' }));

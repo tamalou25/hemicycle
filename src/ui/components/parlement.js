@@ -3,7 +3,7 @@ import { ETAPES, groupesAssemblee, groupesSenat, accordActif, apercuAmendement }
 
 const ETAPES_LIB = { assemblee: 'Assemblée', senat: 'Sénat', cmp: 'CMP', lecture_definitive: 'Lecture définitive', conseil: 'Conseil constitutionnel' };
 const OPTIONNELLES = ['cmp', 'lecture_definitive'];
-const ROLES_LIB = { depute: 'Député·e', premier_ministre: 'Premier ministre (fictif)' };
+const ROLES_LIB = { depute: 'Député·e', premier_ministre: 'Premier ministre (fictif)', president: 'Président·e de la République (fictif)' };
 export const libelleRole = (r) => ROLES_LIB[r] ?? r;
 
 const raison = (id, msg) => (msg ? `<p id="${id}" class="text-xs text-doux mt-1">${esc(msg)}</p>` : '');

@@ -22,6 +22,7 @@ export function render(racine, etat, dispatch, ctx) {
       <p class="text-sm mt-2">${nbAtteints} sur ${f.objectifs.length} atteint${nbAtteints > 1 ? 's' : ''} : <strong>+${nbAtteints * POINTS_PAR_OBJECTIF} points au bilan</strong> (${POINTS_PAR_OBJECTIF} par objectif).</p>
     </section>` : '';
   const elu = etat.fin.type === 'victoire';
+  const president = etat.joueur.role === 'president';
   const nbElections = (etat.resultatsElections ?? []).length;
   const couleur = f.score >= 55 ? '#1F6E43' : f.score >= 35 ? '#8A5A00' : '#B3262B';
   racine.innerHTML = `<section class="max-w-xl mx-auto py-4">
@@ -40,7 +41,7 @@ export function render(racine, etat, dispatch, ctx) {
       <div class="h-3 bg-[#E8E1CD] rounded mt-2" role="meter" aria-label="Score de bilan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${f.score}" aria-valuetext="${f.score} sur 100"><div class="h-3 rounded" style="width:${f.score}%;background:${couleur}"></div></div>
     </div>
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
-      <h2 class="font-serif font-bold text-xl mb-1">Bilan de ${esc(etat.joueur.nom)}</h2>
+      <h2 class="font-serif font-bold text-xl mb-1">Bilan de ${esc(etat.joueur.nom)}${president ? ', président·e (fictif)' : ''}</h2>${president && etat.gouvernement ? `<p class="text-sm text-doux">${etat.gouvernement.renversements} gouvernement${etat.gouvernement.renversements > 1 ? 's' : ''} renversé${etat.gouvernement.renversements > 1 ? 's' : ''}, ${etat.gouvernement.nominations} nomination${etat.gouvernement.nominations > 1 ? 's' : ''}.</p>` : ''}
       <p class="text-sm text-doux mb-3">${esc(MOIS[d.mois - 1])} ${d.annee}, après ${etat.tour} mois</p>
       <dl class="grid grid-cols-2 gap-y-1 text-sm">
         <dt>Lois adoptées</dt><dd class="text-right font-semibold">${etat.loisAdoptees.length}</dd>

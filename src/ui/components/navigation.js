@@ -1,5 +1,6 @@
 // Navigation du tableau de bord : barre du bas (mobile), panneau « Plus », barre d'action fixe.
 import { esc, MOIS } from '../util.js';
+import { jourDuMois, VITESSES } from '../../engine/index.js';
 
 export const ONGLETS_PRINCIPAUX = [['bureau', 'Bureau'], ['decisions', 'Décisions'], ['carte', 'Carte'], ['budget', 'Budget']];
 export const ONGLETS_PLUS = [['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
@@ -24,22 +25,37 @@ export function barreOnglets(actif) {
 
 const pastilleEvenement = '<span class="inline-flex items-center gap-1 text-xs font-bold border border-encre bg-[#FFF3C4] rounded-full px-2 py-0.5"><span aria-hidden="true">!</span>Événement à traiter</span>';
 
-/** En-tête collant (ordinateur) : date et « Mois suivant ». */
-export function enteteCollant(etat, d) {
+/**
+ * Commandes du temps continu : pause / lecture, vitesses, jour du mois. `h` = horloge (ctx.horloge) ; rien sans horloge.
+ * Accessibles au clavier (boutons) ; raccourcis : Espace (pause/lecture), + et − (vitesse), gérés par main.js.
+ */
+export function commandesTemps(h, suffixe = '') {
+  if (!h) return '';
+  const vitesses = Object.keys(VITESSES).map((v) => `<button type="button" data-vitesse="${v}" aria-pressed="${Number(v) === h.vitesse}" class="min-w-[44px] min-h-[44px] px-2 text-sm font-bold border rounded ${Number(v) === h.vitesse ? 'bg-encre text-white border-encre' : 'bg-carte border-bord'}" aria-label="Vitesse ${v}">×${v}</button>`).join('');
+  return `<div class="flex items-center gap-1" role="group" aria-label="Temps" id="temps${suffixe}">
+    <button type="button" data-horloge="basculer" id="horloge-bascule${suffixe}" class="btn ${h.marche ? 'btn-s' : 'btn-p'} !px-3" aria-pressed="${h.marche}" aria-label="${h.marche ? 'Mettre en pause' : 'Lancer le temps'}"><span aria-hidden="true">${h.marche ? '❚❚' : '▶'}</span><span class="ml-1 text-sm">${h.marche ? 'Pause' : 'Lecture'}</span></button>
+    ${vitesses}
+    <span class="text-xs text-doux tabular-nums ml-1" aria-live="off" data-jour>jour ${jourDuMois(h)}</span>
+  </div>`;
+}
+
+/** En-tête collant (ordinateur) : date, commandes du temps (si horloge) et « Mois suivant ». */
+export function enteteCollant(etat, d, h = null) {
   return `<div class="hidden sm:flex items-center justify-between gap-3 py-2">
     <p class="font-serif font-bold text-lg"><span class="capitalize">${esc(MOIS[d.mois - 1])}</span> ${d.annee} <span class="font-sans font-normal text-doux text-sm">· mois ${etat.tour} sur 60</span></p>
-    <span class="flex items-center gap-3">${etat.evenement ? pastilleEvenement : ''}<button type="button" id="suivant" class="btn btn-p">Mois suivant</button></span></div>`;
+    <span class="flex items-center gap-3">${etat.evenement ? pastilleEvenement : ''}${commandesTemps(h)}<button type="button" id="suivant" class="btn btn-p">Mois suivant</button></span></div>`;
 }
 
 /** Mobile : barre d'action fixe (date + Mois suivant) et barre de navigation du bas. */
-export function navigationMobile(etat, d, actif) {
+export function navigationMobile(etat, d, actif, h = null) {
   const dansPlus = ONGLETS_PLUS.some(([id]) => id === actif);
   const entree = ([id, nom]) => `<li><button type="button" data-nav="${id}" ${id === actif ? 'aria-current="page"' : ''} class="nav-item">${icone(id)}<span>${nom}</span></button></li>`;
   return `<div id="nav-mobile" class="sm:hidden">
     <div class="barre-action" role="region" aria-label="Mois en cours">
       <p class="min-w-0 leading-tight"><span class="block font-serif font-bold capitalize truncate">${esc(MOIS[d.mois - 1])} ${d.annee}</span><span class="block text-xs text-doux">mois ${etat.tour} sur 60</span></p>
-      <span class="flex items-center gap-2">${etat.evenement ? '<span class="inline-flex items-center gap-1 text-xs font-bold border border-encre bg-[#FFF3C4] rounded-full px-2 py-1"><span aria-hidden="true">!</span>Événement</span>' : ''}<button type="button" id="suivant-mobile" class="btn btn-p">Mois suivant</button></span>
+      <span class="flex items-center gap-2">${etat.evenement ? '<span class="inline-flex items-center gap-1 text-xs font-bold border border-encre bg-[#FFF3C4] rounded-full px-2 py-1"><span aria-hidden="true">!</span>Événement</span>' : ''}${h ? `<button type="button" data-horloge="basculer" id="horloge-bascule-mobile" class="btn ${h.marche ? 'btn-s' : 'btn-p'} !px-3" aria-pressed="${h.marche}" aria-label="${h.marche ? 'Mettre en pause' : 'Lancer le temps'}"><span aria-hidden="true">${h.marche ? '❚❚' : '▶'}</span></button>` : ''}<button type="button" id="suivant-mobile" class="btn ${h ? 'btn-s' : 'btn-p'}">Mois suivant</button></span>
     </div>
+    ${h ? `<div class="barre-temps" role="region" aria-label="Vitesse du temps">${commandesTemps(h, '-mobile')}</div>` : ''}
     <button type="button" id="nav-scrim" class="nav-scrim" tabindex="-1" aria-hidden="true" hidden></button>
     <div id="panneau-plus" class="panneau-plus" role="group" aria-label="Autres sections" hidden>
       <ul>${ONGLETS_PLUS.map(([id, nom]) => `<li><button type="button" data-nav="${id}" ${id === actif ? 'aria-current="page"' : ''} class="plus-item">${nom}</button></li>`).join('')}</ul>
@@ -69,6 +85,8 @@ export function brancherNavigation(racine, dispatch) {
   if (barre && actif) barre.scrollLeft = Math.max(0, actif.offsetLeft - 16);
 
   racine.querySelectorAll('#suivant, #suivant-mobile').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'suivant' })));
+  racine.querySelectorAll('[data-horloge=basculer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'horloge', action: 'basculer' })));
+  racine.querySelectorAll('[data-vitesse]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'horloge', action: 'vitesse', vitesse: Number(b.dataset.vitesse) })));
 
   const nav = racine.querySelector('#nav-mobile');
   if (!nav) return;

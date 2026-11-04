@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-3546ba48e333';
+const CACHE = 'hemicycle-074bdf470ac1';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -78,6 +78,7 @@ const FICHIERS = [
   "./src/ui/components/evenement.js",
   "./src/ui/components/fiche.js",
   "./src/ui/components/finances.js",
+  "./src/ui/components/gouvernement.js",
   "./src/ui/components/jauge.js",
   "./src/ui/components/mission.js",
   "./src/ui/components/navigation.js",
@@ -98,6 +99,7 @@ const FICHIERS = [
   "./src/ui/screens/decouverte.js",
   "./src/ui/screens/defi.js",
   "./src/ui/screens/fin.js",
+  "./src/ui/screens/presidence.js",
   "./src/ui/screens/tableau.js",
   "./src/ui/util.js"
 ];

@@ -46,6 +46,7 @@ function blocCampagne(etat, ctx) {
 function blocCandidature(etat, ctx) {
   const badge = '<p class="mt-3"><span class="text-xs font-bold uppercase rounded bg-[#DCEBDD] text-[#1F6E43] px-2 py-1">Candidat·e à la présidentielle</span></p>';
   if (etat.candidat) return badge;
+  if (etat.joueur.role === 'president') return ''; // déjà à l'Élysée : pas de candidature pendant le mandat
   if (prochainesElections(etat, ctx.calendrier)[0]?.type !== 'presidentielle') return '';
   return `<div class="mt-3"><button type="button" class="btn btn-p" id="btn-candidat" data-candidat>Se déclarer candidat·e</button>
     <p class="text-xs text-doux mt-1">Popularité d’au moins 15 % requise pour réunir les parrainages.</p></div>`;

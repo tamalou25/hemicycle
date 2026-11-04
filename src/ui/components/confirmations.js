@@ -51,8 +51,10 @@ export function confirmation(action, avant, apres, ctx) {
     case 'plf-493': parts.push('49.3 engagé sur le budget : adopté sauf motion de censure en fin de mois.'); break;
     case 'candidat': parts.push('Vous êtes candidat·e à la présidentielle (simulation). Une victoire termine la partie ; une défaite coûte de la popularité.'); break;
     case 'campagne': parts.push(dernier(apres), capital(avant, apres)); break;
+    case 'nommer': parts.push(dernier(apres), capital(avant, apres), 'Vos mesures gouvernementales sont de nouveau possibles. Le temps peut reprendre.'); break;
     case 'dissolution': parts.push(dernier(apres), capital(avant, apres)); break;
     case 'suivant': {
+      if (apres.gouvernement?.statut === 'renverse' && avant.gouvernement?.statut !== 'renverse') return 'Votre gouvernement est renversé : nommez un Premier ministre (Bureau). Le temps est en pause.';
       const fini = apres.scenario?.statut === 'termine' && avant.scenario?.statut === 'en_cours';
       if (fini) return 'Le scénario est conclu : lisez la conclusion en tête du Bureau.';
       if (apres.evenement && apres.evenement !== avant.evenement) { const ev = ctx.evenements?.find((e) => e.id === apres.evenement); return `${moisDe(apres, apres.tour)} : « ${ev?.titre ?? 'un événement'} » attend votre réponse.`; }

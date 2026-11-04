@@ -12,10 +12,11 @@ const STATUT_CLS = {
   disponible: 'bg-[#DCEBDD] text-[#1F6E43] border-[#1F6E43]', en_cours: 'bg-[#DDE7F7] text-bleu border-bleu',
   bloque: 'bg-[#F3E4E4] text-rouge border-rouge', fait: 'bg-[#EFE9D6] text-doux border-bord', urgent: 'bg-bordeaux text-white border-bordeaux',
 };
-const BOUTONS = { loi: 'Proposer', programme: 'Engager', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre' };
+const BOUTONS = { loi: 'Proposer', programme: 'Engager', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
 const CONFIRMATIONS = {
   '493': ['Engager le 49.3 ?', 'Le texte est adopté sans vote, mais le gouvernement s’expose à une motion de censure.'],
   dissolution: ['Proposer une dissolution ?', 'Le Président peut refuser (vous perdriez 2 capital). S’il accepte, des législatives anticipées auront lieu dans deux mois et le texte en cours tombera.'],
+  gouvernement: ['Nommer ce gouvernement ?', '2 capital. Son parti soutiendra vos textes et ne votera pas la censure. Un parti éloigné de vous coûte en popularité (cohabitation). Sans censure, le prochain changement attendra 12 mois.'],
 };
 
 /** Données nécessaires au catalogue, à partir du contexte de l'interface. */
@@ -41,7 +42,7 @@ function couts(x) {
 
 function carte(x, i, etat, ctx) {
   const bouton = libelleBouton(x);
-  const afficheBouton = bouton && !(['loi', 'programme', 'accord'].includes(x.type) && ['en_cours', 'fait'].includes(x.statut));
+  const afficheBouton = bouton && !(['loi', 'programme', 'accord', 'gouvernement'].includes(x.type) && ['en_cours', 'fait'].includes(x.statut));
   const bloque = !!x.raison;
   const rid = `r-dec-${i}`;
   const meta = [couts(x), x.delai, x.type === 'projet' && x.enCours ? `${x.enCours} en cours` : ''].filter(Boolean);

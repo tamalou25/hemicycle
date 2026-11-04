@@ -39,7 +39,9 @@
   .filet-laiton { border-top: 2px solid var(--laiton); }
 
   /* Navigation mobile : barre d'action (date + Mois suivant) au-dessus de la barre du bas */
-  :root { --h-nav: 3.5rem; --h-action: 3.5rem; }
+  :root { --h-nav: 3.5rem; --h-action: 3.5rem; --h-temps: 0px; }
+  body.avec-temps { --h-temps: 3.25rem; }
+  .barre-temps { position: fixed; left: 0; right: 0; bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom)); z-index: 40; min-height: var(--h-temps); display: flex; align-items: center; justify-content: center; padding: 4px 16px; background: #FFFDF7; border-top: 1px solid #D9D2BF; }
   .barre-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: #FFFDF7; border-top: 2px solid #14213D; padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
   .barre-action { position: fixed; left: 0; right: 0; bottom: calc(var(--h-nav) + env(safe-area-inset-bottom)); z-index: 40; min-height: var(--h-action); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 16px; background: #FAF6EC; border-top: 1px solid #D9D2BF; box-shadow: 0 -2px 6px rgba(20,33,61,.12); }
   .nav-item { width: 100%; min-height: var(--h-nav); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .75rem; font-weight: 600; color: #14213D; }
@@ -50,7 +52,7 @@
   .plus-item { width: 100%; min-height: 48px; padding: 0 16px; text-align: left; font-family: 'Source Serif 4', Georgia, serif; font-weight: 700; font-size: 1rem; border-bottom: 1px solid #D9D2BF; }
   .plus-item[aria-current=page] { color: #7A1F2B; background: #EFE9D6; }
   @media (max-width: 639px) {
-    body.avec-barres { padding-bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom) + 8px); }
-    body.avec-barres #toasts { bottom: calc(var(--h-nav) + var(--h-action) + env(safe-area-inset-bottom) + 8px); }
+    body.avec-barres { padding-bottom: calc(var(--h-nav) + var(--h-action) + var(--h-temps) + env(safe-area-inset-bottom) + 8px); }
+    body.avec-barres #toasts { bottom: calc(var(--h-nav) + var(--h-action) + var(--h-temps) + env(safe-area-inset-bottom) + 8px); }
   }
 }

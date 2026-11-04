@@ -17,6 +17,7 @@ import { ongletDecisions, brancherDecisions, catalogue } from '../components/dec
 import { briefMandat } from '../components/objectifs.js';
 import { sectionMission, brancherMission } from '../components/mission.js';
 import { sectionScenario, sectionPriorites, brancherScenario } from '../components/scenario.js';
+import { sectionGouvernement, brancherGouvernement } from '../components/gouvernement.js';
 import { sectionBilanMois, sectionEngagements } from '../components/bilanMois.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
@@ -74,7 +75,7 @@ function ongletBureau(etat, ctx, donnees, points, brief, prio) {
   // Scénario : les priorités du mois remplacent le briefing, le budget y figure déjà ; le brief du mandat long se replie
   const plfOuvert = !scenario && etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
   const mandat = scenario ? `<details class="mb-3" id="mandat-long"><summary class="min-h-[44px] flex items-center cursor-pointer font-semibold text-sm underline text-bleu">Votre mandat (${DUREE_MANDAT} mois) et ses objectifs</summary>${brief.html}</details>` : brief.html;
-  return `${scenario ? sectionScenario(etat, ctx) : sectionMission(etat, ctx)}${scenario ? '' : mandat}
+  return `${sectionGouvernement(etat, ctx)}${scenario ? sectionScenario(etat, ctx) : sectionMission(etat, ctx)}${scenario ? '' : mandat}
     <section aria-labelledby="h-q1" class="mb-4">
       <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
@@ -157,11 +158,11 @@ export function render(racine, etat, dispatch, ctx) {
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
-    <div class="sm:sticky sm:top-0 z-30 bg-creme -mx-4 px-4 sm:border-b sm:border-bord">${enteteCollant(etat, d)}${barreOnglets(onglet)}</div>
+    <div class="sm:sticky sm:top-0 z-30 bg-creme -mx-4 px-4 sm:border-b sm:border-bord">${enteteCollant(etat, d, ctx.horloge)}${barreOnglets(onglet)}</div>
     ${onglet === 'bureau' ? enteteBureau(etat, d, parti) : ''}
     <div id="panneau" role="tabpanel" aria-labelledby="tab-${onglet}" tabindex="-1">${contenu}</div>
     <p class="text-xs text-doux mt-4"><a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a><span class="hidden sm:inline"> · Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage.</span></p>
-    ${navigationMobile(etat, d, onglet)}`;
+    ${navigationMobile(etat, d, onglet, ctx.horloge)}`;
 
   brancherNavigation(racine, dispatch);
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
@@ -169,6 +170,7 @@ export function render(racine, etat, dispatch, ctx) {
     brancherEvenement(racine, dispatch);
     brancherMission(racine, dispatch, etat);
     brancherScenario(racine, dispatch, etat, prio.liste);
+    brancherGouvernement(racine, dispatch);
     // Pistes du mandat : simple navigation (aucune décision exécutée). Le filtre de Décisions est remplacé
     // pour qu'un ancien filtre (statut, secteur) ne masque pas le levier proposé.
     racine.querySelectorAll('[data-piste]').forEach((b) => b.addEventListener('click', () => {
