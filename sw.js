@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-097f051ca573';
+const CACHE = 'hemicycle-3546ba48e333';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -44,6 +44,7 @@ const FICHIERS = [
   "./src/engine/finances.js",
   "./src/engine/fins.js",
   "./src/engine/groupes.js",
+  "./src/engine/horloge.js",
   "./src/engine/index.js",
   "./src/engine/laws.js",
   "./src/engine/mission.js",
@@ -51,6 +52,7 @@ const FICHIERS = [
   "./src/engine/objectifs.js",
   "./src/engine/parliament.js",
   "./src/engine/polls.js",
+  "./src/engine/presidence.js",
   "./src/engine/projets.js",
   "./src/engine/reactions.js",
   "./src/engine/relations.js",

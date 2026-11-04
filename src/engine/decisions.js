@@ -12,6 +12,7 @@ import { raisonRefusPolitique } from './secteurs.js';
 import { raisonRefusPLF } from './budgetEtat.js';
 import { raisonRefusDissolution } from './elections.js';
 import { raisonRefusProjet } from './projets.js';
+import { gouverne, raisonRefusNommer } from './presidence.js';
 
 export const CATEGORIES = { nationale: 'Politiques nationales', territoriale: 'Projets territoriaux', exceptionnelle: 'Décisions exceptionnelles', negociation: 'Négociations' };
 export const SECTEURS_DECISION = {
@@ -60,11 +61,23 @@ export function catalogueDecisions(etat, d) {
       raison: possible ? null : raisonRefusProjet(etat, p, d.regions?.regions?.[0]), action: { type: 'onglet', onglet: 'carte' } }));
   }
   // 49.3 et dissolution
-  if (etat.joueur.role === 'premier_ministre') {
+  if (gouverne(etat)) {
     if (etat.texte) res.push(item({ id: '493:texte', categorie: 'exceptionnelle', type: '493', secteur: 'institutions', titre: 'Engager la responsabilité (49.3)', resume: 'Adopter le texte sans vote, au risque d’une censure.',
       raison: raisonRefus493(etat), action: { type: '493' } }));
-    res.push(item({ id: 'dissolution', categorie: 'exceptionnelle', type: 'dissolution', secteur: 'institutions', titre: 'Proposer une dissolution', resume: 'Législatives anticipées dans deux mois, si le Président accepte.',
+    if (etat.joueur.role !== 'president') res.push(item({ id: 'dissolution', categorie: 'exceptionnelle', type: 'dissolution', secteur: 'institutions', titre: 'Proposer une dissolution', resume: 'Législatives anticipées dans deux mois, si le Président accepte.',
       raison: raisonRefusDissolution(etat), action: { type: 'dissolution' } }));
+  }
+  // Président·e : dissolution de plein droit (art. 12) et nomination du gouvernement
+  if (etat.joueur.role === 'president') {
+    res.push(item({ id: 'dissolution', categorie: 'exceptionnelle', type: 'dissolution', secteur: 'institutions', titre: 'Dissoudre l’Assemblée nationale', resume: 'Législatives anticipées dans deux mois (art. 12) ; les textes en cours tombent.',
+      raison: raisonRefusDissolution(etat), action: { type: 'dissolution' } }));
+    for (const p of d.partis ?? []) {
+      const sieges = etat.sieges ? (etat.sieges[p.id] ?? 0) : (p.sieges_assemblee ?? 0);
+      if (!sieges) continue;
+      const actuel = etat.gouvernement?.statut === 'en_place' && etat.gouvernement.parti === p.id;
+      res.push(item({ id: `gouvernement:${p.id}`, categorie: 'negociation', type: 'gouvernement', secteur: 'institutions', titre: `Gouvernement ${p.sigle}`, resume: actuel ? 'Dirige le gouvernement actuel.' : `Nommer un Premier ministre issu de ${p.sigle} (${sieges} députés) : son groupe soutient les textes et ne vote pas la censure.`,
+        cout: { capital: 2 }, statut: actuel ? 'en_cours' : etat.gouvernement?.statut === 'renverse' ? 'urgent' : undefined, raison: actuel ? null : raisonRefusNommer(etat, p.id, d.partis), action: { type: 'nommer', parti: p.id } }));
+    }
   }
   // Négociations
   for (const p of d.partis ?? []) {

@@ -3,6 +3,7 @@
 import { aleatoire } from './rng.js';
 import { planifierEffets } from './effects.js';
 import { groupesAssemblee, groupesSenat, voterChambre, voterCensure } from './parliament.js';
+import { gouverne, renverserGouvernement } from './presidence.js';
 
 /** Risque de censure par le Conseil constitutionnel si la loi ne le précise pas. */
 const RISQUE_DEFAUT = { immigration: 0.3, securite: 0.2, europe: 0.15 };
@@ -22,6 +23,7 @@ export function avancerNavette(etat, { partis, lois, senat }, graine) {
   let texte = { ...t };
   let dernierVote = null;
   let fin = etat.fin;
+  let renverse = null; // président·e : censure adoptée → gouvernement renversé (pas de fin de partie)
   let loisAdoptees = etat.loisAdoptees, loisRejetees = etat.loisRejetees, effetsEnCours = etat.effetsEnCours;
 
   const rejeter = (raison) => { log('rejet', `« ${loi.titre} » ${raison}`); loisRejetees = [...loisRejetees, loi.id]; texte = null; };
@@ -33,6 +35,7 @@ export function avancerNavette(etat, { partis, lois, senat }, graine) {
       const c = voterCensure(etat, AN);
       dernierVote = { loi: loi.id, chambre: 'censure', ...c };
       if (c.adoptee) {
+        if (etat.joueur.role === 'president') { renverse = `Motion de censure adoptée (${c.pour} voix, ${c.requis} requises). Le gouvernement est renversé.`; texte = null; return; }
         log('censure', `Motion de censure adoptée (${c.pour} voix, ${c.requis} requises). Le gouvernement est renversé.`);
         fin = { type: 'censure', texte: 'Votre gouvernement a été renversé par une motion de censure.' };
         texte = null;
@@ -91,7 +94,8 @@ export function avancerNavette(etat, { partis, lois, senat }, graine) {
       texte = null;
   }
 
-  return { etat: { ...etat, texte, journal, dernierVote, fin, loisAdoptees, loisRejetees, effetsEnCours }, graine: g };
+  const apres = { ...etat, texte, journal, dernierVote, fin, loisAdoptees, loisRejetees, effetsEnCours };
+  return { etat: renverse ? renverserGouvernement(apres, renverse) : apres, graine: g };
 }
 
 /**
@@ -99,13 +103,14 @@ export function avancerNavette(etat, { partis, lois, senat }, graine) {
  * Probabilité mensuelle croissante avec les tensions et l'impopularité.
  */
 export function censureSpontanee(etat, { partis }, graine) {
-  if (etat.joueur.role !== 'premier_ministre' || etat.fin) return { etat, graine };
+  if (!gouverne(etat) || etat.fin) return { etat, graine };
   const { tensions, popularite } = etat.indicateurs;
   const p = Math.max(0, (tensions - 55) / 100) + Math.max(0, (22 - popularite) / 60);
   let [r, g] = aleatoire(graine);
   if (r >= p) return { etat, graine: g };
   const c = voterCensure(etat, groupesAssemblee(partis, etat.sieges));
   const journal = [...etat.journal, { tour: etat.tour, type: 'censure', texte: `L’opposition dépose une motion de censure : ${c.pour} voix (${c.requis} requises).` }];
+  if (c.adoptee && etat.joueur.role === 'president') return { etat: renverserGouvernement({ ...etat, journal, motion: { tour: etat.tour, ...c } }, 'Motion de censure adoptée : le gouvernement est renversé.'), graine: g };
   const fin = c.adoptee ? { type: 'censure', texte: 'Votre gouvernement a été renversé par une motion de censure.' } : etat.fin;
   return { etat: { ...etat, journal, fin, texte: c.adoptee ? null : etat.texte, motion: { tour: etat.tour, ...c } }, graine: g };
 }

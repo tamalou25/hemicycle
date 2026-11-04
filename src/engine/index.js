@@ -39,5 +39,7 @@ export { ficheDecision, favorable } from './fiches.js';
 export { bilanMois, engagements } from './bilan.js';
 export { creerMission, regionMission, projetMission, projetsMission, effetObserve, etapesMission, debriefMission, differerMission, apercuProjet, RESULTATS_MISSION } from './mission.js';
 export { creerScenario, projetsScenario, effetSoins, evaluerEngagements, resultatScenario, gardeFou, criseDue, bilanScenario, priorites, apercuAmendement, RESULTATS_SCENARIO, ETATS_ENGAGEMENT } from './scenario.js';
+export { gouverne, partiGouvernement, gouvernementInitial, nommerGouvernement, raisonRefusNommer, situationGouvernement } from './presidence.js';
+export { VITESSES, JOURS_PAR_MOIS, horlogeInitiale, demarrer, pauser, basculer, changerVitesse, avancer, jourDuMois, raisonPause } from './horloge.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

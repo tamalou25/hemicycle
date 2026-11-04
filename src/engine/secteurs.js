@@ -4,6 +4,7 @@
 // La défense ne couvre que les moyens et la préparation (aucune opération).
 import { planifierEffets } from './effects.js';
 import { reagir } from './relations.js';
+import { gouverne } from './presidence.js';
 
 const r2 = (v) => Math.round(v * 100) / 100;
 const borne = (v) => r2(Math.min(100, Math.max(0, v)));
@@ -15,7 +16,7 @@ export function raisonRefusPolitique(etat, politique, pol) {
   if (etat.fin) return 'La partie est terminée.';
   if (!politique) return 'Programme inconnu.';
   if (!etat.secteurs) return 'Secteurs indisponibles.';
-  if (etat.joueur.role !== 'premier_ministre') return 'Les programmes nationaux relèvent du gouvernement.';
+  if (!gouverne(etat)) return 'Les programmes nationaux relèvent du gouvernement.';
   if ((etat.politiques ?? []).some((p) => p.id === politique.id)) return 'Programme déjà engagé.';
   for (const req of politique.prerequis ?? []) {
     const p = (etat.politiques ?? []).find((x) => x.id === req);

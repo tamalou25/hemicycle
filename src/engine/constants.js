@@ -18,10 +18,11 @@ export const DUREE_MANDAT = 60;       // 5 ans
 export const SEUIL_DEFAITE = 8;       // popularité sous laquelle la partie s'arrête
 export const CAPITAL_MENSUEL = 2;     // capital politique gagné chaque mois
 export const CAPITAL_MAX = 10;
-export const VERSION_SAUVEGARDE = 14;
+export const VERSION_SAUVEGARDE = 15;
 
 // --- Institutions (Phase 2) ---
-export const ROLES = ['depute', 'premier_ministre'];
+export const ROLES = ['depute', 'premier_ministre', 'president'];
+export const DELAI_NOMINATION = 12;       // un président ne change pas de gouvernement sans censure avant 12 mois
 /** Parcours d'un texte : navette simplifiée, une étape par mois. */
 export const ETAPES = ['assemblee', 'senat', 'cmp', 'lecture_definitive', 'conseil'];
 export const MAJORITE_CENSURE = 289;      // majorité absolue des 577 députés

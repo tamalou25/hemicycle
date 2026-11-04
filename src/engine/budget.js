@@ -1,11 +1,12 @@
 // Budget annuel (Premier ministre) : deux leviers, de -2 à +2 points de PIB.
 import { planifierEffets } from './effects.js';
+import { gouverne } from './presidence.js';
 
 export const LEVIERS = { depenses: [-2, 2], impots: [-2, 2] };
 
 export function raisonRefusBudget(etat) {
   if (etat.fin) return 'La partie est terminée.';
-  if (etat.joueur.role !== 'premier_ministre') return 'Le budget est présenté par le gouvernement.';
+  if (!gouverne(etat)) return 'Le budget est présenté par le gouvernement.';
   if (etat.dernierBudget != null && etat.tour - etat.dernierBudget < 12) return `Prochain budget dans ${12 - (etat.tour - etat.dernierBudget)} mois.`;
   return null;
 }

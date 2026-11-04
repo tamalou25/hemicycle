@@ -1,6 +1,7 @@
 // Événements mensuels : tirage pondéré selon les conditions, résolution par un choix du joueur.
 import { aleatoire } from './rng.js';
 import { planifierEffets } from './effects.js';
+import { gouverne } from './presidence.js';
 
 /** Probabilité qu'un événement survienne un mois donné. */
 export const PROBA_EVENEMENT = 0.35;
@@ -13,7 +14,7 @@ export function eligible(ev, etat, { scenario = false } = {}) {
   if (ev.declenchement === 'scenario' && !scenario) return false;
   // Un événement régional n'a de sens que si la partie a des territoires
   if (ev.region_cible && !etat.territoires) return false;
-  if (ev.role === 'premier_ministre' && etat.joueur.role !== 'premier_ministre') return false;
+  if (ev.role === 'premier_ministre' && !gouverne(etat)) return false;
   const dernier = (etat.evenementsPasses ?? []).filter((e) => e.id === ev.id).at(-1);
   if (dernier && etat.tour - dernier.tour < DELAI_REPETITION && !scenario) return false;
   return Object.entries(ev.conditions ?? {}).every(([ind, { min, max }]) => {
