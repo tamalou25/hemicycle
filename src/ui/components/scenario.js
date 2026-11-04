@@ -106,7 +106,7 @@ function conclusion(etat, ctx, def) {
       if (e.rejets) lignes.push(`${e.rejets} texte(s) rejeté(s) : la majorité de sièges n’y était pas ; un accord, un amendement ou un autre texte auraient pu changer le vote.`);
       if (!e.engage) lignes.push('Aucune loi déposée.');
     } else {
-      for (const p of e.programmes ?? []) lignes.push(`${esc(p.titre)} : ${p.statut === 'preparation' ? `en préparation jusqu’au mois ${p.enService}` : 'premiers effets commencés'}, ${fmt(p.coutAnnuel, 1)} Md€/an inscrits au déficit${p.contrepartie ? ` ; contrepartie : ${esc(p.contrepartie)}` : ''}.`);
+      for (const p of e.programmes ?? []) lignes.push(`${esc(p.titre)} : ${p.statut === 'preparation' ? `en préparation jusqu’au mois ${p.enService}` : 'premiers effets commencés'}, ${fmt(p.coutAnnuel, 1)} Md€/an inscrits au déficit${p.contrepartie ? ` ; contrepartie : ${esc(p.contrepartie.replace(/\.$/, ''))}` : ''}.`);
       if (!e.programmes?.length) lignes.push(b.roleChange ? 'Aucun programme : ils relèvent du gouvernement, que vous avez quitté en cours de route.' : 'Aucun programme engagé.');
     }
     return `<li class="py-1.5 border-b border-bord last:border-0" data-engagement="${esc(e.id)}" data-etat="${e.etat}"><span class="inline-block text-xs font-bold border rounded px-1.5 mr-1 ${CLS_ETAT[e.etat]}">${ETATS_ENGAGEMENT[e.etat]}</span><strong class="text-sm">${esc(e.titre)}</strong>
@@ -120,6 +120,7 @@ function conclusion(etat, ctx, def) {
     c.censures ? `${c.censures} motion${c.censures > 1 ? 's' : ''} de censure` : null,
     c.budget === 'adopte' ? 'budget de l’État adopté' : c.budget === 'loi_speciale' ? 'budget rejeté : loi spéciale' : 'aucun budget voté',
   ].filter(Boolean);
+  if (!c.accords && !c.accordsRefuses && !c.amendements && !c.recours493) politique.unshift('aucun accord négocié ni amendement : vos textes ont été votés tels quels');
   const sens = (a, z, bon) => (z === a ? 'stable' : `${a > z ? 'en baisse' : 'en hausse'} (${(z > a) === bon ? 'mieux' : 'moins bien'})`);
   const elections = b.elections.map((e) => `${e.type === 'presidentielle' ? 'présidentielle' : e.type} au mois ${e.tour}${e.vainqueur ? ` : victoire ${esc(ctx.partis.find((p) => p.id === e.vainqueur)?.sigle ?? e.vainqueur)} (simulation)` : ''}`).join(' ; ');
   const ouvert = etat.tour === b.tour && !ctx.scenarioReplie ? ' open' : '';

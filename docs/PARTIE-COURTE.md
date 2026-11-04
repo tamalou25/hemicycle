@@ -70,3 +70,33 @@ les projets et les propositions de loi restent possibles.
 3. Lot 3 : priorités, confirmations d'action, aperçu du compromis, chaîne maternité, rôle et élections dans la conclusion.
 4. Lot 4 : simulations (parties constructive, autre compromis, inaction, deux projets, projet lent, refus, crise, rôle, reprise, défi),
    mobile 390/412/ordinateur, accessibilité, documentation, parcours de test humain.
+
+## Règles réellement implémentées (lot 2 à 4)
+- `creerPartie({ …, scenario })` : `etat.scenario = { id, debut, echeance, region, indice, valeurInitiale, roleInitial, loisInitiales,
+  popularite, deficit, crises: [{ id, tour }], statut, bilan }`. Région : indice de santé de jeu le plus bas (égalité : identifiant).
+- `evaluerEngagements` : voir le tableau ci-dessus ; `resultatScenario(engagements, gardeFou)` ; **garde-fou** : réussite complète seulement
+  si le déficit à l'échéance ≤ déficit de départ + 1 point de PIB (`scenario.json`, `garde_fou`). Ajouté après simulation : sans lui,
+  « tout lancer » obtenait 50/50 réussites complètes ; avec lui, 16/50 (déficit moyen 6,25 contre 5,65 pour la stratégie constructive).
+- `criseDue` : au mois 3, `fermeture-maternite` dans la région du scénario (ou rien si inéligible) ; si le choix est passif (index 1 ou 2),
+  `maternite-fermee` deux mois plus tard ; au mois 7, `procedure-deficit-excessif` si éligible (déficit ≥ 4,5, PM), sinon
+  `tensions-commerciales`. La crise remplace le tirage aléatoire du mois ; ses effets sont ceux de `resoudreEvenement` (registre des causes).
+- `priorites` : événement en attente (urgence) → engagements non commencés (raison : délai et mois restants) → texte en navette (amender ou
+  49.3) → budget déposable → conclusion proche. Au plus 3.
+- `apercuAmendement` : vote estimé avant / après (orientation × 0,7, effets × 0,8) sans toucher à l'état.
+- `avancerScenario` : à l'échéance ou à la fin de partie, `bilan` figé (`bilanScenario`) et entrée de journal. Rejouer = même graine,
+  même nom, même parti ; poursuivre = la partie continue (mandat de 60 mois, objectifs par défaut).
+- Sauvegarde v14, assainissement strict du bilan ; défi `s: 1` ; sauvegarde v13 avec mission : inchangée, pas de scénario ajouté.
+
+## Parcours de test humain (chronométré, 10 à 20 minutes visées)
+Noter l'heure de départ. Accueil → avertissement → **Découvrir en jouant** → une famille politique → **Commencer la découverte**.
+1. (mois 0, 2 min) Lire la feuille de route. Question : « Quel est mon but ? » Choisir une réponse pour les soins ; lire la confirmation.
+   Ouvrir « À faire maintenant » → Décisions : déposer une loi (lire la fiche : vote estimé), engager un programme (lire la contrepartie).
+2. (mois 1-2, 2 min) « Mois suivant ». Lire « Ce mois-ci » : vote de l'Assemblée, suites. En cas de rejet : Parlement → aperçu de
+   l'amendement, ou Décisions → accord.
+3. (mois 3, 2 min) Crise de la maternité : comparer les trois réponses (coût, effets locaux). Choisir.
+4. (mois 4-6, 3 min) Mise en service, premiers effets locaux ; présidentielle (mois 5) : lire le journal, vérifier le rôle.
+5. (mois 7-11, 4 min) Crise du mois 7 ; seconde fenêtre budgétaire (septembre) : déposer un budget ou non.
+6. (mois 12, 3 min) Conclusion. Noter l'heure. Questions au joueur : « Quel était mon but ? Pourquoi ai-je choisi cela ?
+   Qu'est-ce que cela a changé ? Que tenterais-je autrement ? » Puis « Rejouer avec d'autres choix ».
+Points à faire tester par le propriétaire : durée réelle, lisibilité des priorités, compréhension d'un refus (loi rejetée, accord refusé),
+clarté du garde-fou, mobile physique et lecteur d'écran.
