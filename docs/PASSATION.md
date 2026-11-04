@@ -1,5 +1,18 @@
 # Passation : Hémicycle
 
+## Campagne présidentielle et temps continu (Claude, branche `campagne-presidence`, lot 1 de `docs/VISION-CAMPAGNE.md`)
+- **Vision** validée le 04/11/2026 : `docs/VISION-CAMPAGNE.md` (préférences, boucle de jeu, réutilisations, changements, feuille de route
+  en 5 lots, parcours manuel). Attentes du propriétaire mises à jour (`.agents/skills/attentes-proprietaire/SKILL.md`).
+- **Moteur** : `presidence.js` (rôle `president`, gouvernement, `gouverne()`, censure → gouvernement renversé, nomination, cohabitation),
+  `horloge.js` (horloge pure : pause, vitesses, un mois par pas, raisons de pause), contrôles de rôle passés par `gouverne()`, dissolution
+  de plein droit pour le président, objectifs « programmes » accessibles au président. **Sauvegarde v15** (`gouvernement`), migration
+  v14 → v15 sans activation rétroactive. Les règles du PM et du député sont inchangées (tests existants verts).
+- **Interface** : écran « Campagne présidentielle », bloc gouvernement au Bureau (nomination si renversé), commandes du temps (ordinateur
+  et mobile, clavier : Espace, +, −), pause automatique et en arrière-plan, « Mois suivant » conservé.
+- **Tests** : `tests/presidence.test.js` (9), `tests/horloge.test.js` (4, dont l'indépendance de la vitesse) ; `e2e/presidence.spec.js`.
+- **Limites** : durée réelle de 30 à 90 minutes non mesurée ; diplomatie, économie internationale, défense : lots suivants ; la
+  présidentielle suivante n'est pas jouée ; la défaite par popularité est une convention étiquetée.
+
 ## État au 03/11/2026 (Claude)
 - **Branche de référence** : `main`, au commit `687caa0` (merge de la PR #15). Toutes les étapes E0 à E7 et les correctifs de revue y sont intégrés.
 - **En ligne** : https://tamalou25.github.io/hemicycle/ (PWA installable, jouable hors ligne). Un APK Android de test est produit par la CI (workflow « Application Android »).

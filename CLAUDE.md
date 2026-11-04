@@ -45,7 +45,7 @@ En début de session, suivre les skills `.agents/skills/demarrage/SKILL.md` puis
 - Positions sur 6 axes notés de −100 à +100 : retraites, immigration, fiscalite, europe, ecologie, securite
 
 ## Institutions (Phase 2)
-- Rôles : `depute`, ou `premier_ministre` (49.3 possible, +1 capital par mois, exposé à la censure)
+- Rôles : `depute`, `premier_ministre` (49.3 possible, +1 capital par mois, exposé à la censure), ou `president` (campagne présidentielle : agit par son gouvernement, `gouverne()` ; une censure renverse le gouvernement, pas la présidence ; temps continu via `horloge.js`, voir `docs/VISION-CAMPAGNE.md`)
 - Navette (`navette.js`) : un seul texte à la fois, une étape par mois, traitée en fin de tour. Ordre : `assemblee` → `senat` → (`cmp` → `lecture_definitive`) → `conseil`
 - Vote d'un groupe : `pour` si son score ≥ 0,72. Score = proximité sur le thème, + négociation, + 0,15 en cas d'accord.
 - Censure : votent pour les groupes dont l'écart idéologique avec le joueur dépasse 60 (hors son parti et ses alliés). Adoptée à partir de 289 voix.
