@@ -15,6 +15,7 @@ import { raisonRefusProjet } from './projets.js';
 import { gouverne, raisonRefusNommer } from './presidence.js';
 import { raisonRefusInvestissement } from './economie.js';
 import { initiativeEnCours, resumePartenaires } from './diplomatie.js';
+import { raisonRefusProgrammeDefense, raisonRefusEngagement } from './defense.js';
 
 export const CATEGORIES = { nationale: 'Politiques nationales', territoriale: 'Projets territoriaux', exceptionnelle: 'Décisions exceptionnelles', negociation: 'Négociations', diplomatie: 'Diplomatie' };
 export const SECTEURS_DECISION = {
@@ -65,6 +66,21 @@ export function catalogueDecisions(etat, d) {
         cout: { capital: 1, md: inv.cout_total_md, mdAn: inv.entretien_md || undefined }, delai: `${inv.delai_mois} mois de chantier, puis montée en charge sur ${inv.montee_mois} mois`, contrepartie: inv.contrepartie,
         statut: lance ? (lance.statut === 'service' ? 'fait' : 'en_cours') : undefined,
         raison: lance ? null : raisonRefusInvestissement(etat, inv, d.economie), action: { type: 'investissement', id: inv.id } }));
+    }
+  }
+  // Défense stratégique (lot 4) : programmes d'équipement et engagements
+  if (etat.defense && d.defense) {
+    for (const p of d.defense.programmes ?? []) {
+      const lance = (etat.defense.programmes ?? []).find((x) => x.id === p.id);
+      res.push(item({ id: `defense:${p.id}`, categorie: 'nationale', type: 'programme_defense', secteur: 'defense', titre: p.titre, resume: p.description,
+        cout: { capital: 1, md: p.cout_total_md, mdAn: p.entretien_md || undefined }, delai: `${p.delai_mois} mois, puis livraisons sur ${p.montee_mois} mois`, contrepartie: p.contrepartie,
+        statut: lance ? (lance.statut === 'service' ? 'fait' : 'en_cours') : undefined, raison: lance ? null : raisonRefusProgrammeDefense(etat, p, d.defense), action: { type: 'programme-defense', id: p.id } }));
+    }
+    for (const e of d.defense.engagements ?? []) {
+      const enCours = (etat.defense.engagements ?? []).some((x) => x.id === e.id);
+      res.push(item({ id: `engagement:${e.id}`, categorie: 'exceptionnelle', type: 'engagement', secteur: 'defense', titre: e.titre, resume: e.description,
+        cout: { capital: 1, mdAn: e.cout_annuel_md }, delai: `${e.duree_mois} mois`, contrepartie: e.contrepartie, statut: enCours ? 'en_cours' : undefined,
+        raison: enCours ? null : raisonRefusEngagement(etat, e, d.defense), action: { type: 'engagement', id: e.id } }));
     }
   }
   // Budget

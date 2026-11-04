@@ -20,6 +20,7 @@ import { evoluerGroupes, confianceMoyenne, voteJoueurNational, voteJoueurParGrou
 import { dateDuTour } from './state.js';
 import { evoluerEconomie } from './economie.js';
 import { evoluerDiplomatie } from './diplomatie.js';
+import { evoluerDefense } from './defense.js';
 
 /**
  * Ordre d'un tour :
@@ -143,6 +144,12 @@ function passage(etatInitial, donnees) {
     etat = { ...etat, confianceRegions: cr.confianceRegions };
     entreesConfiance = cr.entrees;
   }
+  // 2 quater bis. Défense stratégique (lot 4) : usure, budget, programmes, engagements, OTAN, disponibilité (après les secteurs : la préparation est à jour)
+  let entreesDefense = [];
+  if (etat.defense && donnees.defense) {
+    const dd = evoluerDefense(etat, donnees, tour);
+    etat = dd.etat; entreesDefense = dd.entrees;
+  }
   // 2 quinquies. Diplomatie (lot 3) : initiative ignorée, échéances, convergence des relations, modificateurs commerciaux, nouvelle initiative
   let entreesDiplomatie = [];
   if (etat.diplomatie && donnees.pays) {
@@ -157,7 +164,7 @@ function passage(etatInitial, donnees) {
   ind.popularite = borner('popularite', ind.popularite + (cible - ind.popularite) * 0.15 + n);
 
   // Registre des causes (explications du mois)
-  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesEconomie, ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance, ...entreesDiplomatie], tour);
+  const explications = archiver(etat.explications, [...registreDuMois(tour, appliques, apresLois, ind), ...entreesEconomie, ...entreesTerritoires, ...entreesGroupes, ...entreesSecteurs, ...entreesConfiance, ...entreesDefense, ...entreesDiplomatie], tour);
 
   // 4. Sondage
   const sondage = { tour, popularite: ind.popularite, intentions: intentionsDeVote(partis, etat.joueur.parti, ind.popularite) };

@@ -13,6 +13,7 @@ export function typeSource(source = '') {
   if (source === 'interets') return 'interets';
   if (source.startsWith('investissement:')) return 'investissement';
   if (source.startsWith('diplomatie:')) return 'diplomatie';
+  if (source.startsWith('defense:')) return 'defense';
   return 'loi';
 }
 
@@ -79,9 +80,10 @@ const LIBELLES_SECTEURS = { sante: 'santé', infrastructures_environnement: 'inf
 const fmt = (v) => `${v > 0 ? '+' : '−'}${Math.abs(v).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`;
 
 /** Nom lisible de la cause. */
-export function nomCause(entree, { lois = [], evenements = [], projets, politiques, economie } = {}) {
+export function nomCause(entree, { lois = [], evenements = [], projets, politiques, economie, defense } = {}) {
   if (entree.type === 'investissement') return `l’investissement « ${economie?.investissements?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
   if (entree.type === 'economie') { const nom = economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere ?? 'une filière'; return entree.source?.startsWith('penurie:') ? `la pénurie dans la filière ${nom}` : `la production de la filière ${nom}`; }
+  if (entree.type === 'defense') return `le programme de défense « ${defense?.programmes?.find((p) => `defense:${p.id}` === entree.source)?.titre ?? entree.source.split(':')[1]?.replaceAll('-', ' ') ?? 'de défense'} »`;
   if (entree.type === 'diplomatie') return entree.source === 'convergence' ? 'l’évolution naturelle des relations' : `l’initiative « ${entree.source} »`;
   if (entree.type === 'commerce') return entree.source?.startsWith('debouches:') ? 'la perte de débouchés à l’exportation' : 'l’indisponibilité de partenaires à l’importation';
   if (entree.type === 'politique') return `le programme « ${politiques?.politiques?.find((p) => p.id === entree.source.split(':')[1])?.titre ?? 'national'} »`;
@@ -106,13 +108,14 @@ export function phraseExplication(entree, donnees) {
   }
   const [nom, unite] = LIBELLES[entree.indicateur] ?? (entree.indicateur?.startsWith('secteur:') ? [`le niveau « ${donnees?.politiques?.secteurs?.[entree.secteur]?.nom ?? entree.secteur} »`, 'pt']
     : entree.indicateur?.startsWith('filiere:') ? [`${entree.type === 'investissement' ? 'la capacité' : 'la production'} de la filière ${donnees?.economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere}`, 'pt']
+    : entree.indicateur === 'defense:equipement' ? ['l’équipement des forces', 'pt']
     : entree.indicateur?.startsWith('pays:') ? [`la relation avec ${donnees?.pays?.pays?.find((p) => p.id === entree.pays)?.nom ?? entree.pays}`, 'pt']
     : entree.indicateur?.startsWith('commerce:') ? [`les ${entree.source?.startsWith('debouches:') ? 'exportations' : 'importations disponibles'} de la filière ${donnees?.economie?.filieres?.[entree.filiere]?.nom ?? entree.filiere}`, 'Md€/an'] : [entree.indicateur, '']);
   const cause = nomCause(entree, donnees);
   const nomRegion = entree.region ? (donnees?.regions?.regions?.find((r) => r.id === entree.region)?.nom ?? entree.region) : null;
   const valeur = `${fmt(entree.delta)} ${unite}`.trim() + (nomRegion ? ` (${nomRegion})` : '');
   if (entree.nature === 'prevision') return `Prévu sur les prochains mois : ${cause} devrait faire varier ${nom} de ${valeur}.`;
-  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'convergence' || entree.type === 'choc' || entree.type === 'mise-en-service' || entree.type === 'interets' || entree.type === 'economie' || entree.type === 'commerce' || entree.type === 'diplomatie' || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
+  if (entree.type === 'conjoncture' || entree.type === 'opinion' || entree.type === 'usure' || entree.type === 'convergence' || entree.type === 'choc' || entree.type === 'mise-en-service' || entree.type === 'interets' || entree.type === 'economie' || entree.type === 'commerce' || entree.type === 'diplomatie' || (entree.type === 'defense' && entree.depuis == null) || entree.depuis == null) return `${cause[0].toUpperCase()}${cause.slice(1)} fait varier ${nom} de ${valeur}.`;
   const etape = entree.depuis === 1 ? 'commence à produire ses effets' : entree.depuis >= entree.duree ? 'produit ses derniers effets' : `agit depuis ${entree.depuis} mois`;
   return `${cause[0].toUpperCase()}${cause.slice(1)} ${etape} : ${nom} ${valeur}.`;
 }

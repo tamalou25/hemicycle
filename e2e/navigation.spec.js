@@ -35,7 +35,7 @@ test('chaque onglet est atteignable, « Mois suivant » reste visible', async ({
     await expect(plus).toHaveAttribute('aria-expanded', 'false');
     await plus.click();
     await expect(plus).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByRole('group', { name: 'Autres sections' }).getByRole('button')).toHaveCount(5); // Économie, Carte, Opinion, Parlement, Chronologie (« Monde » est en barre principale)
+    await expect(page.getByRole('group', { name: 'Autres sections' }).getByRole('button')).toHaveCount(6); // Économie, Défense, Carte, Opinion, Parlement, Chronologie (« Monde » est en barre principale)
     await page.keyboard.press('Escape');
     await expect(plus).toHaveAttribute('aria-expanded', 'false');
     await expect(plus).toBeFocused();
@@ -59,12 +59,18 @@ test('Bureau : synthèse, À traiter avec action, détails repliés, hauteur mob
   for (let i = 0; i < 3; i++) {
     const evt = page.locator('[data-evenement]').first();
     if (await evt.count() && await evt.isEnabled()) await evt.click();
+    // Une initiative diplomatique (lot 3) est une carte à choix comme l'événement : on y répond aussi
+    const init = page.locator('[data-initiative]').first();
+    if (await init.count() && await init.isEnabled()) await init.click();
     await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').click();
   }
   // Le dernier mois peut tirer un nouvel événement : on y répond aussi, pour mesurer un Bureau stable
   // (la hauteur ne doit pas dépendre de l'aléa ; la carte d'événement est mesurée à part au chantier 2).
   const dernier = page.locator('[data-evenement]').first();
   if (await dernier.count() && await dernier.isEnabled()) await dernier.click();
+  const derniereInit = page.locator('[data-initiative]').first();
+  if (await derniereInit.count() && await derniereInit.isEnabled()) await derniereInit.click();
+  await expect(page.locator('[data-initiative]')).toHaveCount(0);
   await expect(page.locator('[data-evenement]')).toHaveCount(0);
   await expect(page.getByRole('status').filter({ hasText: /ce mois-ci|stable/ })).toBeVisible();
   await expect(page.locator('details#secteurs')).not.toHaveAttribute('open', '');

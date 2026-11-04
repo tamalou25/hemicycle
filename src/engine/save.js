@@ -136,6 +136,16 @@ function assainirDiplomatie(d) {
   };
 }
 
+/** Défense (v16) : équipement, OTAN, programmes, engagements ; null si absente ou invalide. */
+function assainirDefense(d) {
+  if (!d || typeof d !== 'object') return null;
+  return {
+    equipement: nb(d.equipement, 50), engagementOtan: nb(d.engagementOtan, 50), disponibilite: nb(d.disponibilite, 50),
+    programmes: liste(d.programmes, (x) => ({ id: ch(x.id, 60), debut: nb(x.debut), enService: nb(x.enService), statut: ['chantier', 'montee', 'service'].includes(x.statut) ? x.statut : 'service' })),
+    engagements: liste(d.engagements, (x) => ({ id: ch(x.id, 60), type: ch(x.type, 20), pays: chOuNull(x.pays, 10), debut: nb(x.debut), fin: nb(x.fin), coutAnnuelMd: nb(x.coutAnnuelMd), disponibilite: nb(x.disponibilite) })),
+  };
+}
+
 function assainir(e) {
   const j = e.joueur;
   const texte = e.texte && typeof e.texte === 'object' && ETAPES.includes(e.texte.etape) ? {
@@ -180,7 +190,7 @@ function assainir(e) {
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     economie: assainirEconomie(e.economie),
     diplomatie: assainirDiplomatie(e.diplomatie), diploCeMois: bool(e.diploCeMois),
-    defense: null, difficulte: null,
+    defense: assainirDefense(e.defense), difficulte: null,
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({
@@ -241,7 +251,7 @@ function assainir(e) {
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
       ...(typeof x.filiere === 'string' ? { filiere: x.filiere.slice(0, 40) } : {}),
       ...(typeof x.pays === 'string' ? { pays: x.pays.slice(0, 10) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation|filiere|commerce|pays):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation|filiere|commerce|pays|defense):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),

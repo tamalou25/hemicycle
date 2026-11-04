@@ -86,3 +86,11 @@ Données de `src/data/economie.json` (ordres de grandeur 2025 ; la ventilation p
 - Déficit des échanges de biens 2025 : 58,0 Md€ (61,4 en 2024) ; excédent des services 45,4 Md€ (50,8 en 2024) ; déficit courant 11,6 Md€ — Banque de France, Rapport annuel 2025 de la balance des paiements — https://www.banque-france.fr/fr/communiques-de-presse/rapport-annuel-2025-de-la-balance-des-paiements-un-deficit-courant-quasi-stable-116-milliards-deuros — 2026-07-08
 - Résultats du commerce extérieur 2025 (facture énergétique en baisse, excédent agroalimentaire au plus bas, effet des droits de douane américains) — Douanes (DGDDI) — https://www.douane.gouv.fr/actualites/resultats-du-commerce-exterieur-de-la-france-pour-le-mois-de-decembre-et-pour-lannee — 2026-02-09
 - Indices de capacité et de demande, dépendances entre filières, sensibilités, investissements (coûts, délais, gains) : **paramètres d'équilibrage**, pas des données observées.
+
+## Diplomatie et défense (lots 3 et 4, collecte 2026-11-04)
+
+- États membres de l'Union européenne — Union européenne, « Pays membres » — https://european-union.europa.eu/principles-countries-history/eu-countries_fr — 2026-11-04
+- Pays membres de l'OTAN — OTAN, « Pays membres » — https://www.nato.int/cps/fr/natohq/nato_countries.htm — 2026-11-04
+- Loi de programmation militaire 2024-2030 (413 Md€ sur sept ans) — Légifrance, loi n° 2023-703 du 1er août 2023 — https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047914986 — 2023-08-02
+- Engagement des Alliés : au moins 2 % du PIB pour la défense — OTAN, « Les dépenses de défense des pays de l'OTAN » — https://www.nato.int/cps/fr/natohq/topics_49198.htm — 2026-11-04
+- Relations initiales, intérêts, positions, seuils, probabilités d'initiative (`pays.json`) et indices d'équipement, sensibilités, programmes, engagements (`defense.json`) : **paramètres de simulation**, jamais des affirmations sur des intentions ou des faits réels.
