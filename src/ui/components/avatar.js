@@ -11,11 +11,11 @@ function texteSur(hex) {
   const n = parseInt(String(hex).replace('#', ''), 16);
   const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
   const l = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
-  return l > 0.35 ? '#14213D' : '#FFFFFF';
+  return l > 0.35 ? '#111C33' : '#FFFFFF';
 }
 
 /** Pastille d'initiales aux couleurs du parti (décorative, le nom est toujours à côté). */
 export function avatar(nom, parti) {
-  const c = parti?.couleur ?? '#555555';
+  const c = parti?.couleur ?? '#4B5565';
   return `<span aria-hidden="true" class="inline-flex shrink-0 items-center justify-center w-11 h-11 rounded-full font-bold text-sm" style="background:${esc(c)};color:${texteSur(c)}">${esc(initiales(nom))}</span>`;
 }

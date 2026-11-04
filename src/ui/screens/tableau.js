@@ -18,12 +18,13 @@ import { briefMandat } from '../components/objectifs.js';
 import { sectionMission, brancherMission } from '../components/mission.js';
 import { sectionScenario, sectionPriorites, brancherScenario } from '../components/scenario.js';
 import { sectionGouvernement, brancherGouvernement } from '../components/gouvernement.js';
+import { gouverne } from '../../engine/index.js';
 import { sectionBilanMois, sectionEngagements } from '../components/bilanMois.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
 
-const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF3C4] border-encre'], budget: ['€', 'Budget', 'bg-[#DDE7F7] border-bleu'] };
+const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF4D6] border-encre'], budget: ['€', 'Budget', 'bg-[#DEE8FB] border-bleu'] };
 const pastille = (t) => { const p = PASTILLES[t]; return p ? `<span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold border rounded-full mr-1 ${p[2]}" title="${p[1]}"><span aria-hidden="true">${p[0]}</span><span class="sr-only">${p[1]} :</span></span>` : ''; };
 const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit', dette: 'dette', inflation: 'inflation', popularite: 'popularité', tensions: 'tensions' };
 
@@ -35,7 +36,7 @@ function enteteBureau(etat, d, parti) {
   // Mobile : la date est déjà dans la barre fixe du bas ; le titre reste lisible par les lecteurs d'écran
   return `<header class="mb-3 sm:mb-4">
       <h1 class="sr-only sm:not-sr-only font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
-      ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
+      ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
       <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span></p>
     </header>`;
 }
@@ -69,13 +70,43 @@ function lienDecisions(etat, ctx) {
     <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
 }
 
+/** Campagne présidentielle : au plus 3 priorités avec leur raison (événement, gouvernement, première décision, budget). Présentation seulement. */
+function prioritesCampagne(etat, ctx) {
+  if (etat.joueur.role !== 'president' || etat.scenario) return null;
+  const liste = [];
+  if (etat.evenement) { const ev = ctx.evenements?.find((e) => e.id === etat.evenement); liste.push({ type: 'urgence', titre: ev?.titre ?? 'Événement', raison: 'Le temps est en pause jusqu’à votre réponse ; sans réponse au passage du mois, l’option par défaut s’applique.', aller: { onglet: 'bureau', cible: 'evenement' } }); }
+  if (etat.gouvernement?.statut === 'renverse') liste.push({ type: 'urgence', titre: 'Nommer un Premier ministre', raison: 'Sans gouvernement : ni loi du gouvernement, ni programme, ni budget, ni 49.3.', aller: { onglet: 'bureau', cible: 'gouvernement' } });
+  const rienEngage = !etat.texte && !(etat.politiques ?? []).length && !(etat.projets ?? []).length && !etat.loisAdoptees.length;
+  if (rienEngage && gouverne(etat)) {
+    liste.push({ type: 'engagement', titre: 'Première décision : un projet de loi', raison: `Capital politique ${etat.joueur.capital}/10. Vote à l’Assemblée en fin de mois ; la fiche donne le vote estimé.`, aller: { onglet: 'decisions', decisions: { categorie: 'nationale', secteur: '', statut: '', type: 'loi' } } });
+    liste.push({ type: 'engagement', titre: 'Ou un projet dans une région', raison: `Enveloppe ${(etat.finances?.enveloppe ?? 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} Md€, sans vote ; effets locaux visibles sur la carte.`, aller: { onglet: 'carte', vue: 'satisfaction' } });
+  }
+  if (gouverne(etat) && etat.budget && !etat.plf && !raisonRefusPLF(etat)) liste.push({ type: 'decision', titre: 'Budget de l’État à déposer', raison: 'Fenêtre ouverte jusqu’en décembre ; sans budget voté, une loi spéciale reconduit les crédits.', aller: { onglet: 'budget' } });
+  if (!liste.length) liste.push({ type: 'echeance', titre: 'Laisser le temps courir', raison: 'Vos décisions produisent leurs effets mois après mois ; le temps s’arrête de lui-même quand une réponse est attendue.', aller: { onglet: 'bureau', cible: 'temps' } });
+  const ICONE = { urgence: '!', engagement: '◎', echeance: '⏱', decision: '€' };
+  const BOUTON = { urgence: 'Répondre', engagement: 'Ouvrir', echeance: 'Voir', decision: 'Ouvrir' };
+  const l = liste.slice(0, 3);
+  return { liste: l, html: `<ul class="grid md:grid-cols-3 gap-2 mb-2" id="priorites">${l.map((p, i) => `<li class="bg-carte border border-bord rounded-lg p-2 pl-3 filet-laiton flex items-center justify-between gap-2" data-priorite="${esc(p.type)}">
+      <p class="min-w-0 text-sm leading-snug"><span class="font-semibold"><span aria-hidden="true" class="text-laiton mr-1">${ICONE[p.type]}</span>${esc(p.titre)}.</span> <span class="text-doux">${esc(p.raison)}</span></p>
+      <button type="button" id="prio-${i}" data-prio="${i}" class="btn btn-s shrink-0 !px-3 text-sm">${BOUTON[p.type]}<span class="sr-only"> : ${esc(p.titre)}</span></button></li>`).join('')}</ul>` };
+}
+
 function ongletBureau(etat, ctx, donnees, points, brief, prio) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
   const scenario = !!etat.scenario;
   // Scénario : les priorités du mois remplacent le briefing, le budget y figure déjà ; le brief du mandat long se replie
   const plfOuvert = !scenario && etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
   const mandat = scenario ? `<details class="mb-3" id="mandat-long"><summary class="min-h-[44px] flex items-center cursor-pointer font-semibold text-sm underline text-bleu">Votre mandat (${DUREE_MANDAT} mois) et ses objectifs</summary>${brief.html}</details>` : brief.html;
+  // Premier mois : la prochaine action avant l'état du pays (rien n'a encore bougé) ; ensuite, ce qui s'est passé d'abord
+  const blocFaire = `<section aria-labelledby="h-brief" class="mb-4">
+      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Que puis-je faire ?</h2>
+      ${plfOuvert ? '<p class="mb-3 border-l-4 border-laiton bg-[#FFF4D6] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
+      ${scenario || prio.liste.length ? prio.html : `<ul class="grid md:grid-cols-3 gap-2 mb-1">${(() => { const vus = new Set(); return points.map((pt, i) => carteBriefing(pt, i, etat, vus)).join(''); })()}</ul>`}
+      ${lienDecisions(etat, ctx)}
+    </section>`;
+  const premierMois = etat.tour === 0 && !etat.evenement;
   return `${sectionGouvernement(etat, ctx)}${scenario ? sectionScenario(etat, ctx) : sectionMission(etat, ctx)}${scenario ? '' : mandat}
+    ${premierMois ? blocFaire : ''}
     <section aria-labelledby="h-q1" class="mb-4">
       <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
@@ -84,12 +115,7 @@ function ongletBureau(etat, ctx, donnees, points, brief, prio) {
         : `${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
         ${sectionEtatPays(etat, sat)}`}
     </section>
-    <section aria-labelledby="h-brief" class="mb-4">
-      <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Que puis-je faire ?</h2>
-      ${plfOuvert ? '<p class="mb-3 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
-      ${scenario ? prio.html : `<ul class="grid md:grid-cols-3 gap-2 mb-1">${(() => { const vus = new Set(); return points.map((pt, i) => carteBriefing(pt, i, etat, vus)).join(''); })()}</ul>`}
-      ${lienDecisions(etat, ctx)}
-    </section>
+    ${premierMois ? '' : blocFaire}
     <section aria-labelledby="h-attendu" class="mb-4">
       <h2 id="h-attendu" class="font-serif font-bold text-xl mb-2">Qu’attends-je de mes décisions ?</h2>
       ${sectionEngagements(etat, ctx)}
@@ -149,7 +175,7 @@ export function render(racine, etat, dispatch, ctx) {
   ctx.vue = vueValide(ctx.vue, etat);
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
     { liste: catalogue(etat, ctx), refusPLF: raisonRefusPLF(etat), dureeMandat: DUREE_MANDAT, seuilDefaite: SEUIL_DEFAITE, points: POINTS_PAR_OBJECTIF }) : null;
-  const prio = onglet === 'bureau' && etat.scenario ? sectionPriorites(etat, ctx) : { html: '', liste: [] };
+  const prio = onglet === 'bureau' && etat.scenario ? sectionPriorites(etat, ctx) : (onglet === 'bureau' && prioritesCampagne(etat, ctx)) || { html: '', liste: [] };
   const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief, prio)
     : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
@@ -158,7 +184,7 @@ export function render(racine, etat, dispatch, ctx) {
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
-    <div class="sm:sticky sm:top-0 z-30 bg-creme -mx-4 px-4 sm:border-b sm:border-bord">${enteteCollant(etat, d, ctx.horloge)}${barreOnglets(onglet)}</div>
+    <div class="sm:sticky sm:top-0 z-30 bg-carte -mx-4 px-4 shadow-sm">${enteteCollant(etat, d, ctx.horloge)}${barreOnglets(onglet)}</div>
     ${onglet === 'bureau' ? enteteBureau(etat, d, parti) : ''}
     <div id="panneau" role="tabpanel" aria-labelledby="tab-${onglet}" tabindex="-1">${contenu}</div>
     <p class="text-xs text-doux mt-4"><a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a><span class="hidden sm:inline"> · Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage.</span></p>

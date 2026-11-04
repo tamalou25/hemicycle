@@ -32,7 +32,7 @@ export function render(racine, etat, dispatch, ctx) {
       <ul>${options}</ul>
     </fieldset>
     <p class="text-sm mb-4">À l’échéance, vous pourrez rejouer avec d’autres choix ou poursuivre le mandat (60 mois, objectifs par défaut : chômage, déficit, territoires).</p>
-    ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF3C4] p-3 mb-4" role="note">
+    ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF4D6] p-3 mb-4" role="note">
       <p class="font-semibold">Une partie est déjà sauvegardée sur cet appareil.</p>
       <p class="text-sm">Lancer la découverte la remplacera. Vous pouvez d’abord l’exporter dans un fichier.</p>
       <div class="flex flex-wrap gap-2 mt-2"><button type="button" class="btn btn-s" id="dec-exporter">Exporter ma partie</button></div>

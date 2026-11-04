@@ -18,7 +18,7 @@ export function render(racine, etat, dispatch, ctx) {
       <h2 class="font-serif font-bold text-lg">Avertissement</h2>
       <p class="mt-1">${esc(DISCLAIMER)}</p>
       <label class="flex items-start gap-3 mt-4 cursor-pointer">
-        <input type="checkbox" id="accept" class="mt-1 w-5 h-5 accent-[#1F3A6E]" ${ctx.accepte ? 'checked' : ''}>
+        <input type="checkbox" id="accept" class="mt-1 w-5 h-5 accent-[#1E4ED8]" ${ctx.accepte ? 'checked' : ''}>
         <span>J’ai lu et j’accepte cet avertissement.</span>
       </label>
     </div>

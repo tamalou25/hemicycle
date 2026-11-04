@@ -3,9 +3,9 @@ import { esc, fmt } from '../util.js';
 import { attitudeCensure, RELATION_NEUTRE, phraseExplication, reactionParti } from '../../engine/index.js';
 
 const ATTITUDES = {
-  protege: ['Soutien', 'bg-[#DCEBDD] text-[#1F6E43] border-[#1F6E43]', 'ne votera pas la censure'],
-  hostile: ['Hostile', 'bg-[#F3E4E4] text-rouge border-rouge', 'censure facilitée'],
-  neutre: ['Neutre', 'bg-[#EFE9D6] text-doux border-bord', ''],
+  protege: ['Soutien', 'bg-[#DDF3E6] text-[#157A48] border-[#157A48]', 'ne votera pas la censure'],
+  hostile: ['Hostile', 'bg-[#FBE4E4] text-rouge border-rouge', 'censure facilitée'],
+  neutre: ['Neutre', 'bg-[#EAEEF5] text-doux border-bord', ''],
 };
 
 function ligne(p, etat) {
@@ -15,7 +15,7 @@ function ligne(p, etat) {
   const gauche = Math.min(pct, 50), largeur = Math.abs(pct - 50);
   return `<li class="grid grid-cols-[4.5rem_1fr_auto] sm:grid-cols-[5rem_1fr_3rem_auto] items-center gap-x-3 gap-y-1 py-1.5 border-b border-bord last:border-0">
     <span class="font-semibold text-sm flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded-sm shrink-0" style="background:${esc(p.couleur)}" aria-hidden="true"></span>${esc(p.sigle)}</span>
-    <div class="relative h-3 bg-[#E8E1CD] rounded" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${esc(Math.round(r))}" aria-label="Relation avec ${esc(p.sigle)}">
+    <div class="relative h-3 bg-[#E3E8F0] rounded" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${esc(Math.round(r))}" aria-label="Relation avec ${esc(p.sigle)}">
       <span class="absolute top-0 bottom-0 left-1/2 w-px bg-encre" aria-hidden="true"></span>
       <span class="absolute top-0 bottom-0 rounded" style="left:${gauche}%;width:${largeur}%;background:${esc(p.couleur)}" aria-hidden="true"></span></div>
     <span class="hidden sm:block text-sm tabular-nums text-right">${fmt(r, 0)}</span>
@@ -48,7 +48,7 @@ export function sectionRelations(etat, ctx) {
     : '<p class="text-sm text-doux">Aucune réaction ce mois-ci. Engagez un programme ou faites adopter une loi.</p>';
   return `<section aria-labelledby="h-rel" class="bg-carte border border-bord rounded-lg p-4 mb-6">
     <h2 id="h-rel" class="font-serif font-bold text-xl">Relations avec les partis</h2>
-    <p class="text-xs mb-2"><span class="font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-1.5 py-0.5">Simulation</span> Calculé à partir des positions publiques des partis — SIMULATION</p>
+    <p class="text-xs mb-2"><span class="font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-1.5 py-0.5">Simulation</span> Calculé à partir des positions publiques des partis — SIMULATION</p>
     <p class="text-xs text-doux mb-1">Barre de 0 à 100, centrée sur 50. Soutien à 75 ou plus (pas de vote de censure), Hostile à 25 ou moins (censure facilitée).</p>
     <ul>${partis.map((p) => ligne(p, etat)).join('')}</ul>
     <h3 class="font-serif font-bold text-lg mt-4 mb-1" id="h-rel-mois">Réactions du mois${rx ? ` <span class="text-sm font-normal text-doux">(mois ${rx.tour})</span>` : ''}</h3>

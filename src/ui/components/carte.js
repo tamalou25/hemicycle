@@ -13,7 +13,7 @@ export const VUES = [
 /** Valeur d'une région pour une vue : la confiance vient de etat.confianceRegions, le reste des territoires. */
 export const valeurRegion = (etat, id, vue) => (vue === 'confiance' ? etat.confianceRegions?.[id] : etat.territoires?.[id]?.[vue]);
 // 5 classes séquentielles ivoire → bleu nuit (lisibles aussi en niveaux de gris)
-const COULEURS = ['#F3ECD3', '#C9D6E8', '#8DAAD2', '#4C74AE', '#14213D'];
+const COULEURS = ['#E8ECF3', '#B9C9E6', '#7F9FD6', '#3F66B8', '#111C33'];
 const BORNES = ['0 à 19', '20 à 39', '40 à 59', '60 à 79', '80 à 100'];
 const classe = (v) => Math.max(0, Math.min(4, Math.floor((v ?? 0) / 20)));
 const LIB_INDICE = { emploi: 'Emploi', sante: 'Accès aux soins', transports: 'Transports' };
@@ -30,7 +30,7 @@ export const vueValide = (v, etat) => (vuesDisponibles(etat).some((x) => x.id ==
 
 /** Parti arrivé en tête en sièges dans une région (égalité : ordre alphabétique, déterministe). */
 const enTete = (sieges) => Object.entries(sieges ?? {}).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] ?? null;
-function partiDe(ctx, id) { return ctx.partis.find((p) => p.id === id) ?? { id, sigle: id, nom: id, couleur: '#8A8A8A' }; }
+function partiDe(ctx, id) { return ctx.partis.find((p) => p.id === id) ?? { id, sigle: id, nom: id, couleur: '#8A94A6' }; }
 function motifsLegis(res, ctx) {
   const ids = [...new Set(Object.values(res.parRegion).map((s) => enTete(s)?.[0]).filter(Boolean))].sort();
   return ids.map((id, i) => ({ p: partiDe(ctx, id), motif: MOTIFS[i % MOTIFS.length], i }));
@@ -44,7 +44,7 @@ const defMotif = (m, id) => ({
 }[m] ?? '');
 
 export function badgeSimulation() {
-  return '<span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF3C4] rounded px-2 py-0.5 ml-2 align-middle">Simulation</span>';
+  return '<span class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-2 py-0.5 ml-2 align-middle">Simulation</span>';
 }
 
 export function legendeLegis(res, ctx) {
@@ -61,14 +61,14 @@ function svgLegislatives(etat, ctx, res, selection) {
     const m = motifs.find((x) => x.p.id === t?.[0]);
     const sel = r.id === selection;
     const lib = t ? `${partiDe(ctx, t[0]).sigle} en tête, ${t[1]} sièges` : 'pas de résultat';
-    return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${esc(m?.p.couleur ?? '#E8E1CD')}" stroke="${sel ? '#8A6A1F' : '#FFFDF7'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
+    return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${esc(m?.p.couleur ?? '#E3E8F0')}" stroke="${sel ? '#9A6700' : '#FFFFFF'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
       tabindex="0" role="button" aria-pressed="${sel}" data-region="${esc(r.id)}" aria-label="${esc(noms[r.id] ?? r.nom)}, législatives : ${esc(lib)}"><title>${esc(noms[r.id] ?? r.nom)} : ${esc(lib)}</title></path>
       ${m?.motif ? `<path d="${esc(r.d)}" fill="url(#lg-${m.i})" stroke="none" pointer-events="none" aria-hidden="true"/>` : ''}`;
   };
   const ordre = [...carte.regions.filter((r) => r.id !== selection), ...carte.regions.filter((r) => r.id === selection)];
   return `<svg viewBox="${esc(carte.viewBox)}" class="w-full h-auto max-h-[70vh]" role="group" aria-label="Carte des régions de France, parti en tête aux législatives simulées">
     <defs>${motifs.map(({ motif, i }) => defMotif(motif, `lg-${i}`)).join('')}</defs>
-    ${(carte.encarts ?? []).map((e) => `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" fill="none" stroke="#8A6A1F" stroke-width="1" aria-hidden="true"/>`).join('')}
+    ${(carte.encarts ?? []).map((e) => `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" fill="none" stroke="#9A6700" stroke-width="1" aria-hidden="true"/>`).join('')}
     ${ordre.map(chemin).join('')}</svg>`;
 }
 
@@ -89,7 +89,7 @@ function siegesRegion(res, ctx, r) {
   if (!s.length) return '';
   const total = s.reduce((t, [, v]) => t + v, 0);
   return `<h3 class="font-serif font-bold text-lg mt-3">Législatives simulées${badgeSimulation()}</h3>
-    <div class="h-3 flex rounded overflow-hidden mt-1 bg-[#E8E1CD]" aria-hidden="true">${s.map(([id, v]) => `<div style="width:${(v / total) * 100}%;background:${esc(partiDe(ctx, id).couleur)}"></div>`).join('')}</div>
+    <div class="h-3 flex rounded overflow-hidden mt-1 bg-[#E3E8F0]" aria-hidden="true">${s.map(([id, v]) => `<div style="width:${(v / total) * 100}%;background:${esc(partiDe(ctx, id).couleur)}"></div>`).join('')}</div>
     <ul class="text-sm mt-1">${s.map(([id, v]) => `<li class="flex justify-between gap-2 py-0.5 border-b border-bord last:border-0"><span><span class="inline-block w-3 h-3 rounded-sm align-middle mr-1" style="background:${esc(partiDe(ctx, id).couleur)}" aria-hidden="true"></span>${esc(partiDe(ctx, id).sigle)}</span><span class="tabular-nums font-semibold">${v} sièges</span></li>`).join('')}</ul>`;
 }
 
@@ -106,13 +106,13 @@ export function svgCarte(etat, ctx, vue, selection) {
   const chemin = (r) => {
     const val = valeurRegion(etat, r.id, vue);
     const sel = r.id === selection;
-    return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${COULEURS[classe(val)]}" stroke="${sel ? '#8A6A1F' : '#FFFDF7'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
+    return `<path id="reg-${esc(r.id)}" d="${esc(r.d)}" fill="${COULEURS[classe(val)]}" stroke="${sel ? '#9A6700' : '#FFFFFF'}" stroke-width="${sel ? 4 : 0.8}" stroke-linejoin="round"
       tabindex="0" role="button" aria-pressed="${sel}" data-region="${esc(r.id)}" aria-label="${esc(noms[r.id] ?? r.nom)}, ${esc(v.court)} ${Math.round(val ?? 0)} sur 100"><title>${esc(noms[r.id] ?? r.nom)} : ${Math.round(val ?? 0)}</title></path>`;
   };
   const tous = carte.regions;
   const ordre = [...tous.filter((r) => r.id !== selection), ...tous.filter((r) => r.id === selection)];
   return `<svg viewBox="${esc(carte.viewBox)}" class="w-full h-auto max-h-[70vh]" role="group" aria-label="Carte des régions de France, vue ${esc(v.court)}">
-    ${(carte.encarts ?? []).map((e) => `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" fill="none" stroke="#8A6A1F" stroke-width="1" aria-hidden="true"/>`).join('')}
+    ${(carte.encarts ?? []).map((e) => `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" fill="none" stroke="#9A6700" stroke-width="1" aria-hidden="true"/>`).join('')}
     ${ordre.map(chemin).join('')}</svg>`;
 }
 
@@ -130,7 +130,7 @@ function tableAccessible(etat, ctx) {
 }
 
 const barre = (label, v, gras = false) => `<div class="mb-2"><div class="flex justify-between text-sm"><span class="${gras ? 'font-bold' : ''}">${esc(label)}</span><span class="font-semibold tabular-nums">${fmt(v, 0)}<span class="text-doux font-normal">/100</span></span></div>
-  <div class="h-2.5 bg-[#E8E1CD] rounded" role="meter" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v ?? 0)}"><div class="h-2.5 rounded bg-encre" style="width:${Math.max(0, Math.min(100, v ?? 0))}%"></div></div></div>`;
+  <div class="h-2.5 bg-[#E3E8F0] rounded" role="meter" aria-label="${esc(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v ?? 0)}"><div class="h-2.5 rounded bg-encre" style="width:${Math.max(0, Math.min(100, v ?? 0))}%"></div></div></div>`;
 
 export function statutProjet(p, etat, def) {
   if (p.statut === 'chantier') { const n = Math.max(0, p.service - etat.tour); return `Chantier : mise en service dans ${n} mois${p.retard ? ` (dont ${p.retard} mois de retard)` : ''}`; }

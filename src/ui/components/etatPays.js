@@ -56,7 +56,7 @@ export function phraseSynthese(evo) {
 }
 
 const LIB_Q = { 1: 'mieux', '-1': 'moins bien', 0: 'stable' };
-const CLS_Q = { 1: 'text-[#1F6E43]', '-1': 'text-rouge', 0: 'text-doux' };
+const CLS_Q = { 1: 'text-[#157A48]', '-1': 'text-rouge', 0: 'text-doux' };
 
 /** Variation : flèche, valeur signée et libellé texte (jamais la couleur seule). */
 export function variation(id, evo) {
@@ -70,7 +70,7 @@ export function variation(id, evo) {
 const coulSpark = (id, etat) => {
   const [min, max] = BORNES[id], pct = (etat.indicateurs[id] - min) / (max - min);
   const haut = id === 'inflation' ? Math.abs(etat.indicateurs[id] - CIBLE_INFLATION) < 2 : SENS[id] > 0 ? pct >= 0.5 : pct <= 0.5;
-  return haut ? '#1F6E43' : '#B3262B';
+  return haut ? '#157A48' : '#C0262B';
 };
 
 export function sectionEtatPays(etat, sat = null) {

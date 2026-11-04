@@ -32,7 +32,7 @@ export function render(racine, etat, dispatch, ctx) {
       <ul>${options}</ul>
     </fieldset>
     <p class="text-sm mb-4">Objectifs de mandat par défaut : chômage, déficit et territoires (modifiables en partie personnalisée). La campagne se conclut à la fin du mandat (60 mois) avec le bilan.</p>
-    ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF3C4] p-3 mb-4" role="note">
+    ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF4D6] p-3 mb-4" role="note">
       <p class="font-semibold">Une partie est déjà sauvegardée sur cet appareil.</p>
       <p class="text-sm">Lancer la campagne la remplacera. Vous pouvez d’abord l’exporter dans un fichier.</p>
       <div class="flex flex-wrap gap-2 mt-2"><button type="button" class="btn btn-s" id="pres-exporter">Exporter ma partie</button></div>

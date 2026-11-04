@@ -9,7 +9,11 @@
   v14 → v15 sans activation rétroactive. Les règles du PM et du député sont inchangées (tests existants verts).
 - **Interface** : écran « Campagne présidentielle », bloc gouvernement au Bureau (nomination si renversé), commandes du temps (ordinateur
   et mobile, clavier : Espace, +, −), pause automatique et en arrière-plan, « Mois suivant » conservé.
-- **Tests** : `tests/presidence.test.js` (9), `tests/horloge.test.js` (4, dont l'indépendance de la vitesse) ; `e2e/presidence.spec.js`.
+- **Refonte visuelle « Salle des cartes »** (même chantier) : nouvelle palette (fond gris-bleu, surfaces blanches, bleu d'action, ambre pour le
+  temps et les alertes), bandeau d'état sombre, accueil en trois entrées, priorités en premier au premier mois, animations sobres respectant
+  `prefers-reduced-motion`. Choix et captures avant / après : `docs/DESIGN-UI.md`, `docs/captures/avant-refonte/`, `docs/captures/apres-refonte/`.
+- **Tests** : `tests/presidence.test.js` (9), `tests/horloge.test.js` (4, dont l'indépendance de la vitesse) ; `e2e/presidence.spec.js` (8).
+  Vitest 220/220 ; Playwright 86 passed, 2 skipped (raccourcis clavier hors mobile, mise en page mobile hors ordinateur).
 - **Limites** : durée réelle de 30 à 90 minutes non mesurée ; diplomatie, économie internationale, défense : lots suivants ; la
   présidentielle suivante n'est pas jouée ; la défaite par popularité est une convention étiquetée.
 

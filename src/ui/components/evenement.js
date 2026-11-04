@@ -12,7 +12,7 @@ const LIB_REGION = { emploi: 'Emploi', sante: 'Accès aux soins', transports: 'T
 
 /** Pastille compacte d'effet : flèche + libellé + valeur + délai, couleur ET texte (« favorable » lisible sans couleur). */
 function pastille(libelle, valeur, favorable, detail = '') {
-  return `<li class="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs ${favorable ? 'border-[#1F6E43] text-[#1F6E43]' : 'border-rouge text-rouge'}">
+  return `<li class="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs ${favorable ? 'border-[#157A48] text-[#157A48]' : 'border-rouge text-rouge'}">
     <span aria-hidden="true">${valeur >= 0 ? '↑' : '↓'}</span><span class="font-semibold">${esc(libelle)}</span>
     ${valeur >= 0 ? '+' : '−'}${fmt(Math.abs(valeur), 1)}${detail ? ` <span class="text-doux">${esc(detail)}</span>` : ''}
     <span class="sr-only">${favorable ? '(favorable)' : '(défavorable)'}</span></li>`;
@@ -37,7 +37,7 @@ export function sectionEvenement(etat, ctx) {
     </button></li>`;
   }).join('');
   const lienCarte = region ? `<button type="button" class="underline text-bleu text-sm min-h-[44px]" data-ev-carte="${esc(region.id)}" data-ev-indice="${esc(ev.region_cible?.indice ?? 'satisfaction')}">Voir ${esc(region.nom)} sur la carte</button>` : '';
-  return `<section role="alert" aria-labelledby="h-ev" class="mb-4 bg-[#FFF3C4] border-2 border-encre rounded-lg p-3 sm:p-4">
+  return `<section role="alert" aria-labelledby="h-ev" class="mb-4 bg-[#FFF4D6] border-2 border-encre rounded-lg p-3 sm:p-4">
     <p class="text-xs font-bold uppercase tracking-wide">Événement · ${esc(THEMES_EV[ev.theme] ?? ev.theme)}${region ? ` · ${esc(region.nom)}` : ''}</p>
     <h2 id="h-ev" class="font-serif font-bold text-xl sm:text-2xl leading-tight">${esc(ev.titre)}</h2>
     <p class="mt-0.5 text-sm sm:text-base leading-snug">${esc(ev.description)}</p>${lienCarte}

@@ -9,8 +9,8 @@ export const STATUTS = [['disponible', 'Disponibles'], ['en_cours', 'En cours'],
 const LIMITE_PAR_CATEGORIE = 6;
 const STATUT_LIB = { disponible: 'Disponible', en_cours: 'En cours', bloque: 'Bloquée', fait: 'Faite', urgent: 'Urgent' };
 const STATUT_CLS = {
-  disponible: 'bg-[#DCEBDD] text-[#1F6E43] border-[#1F6E43]', en_cours: 'bg-[#DDE7F7] text-bleu border-bleu',
-  bloque: 'bg-[#F3E4E4] text-rouge border-rouge', fait: 'bg-[#EFE9D6] text-doux border-bord', urgent: 'bg-bordeaux text-white border-bordeaux',
+  disponible: 'bg-[#DDF3E6] text-[#157A48] border-[#157A48]', en_cours: 'bg-[#DEE8FB] text-bleu border-bleu',
+  bloque: 'bg-[#FBE4E4] text-rouge border-rouge', fait: 'bg-[#EAEEF5] text-doux border-bord', urgent: 'bg-bordeaux text-white border-bordeaux',
 };
 const BOUTONS = { loi: 'Proposer', programme: 'Engager', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
 const CONFIRMATIONS = {
@@ -47,12 +47,12 @@ function carte(x, i, etat, ctx) {
   const rid = `r-dec-${i}`;
   const meta = [couts(x), x.delai, x.type === 'projet' && x.enCours ? `${x.enCours} en cours` : ''].filter(Boolean);
   const urgent = x.statut === 'urgent';
-  return `<li class="rounded-lg p-3 ${urgent ? 'border-2 border-bordeaux bg-[#F7ECEC]' : 'border border-bord bg-carte filet-laiton'}">
+  return `<li class="rounded-lg p-3 ${urgent ? 'border-2 border-bordeaux bg-[#FCEFEF]' : 'border border-bord bg-carte filet-laiton'}">
     <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
       <h4 class="font-serif font-bold text-base grow min-w-0">${esc(x.titre)}</h4>
       <span class="text-xs font-bold border rounded px-2 py-0.5 ${STATUT_CLS[x.statut] ?? STATUT_CLS.fait}">${esc(STATUT_LIB[x.statut] ?? x.statut)}</span>
     </div>
-    ${x.secteur ? `<span class="inline-block text-xs border border-bord bg-[#EFE9D6] rounded-full px-2 py-0.5 mt-1">${esc(SECTEURS_DECISION[x.secteur] ?? x.secteur)}</span>` : ''}
+    ${x.secteur ? `<span class="inline-block text-xs border border-bord bg-[#EAEEF5] rounded-full px-2 py-0.5 mt-1">${esc(SECTEURS_DECISION[x.secteur] ?? x.secteur)}</span>` : ''}
     <p class="text-sm text-doux line-clamp-1 mt-1">${esc(x.resume)}</p>
     ${meta.length ? `<p class="text-xs mt-1">${meta.map(esc).join(' · ')}</p>` : ''}
     ${x.contrepartie ? `<p class="text-xs text-doux mt-1"><strong>Contrepartie :</strong> ${esc(x.contrepartie)}</p>` : ''}
@@ -70,7 +70,7 @@ function reactionDe(x, etat, ctx) {
 }
 
 const pastille = (id, libelle, nombre, actif, attr) => `<button type="button" id="${id}" ${attr} aria-pressed="${actif}"
-  class="min-h-[44px] px-3 rounded-full border text-sm font-semibold whitespace-nowrap ${actif ? 'bg-encre text-white border-encre' : 'bg-carte text-encre border-bord hover:bg-[#EFE9D6]'}">${esc(libelle)}${nombre != null ? ` <span class="tabular-nums font-normal">(${nombre})</span>` : ''}</button>`;
+  class="min-h-[44px] px-3 rounded-full border text-sm font-semibold whitespace-nowrap ${actif ? 'bg-encre text-white border-encre' : 'bg-carte text-encre border-bord hover:bg-[#EAEEF5]'}">${esc(libelle)}${nombre != null ? ` <span class="tabular-nums font-normal">(${nombre})</span>` : ''}</button>`;
 
 /** Contenu de l'onglet Décisions. Retourne aussi la liste affichée (pour brancher les boutons). */
 export function ongletDecisions(etat, ctx) {

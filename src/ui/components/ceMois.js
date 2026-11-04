@@ -30,7 +30,7 @@ export function sectionCeMois(etat, donnees, avant = '') {
   return `<section aria-labelledby="h-bilan" class="mb-3">
     <h3 id="h-bilan" class="font-serif font-bold text-lg mb-1 max-sm:sr-only">Ce mois-ci</h3>${avant}
     <div class="grid sm:grid-cols-2 gap-3">
-      <div class="bg-carte border border-bord border-l-4 border-l-[#1F6E43] rounded-lg px-3 py-2 ${bonnes.length ? '' : 'max-sm:py-1 max-sm:flex max-sm:items-baseline max-sm:gap-2'}"><h3 class="font-semibold text-[#1F6E43] mb-1"><span aria-hidden="true">✓ </span>Bonnes nouvelles</h3>${liste(bonnes, '↑')}</div>
+      <div class="bg-carte border border-bord border-l-4 border-l-[#157A48] rounded-lg px-3 py-2 ${bonnes.length ? '' : 'max-sm:py-1 max-sm:flex max-sm:items-baseline max-sm:gap-2'}"><h3 class="font-semibold text-[#157A48] mb-1"><span aria-hidden="true">✓ </span>Bonnes nouvelles</h3>${liste(bonnes, '↑')}</div>
       <div class="bg-carte border border-bord border-l-4 border-l-rouge rounded-lg px-3 py-2 ${vigilance.length ? '' : 'max-sm:py-1 max-sm:flex max-sm:items-baseline max-sm:gap-2'}"><h3 class="font-semibold text-rouge mb-1"><span aria-hidden="true">! </span>Points de vigilance</h3>${liste(vigilance, '↓')}</div>
     </div>
     <details class="mt-2"><summary class="min-h-[44px] flex items-center cursor-pointer underline text-bleu font-semibold">Détail complet et prévisions</summary>

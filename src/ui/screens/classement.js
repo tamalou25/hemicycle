@@ -16,7 +16,7 @@ export function render(racine, etat, dispatch, ctx) {
     <p class="mt-1 text-sm text-doux">Classement enregistré sur cet appareil uniquement.</p>
     ${liste.length ? `<div class="mt-4 bg-carte border border-bord rounded-lg overflow-x-auto"><table class="w-full text-sm">
       <caption class="sr-only">Meilleures parties sur cet appareil, classées par score de bilan</caption>
-      <thead class="bg-[#EFE9D6]"><tr>
+      <thead class="bg-[#EAEEF5]"><tr>
         <th scope="col" class="px-2 py-2 text-left">Rang</th><th scope="col" class="px-2 py-2 text-left">Nom</th>
         <th scope="col" class="px-2 py-2 text-left">Parti</th><th scope="col" class="px-2 py-2 text-left">Titre de fin</th>
         <th scope="col" class="px-2 py-2 text-right">Score</th><th scope="col" class="px-2 py-2 text-right">Mois</th>
