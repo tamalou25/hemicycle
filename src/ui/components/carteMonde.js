@@ -6,6 +6,8 @@ import { evaluerObjectifs, dateDuTour, gouverne, raisonRefusPLF } from '../../en
 import { VUES, vuesDisponibles, vueValide, valeurRegion, legislativesRegions, COULEURS, classe, ficheRegion, tableAccessible, legende, legendeLegis, badgeSimulation } from './carte.js';
 import { META } from './jauge.js';
 import { texteValeur } from './objectifs.js';
+import { COULEURS_RELATION, classeRelation, legendeRelations, panneauPays, brancherPays, tableauPartenaires, libelleRelation } from './diplomatie.js';
+import { resumePartenaires } from '../../engine/index.js';
 
 const ZOOM_MIN = 60, ZOOM_MAX = 8192; // largeur de cadrage (unités de la carte) : de ~2° à 360°
 const r1 = (v) => Math.round(v * 10) / 10;
@@ -36,6 +38,14 @@ export function cadrageRegion(monde, regionId, ratio) {
   return d ? cadrer(monde, d.cx, d.cy, 120, ratio) : cadrageInitial(monde);
 }
 
+/** Cadrage sur un pays (boîte englobante de son tracé, zoom plafonné pour les très grands pays). */
+export function cadragePays(monde, paysId, ratio) {
+  const p = monde.pays.find((x) => x.id === paysId);
+  if (!p) return cadrageInitial(monde);
+  const b = boiteChemin(p.d);
+  return cadrer(monde, b.x + b.w / 2, b.y + b.h / 2, Math.min(2600, Math.max(b.w, b.h * (ratio || 1.5)) * 1.5), ratio);
+}
+
 const ratioDe = (ctx) => ctx.monde?.ratio ?? 1.5;
 
 /** Bandeau compact : date, rôle, indicateurs clés (la commande du temps est dans l'en-tête fixe). */
@@ -48,7 +58,7 @@ function bandeauIndicateurs(etat, ctx) {
 }
 
 /** Panneau « Cap » : objectifs du mandat et urgences, toujours visibles (repliable sur mobile). */
-function panneauCap(etat, ctx, priorites) {
+function panneauCap(etat, ctx, priorites, veille = null) {
   const objectifs = evaluerObjectifs(etat, { regions: ctx.regions, objectifs: ctx.objectifs });
   const reste = Math.max(0, 60 - etat.tour);
   const lignes = objectifs.map((o) => { const t = texteValeur(o); return `<li class="flex items-center justify-between gap-2 py-0.5 text-sm"><span class="min-w-0 truncate" title="${esc(o.titre)}">${esc(o.titre)}</span><span class="shrink-0 tabular-nums text-xs ${o.atteint ? 'text-succes font-bold' : 'text-doux'}">${esc(t.v)} / ${esc(t.c)}</span></li>`; }).join('');
@@ -56,7 +66,7 @@ function panneauCap(etat, ctx, priorites) {
   return `<section aria-labelledby="h-cap" class="bg-carte border border-bord rounded-xl p-3">
     <h2 id="h-cap" class="font-serif font-bold text-base">Votre cap <span class="font-sans font-normal text-xs text-doux">· ${reste} mois restants</span></h2>
     ${urgences.length ? `<ul class="mt-1 space-y-1" aria-label="Urgences">${urgences.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#FFF4D6] border border-laiton rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-laiton mr-1">!</span><strong>${esc(p.titre)}</strong></span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-prio="${i}">Traiter</button></li>`).join('')}</ul>` : '<p class="text-xs text-succes mt-1">Rien d’urgent ce mois-ci.</p>'}
-    ${(() => { const veille = priorites.filter((p) => p.type === 'territoire').slice(0, 2); return veille.length ? `<ul class="mt-1 space-y-1" aria-label="À surveiller">${veille.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#EAEEF5] border border-bord rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-doux mr-1">◎</span>${esc(p.titre)}</span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-veille="${i}">${esc(p.bouton ?? 'Voir')}</button></li>`).join('')}</ul>` : ''; })()}
+    ${(() => { const v = veille ?? priorites.filter((p) => p.type === 'territoire').slice(0, 2); return v.length ? `<ul class="mt-1 space-y-1" aria-label="À surveiller">${v.map((p, i) => `<li class="flex items-center justify-between gap-2 text-sm bg-[#EAEEF5] border border-bord rounded-lg px-2 py-1"><span class="min-w-0"><span aria-hidden="true" class="font-bold text-doux mr-1">◎</span>${esc(p.titre)}</span><button type="button" class="btn btn-s !min-h-[36px] !px-2 text-xs shrink-0" data-veille="${i}">${esc(p.bouton ?? 'Voir')}</button></li>`).join('')}</ul>` : ''; })()}
     <ul class="mt-1 divide-y divide-bord" aria-label="Objectifs du mandat">${lignes}</ul>
     <p class="text-xs text-doux mt-1">Détail et pistes : Bureau.</p>
   </section>`;
@@ -80,10 +90,21 @@ function encartsDrom(monde, etat, vue, selection) {
 
 function svgMonde(etat, ctx, vue, selection) {
   const monde = ctx.monde.donnees, vb = ctx.monde.cadrage;
+  // Partenaires simulés (lot 3) : colorés par relation en mode « Partenaires », toujours sélectionnables
+  const partenaires = Object.fromEntries(resumePartenaires(etat, { pays: ctx.pays }).map((p) => [p.id, p]));
+  const modePays = ctx.modeMonde === 'partenaires';
+  const paysSel = ctx.paysSel ?? null;
   const noms = Object.fromEntries(ctx.regions.regions.map((r) => [r.id, r.nom]));
   const legis = vue === 'legislatives' ? legislativesRegions(etat) : null;
   const epaisseur = Math.max(0.3, vb.w / 1500);
-  const pays = monde.pays.map((p) => `<path d="${p.d}" class="pays" fill="#F7F9FC" stroke="#AEB8CC" stroke-width="${epaisseur}" vector-effect="non-scaling-stroke"><title>${esc(p.nom)}</title></path>`).join('');
+  const pays = monde.pays.map((p) => {
+    const r = partenaires[p.id];
+    if (!r) return `<path d="${p.d}" class="pays" fill="${modePays ? '#EDF0F5' : '#F7F9FC'}" stroke="#AEB8CC" stroke-width="${epaisseur}" vector-effect="non-scaling-stroke"><title>${esc(p.nom)}</title></path>`;
+    const sel = p.id === paysSel;
+    const fill = modePays ? COULEURS_RELATION[classeRelation(r.relation)] : '#F7F9FC';
+    const lib = `relation ${Math.round(r.relation)} sur 100, ${libelleRelation(r.relation)}${r.sanctions ? ', sous sanctions' : ''}${r.tension ? ', différend en cours' : ''}`;
+    return `<path id="pays-${esc(p.id)}" d="${p.d}" class="pays partenaire" fill="${fill}" stroke="${sel ? '#9A6700' : modePays ? '#8A96AD' : '#AEB8CC'}" stroke-width="${sel ? 3 : epaisseur}" vector-effect="non-scaling-stroke" tabindex="0" role="button" aria-pressed="${sel}" data-pays="${esc(p.id)}" aria-label="${esc(p.nom)}, ${esc(lib)}"><title>${esc(p.nom)} : ${esc(lib)}</title></path>`;
+  }).join('');
   const chemin = (r) => {
     const sel = r.id === selection;
     let fill, lib;
@@ -101,12 +122,13 @@ function svgMonde(etat, ctx, vue, selection) {
 }
 
 /** Écran complet. `priorites` : liste du Bureau (événement, gouvernement, première décision…) pour le panneau Cap. */
-export function ecranMonde(etat, ctx, priorites = []) {
+export function ecranMonde(etat, ctx, priorites = [], veille = null) {
   const vue = vueValide(ctx.vue, etat);
   const sel = ctx.region ?? null;
   const monde = ctx.monde.donnees;
   const legis = vue === 'legislatives' ? legislativesRegions(etat) : null;
   const tableau = !!ctx.tableauCarte;
+  const modePays = ctx.modeMonde === 'partenaires' && !!ctx.pays;
   const d = dateDuTour(etat);
   const vues = vuesDisponibles(etat).map((x) => `<button type="button" data-vue="${x.id}" aria-pressed="${x.id === vue}" class="min-h-[36px] px-2.5 rounded-full border text-xs font-semibold ${x.id === vue ? 'bg-encre text-white border-encre' : 'bg-white border-bord text-encre'}">${esc(x.nom)}</button>`).join('');
   const outils = `<div class="absolute right-1 top-1 flex flex-col gap-1" role="group" aria-label="Zoom et recentrage">
@@ -117,26 +139,31 @@ export function ecranMonde(etat, ctx, priorites = []) {
       <button type="button" class="btn btn-s !min-w-[44px] !px-1 text-xs" data-cadrage="monde" title="Monde entier">🌍<span class="sr-only">Monde entier</span></button>
     </div>`;
   const carte = tableau
-    ? `<div class="bg-carte border border-bord rounded-xl p-3 overflow-auto max-h-[60vh]">${tableAccessible(etat, ctx)}</div>`
+    ? `<div class="bg-carte border border-bord rounded-xl p-3 overflow-auto max-h-[60vh]">${modePays ? tableauPartenaires(etat, ctx) : tableAccessible(etat, ctx)}</div>`
     : `<div id="cadre-monde" class="relative bg-[#D6E2F0] rounded-xl border border-bord overflow-hidden h-[52vh] sm:h-[min(70vh,46rem)]" tabindex="0" aria-label="Carte navigable : glisser pour déplacer, molette ou pincement pour zoomer, flèches pour déplacer, + et − pour zoomer">
         ${svgMonde(etat, ctx, vue, sel)}${outils}${encartsDrom(monde, etat, vue, sel)}
         <p class="absolute right-1 bottom-1 text-[0.65rem] text-doux bg-white/80 rounded px-1" aria-hidden="true">Seule la France est jouable</p>
       </div>`;
-  const legendes = legis ? `<p class="text-xs mt-1">Parti en tête en sièges par région ${badgeSimulation()}</p>${legendeLegis(legis, ctx)}` : legende();
+  const legendes = modePays ? `<p class="text-xs mt-1">Relations avec les partenaires simulés ${badgeSimulation()}</p>${legendeRelations()}` : legis ? `<p class="text-xs mt-1">Parti en tête en sièges par région ${badgeSimulation()}</p>${legendeLegis(legis, ctx)}` : legende();
+  const modes = ctx.pays ? `<div role="group" aria-label="Mode de la carte" class="flex gap-1 mr-2">${[['territoires', 'Territoires'], ['partenaires', 'Partenaires']].map(([id, nom]) => `<button type="button" data-mode-monde="${id}" aria-pressed="${(ctx.modeMonde ?? 'territoires') === id}" class="min-h-[44px] px-3 rounded-full border text-xs font-semibold ${(ctx.modeMonde ?? 'territoires') === id ? 'bg-bleu text-white border-bleu' : 'bg-white border-bord text-encre'}">${nom}</button>`).join('')}</div>` : '';
   return `<div id="monde" class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_22rem] items-start">
     <section aria-labelledby="h-monde" class="min-w-0">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
         <h2 id="h-monde" class="font-serif font-bold text-lg"><span class="capitalize">${esc(MOIS[d.mois - 1])}</span> ${d.annee} <span class="font-sans font-normal text-sm text-doux">· ${esc(etat.joueur.nom)}, ${etat.joueur.role === 'president' ? 'président·e (fictif)' : etat.joueur.role === 'premier_ministre' ? 'Premier ministre (fictif)' : 'député·e'}</span></h2>
         ${bandeauIndicateurs(etat, ctx)}
       </div>
-      <div class="flex flex-wrap items-center gap-1.5 mb-2" role="group" aria-label="Vue de la carte">${vues}
+      <div class="flex flex-wrap items-center gap-1.5 mb-2">${modes}<div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Vue de la carte">${modePays ? '' : vues}</div>
         <button type="button" id="bascule-tableau" class="min-h-[36px] px-2.5 rounded-full border border-bord bg-white text-xs font-semibold ml-auto" aria-pressed="${tableau}">${tableau ? 'Afficher la carte' : 'Afficher en tableau'}</button></div>
       ${carte}
       <div class="flex flex-wrap items-center justify-between gap-2">${legendes}<span class="text-[0.65rem] text-doux">${esc(monde.attribution)}</span></div>
     </section>
     <aside class="grid gap-3 min-w-0" aria-label="Panneaux">
-      ${panneauCap(etat, ctx, priorites)}
+      ${panneauCap(etat, ctx, priorites, veille)}
       ${liensEcrans(etat)}
+      ${ctx.pays ? `<details id="panneau-pays" class="bg-carte border border-bord rounded-xl" ${ctx.paysSel ? 'open' : ''}>
+        <summary class="min-h-[44px] flex items-center justify-between px-3 cursor-pointer font-semibold text-sm">${ctx.paysSel ? `Pays : ${esc(monde.pays.find((p) => p.id === ctx.paysSel)?.nom ?? ctx.paysSel)}` : 'Pays : aucune sélection'}<span class="text-xs text-doux font-normal">${ctx.paysSel ? 'relation et actions' : 'touchez un partenaire'}</span></summary>
+        ${panneauPays(etat, ctx, ctx.paysSel)}
+      </details>` : ''}
       <details id="panneau-region" class="bg-carte border border-bord rounded-xl" ${sel ? 'open' : ''}>
         <summary class="min-h-[44px] flex items-center justify-between px-3 cursor-pointer font-semibold text-sm">${sel ? `Région : ${esc(ctx.regions.regions.find((r) => r.id === sel)?.nom ?? sel)}` : 'Région : aucune sélection'}<span class="text-xs text-doux font-normal">${sel ? 'fiche et projets' : 'touchez une région'}</span></summary>
         <div class="px-1 pb-1 [&>section]:border-0 [&>section]:shadow-none">${ficheRegion(etat, ctx, sel)}</div>
@@ -146,7 +173,7 @@ export function ecranMonde(etat, ctx, priorites = []) {
 }
 
 /** Branche la navigation de carte (pure présentation) : déplacement, zoom, sélection, raccourcis clavier, liens. */
-export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null) {
+export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null, veille = null) {
   const cadre = racine.querySelector('#cadre-monde');
   const svg = racine.querySelector('#svg-monde');
   const monde = ctx.monde.donnees;
@@ -165,10 +192,10 @@ export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null
     // Cadrage recalculé selon le ratio réel du cadre (le viewBox utilise « slice » : la carte remplit toujours le cadre)
     appliquer(cadrer(monde, ctx.monde.cadrage.x + ctx.monde.cadrage.w / 2, ctx.monde.cadrage.y + ctx.monde.cadrage.h / 2, ctx.monde.cadrage.w, ratio()), false);
     // Déplacement à la souris et au tactile (pointer events) ; pincement à deux doigts
-    const pointeurs = new Map(); let depart = null, distance0 = null, glisse = false, cible = null;
+    const pointeurs = new Map(); let depart = null, distance0 = null, glisse = false, cible = null, ciblePays = null;
     const echelle = () => ctx.monde.cadrage.w / cadre.clientWidth;
     // La capture du pointeur redirige les événements vers le cadre : la région visée est mémorisée au pointerdown
-    cadre.addEventListener('pointerdown', (e) => { if ((e.button !== 0 && e.pointerType === 'mouse') || e.target.closest('button')) return; pointeurs.set(e.pointerId, [e.clientX, e.clientY]); if (pointeurs.size === 1) { depart = { x: e.clientX, y: e.clientY, vb: { ...ctx.monde.cadrage } }; glisse = false; cible = e.target.closest?.('[data-region]')?.dataset.region ?? null; } cadre.setPointerCapture?.(e.pointerId); });
+    cadre.addEventListener('pointerdown', (e) => { if ((e.button !== 0 && e.pointerType === 'mouse') || e.target.closest('button')) return; pointeurs.set(e.pointerId, [e.clientX, e.clientY]); if (pointeurs.size === 1) { depart = { x: e.clientX, y: e.clientY, vb: { ...ctx.monde.cadrage } }; glisse = false; cible = e.target.closest?.('[data-region]')?.dataset.region ?? null; ciblePays = e.target.closest?.('[data-pays]')?.dataset.pays ?? null; } cadre.setPointerCapture?.(e.pointerId); });
     cadre.addEventListener('pointermove', (e) => {
       if (!pointeurs.has(e.pointerId)) return;
       pointeurs.set(e.pointerId, [e.clientX, e.clientY]);
@@ -182,7 +209,7 @@ export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null
       if (Math.abs(e.clientX - depart.x) + Math.abs(e.clientY - depart.y) > 4) glisse = true;
       appliquer({ ...depart.vb, x: r1(depart.vb.x - dx), y: r1(depart.vb.y - dy) }, false);
     });
-    const fin = (e, choisir) => { pointeurs.delete(e.pointerId); if (!pointeurs.size) { ctx.monde.cadrageVu = ctx.monde.cadrage; const id = cible; depart = null; distance0 = null; cible = null; if (choisir && !glisse && id) { dispatch({ type: 'region', id }); if (window.innerWidth < 1024) document.getElementById('panneau-region')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } };
+    const fin = (e, choisir) => { pointeurs.delete(e.pointerId); if (!pointeurs.size) { ctx.monde.cadrageVu = ctx.monde.cadrage; const id = cible, idPays = ciblePays; depart = null; distance0 = null; cible = null; ciblePays = null; if (choisir && !glisse && id) { dispatch({ type: 'region', id }); if (window.innerWidth < 1024) document.getElementById('panneau-region')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); } else if (choisir && !glisse && idPays) { dispatch({ type: 'pays', id: idPays }); if (window.innerWidth < 1024) document.getElementById('panneau-pays')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } };
     cadre.addEventListener('pointerup', (e) => fin(e, true)); cadre.addEventListener('pointercancel', (e) => fin(e, false));
     cadre.addEventListener('wheel', (e) => { e.preventDefault(); const rect = cadre.getBoundingClientRect(); zoomer(e.deltaY > 0 ? 1.2 : 1 / 1.2, (e.clientX - rect.left) / rect.width, (e.clientY - rect.top) / rect.height); }, { passive: false });
     cadre.addEventListener('keydown', (e) => {
@@ -196,15 +223,22 @@ export function brancherMonde(racine, dispatch, ctx, priorites = [], etat = null
     racine.querySelectorAll('#cadre-monde [data-region]').forEach((el) => {
       el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dispatch({ type: 'region', id: el.dataset.region }); } });
     });
+    racine.querySelectorAll('#cadre-monde [data-pays]').forEach((el) => {
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dispatch({ type: 'pays', id: el.dataset.pays }); } });
+    });
   }
   racine.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => zoomer(b.dataset.zoom === 'in' ? 1 / 1.5 : 1.5)));
   racine.querySelectorAll('[data-cadrage]').forEach((b) => b.addEventListener('click', () => { const c = monde.cadrages[b.dataset.cadrage]; appliquer(cadrer(monde, c.x + c.w / 2, c.y + c.h / 2, c.w, ratio())); }));
   racine.querySelectorAll('[data-vue]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'ui', patch: { vue: b.dataset.vue } })));
+  // Mode Partenaires : recadrage sur l'Europe (les partenaires colorés deviennent visibles) ; retour aux territoires : France
+  racine.querySelectorAll('[data-mode-monde]').forEach((b) => b.addEventListener('click', () => { const c = monde.cadrages[b.dataset.modeMonde === 'partenaires' ? 'europe' : 'france']; ctx.monde.cadrage = cadrer(monde, c.x + c.w / 2, c.y + c.h / 2, c.w, ratio()); dispatch({ type: 'ui', patch: { modeMonde: b.dataset.modeMonde } }); }));
+  racine.querySelectorAll('[data-pays-ligne]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'pays', id: b.dataset.paysLigne })));
+  brancherPays(racine, dispatch, ctx);
   racine.querySelector('#bascule-tableau')?.addEventListener('click', () => dispatch({ type: 'ui', patch: { tableauCarte: !ctx.tableauCarte } }));
   racine.querySelectorAll('[data-lancer]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'projet', projetId: b.dataset.lancer, regionId: ctx.region })));
   racine.querySelectorAll('[data-monde-aller]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: b.dataset.mondeAller, haut: true, cible: b.dataset.cible })));
   racine.querySelectorAll('#monde [data-veille]').forEach((b) => b.addEventListener('click', () => {
-    const p = priorites.filter((x) => x.type === 'territoire')[Number(b.dataset.veille)];
+    const p = (veille ?? priorites.filter((x) => x.type === 'territoire'))[Number(b.dataset.veille)];
     if (p?.aller) dispatch({ type: 'onglet', haut: true, ...p.aller });
   }));
   racine.querySelectorAll('#monde [data-prio]').forEach((b) => b.addEventListener('click', () => {

@@ -20,7 +20,7 @@ function carteFiliere(id, f, eco, etat) {
   const dependante = f.dependance >= eco.parametres.seuil_dependance;
   return `<li class="bg-carte border ${alerte ? 'border-rouge' : 'border-bord'} rounded-lg p-3" data-filiere="${esc(id)}">
     <div class="flex items-start justify-between gap-2"><h3 class="font-serif font-bold text-base">${esc(f.nom)}</h3>
-      ${alerte ? `<span class="text-xs font-bold text-white bg-rouge rounded px-2 py-0.5">Pénurie ${pct(f.penurie)}</span>` : dependante ? '<span class="text-xs font-bold border border-laiton text-[#9A6700] bg-[#FFF4D6] rounded px-2 py-0.5">Dépendante</span>' : '<span class="text-xs text-succes font-bold">Couverte</span>'}</div>
+      ${alerte ? `<span class="text-xs font-bold text-white bg-rouge rounded px-2 py-0.5">Pénurie ${pct(f.penurie)}</span>` : dependante ? '<span class="text-xs font-bold border border-laiton text-encre bg-[#FFF4D6] rounded px-2 py-0.5">Dépendante</span>' : '<span class="text-xs text-succes font-bold">Couverte</span>'}</div>
     <div class="space-y-1 mt-2">${jauge('Production', f.production)}${jauge('Capacité', f.capacite)}${jauge('Demande', f.demande)}</div>
     <dl class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs mt-2">
       <dt class="text-doux">Besoin couvert</dt><dd class="tabular-nums">${pct(f.couverture)}</dd>
