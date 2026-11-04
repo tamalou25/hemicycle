@@ -1,5 +1,5 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique, differerMission, nommerGouvernement, horlogeInitiale, basculer, pauser, changerVitesse, avancer, raisonPause, jourDuMois } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique, differerMission, nommerGouvernement, horlogeInitiale, basculer, pauser, changerVitesse, reinitialiserMois, avancer, raisonPause, jourDuMois } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
@@ -102,6 +102,7 @@ export function dispatch(action) {
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
+        // ...ctx.defi apporte graine, joueur (rôle, positions, objectifs) et, pour une campagne présidentielle, dateDepart
         etat = creerPartie({ ...ctx.defi, mission: ctx.defi.joueur.mission ? ctx.mission : null, scenario: ctx.defi.joueur.scenario ? ctx.scenario : null, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
@@ -168,7 +169,7 @@ export function dispatch(action) {
       case 'evenement': etat = resoudreEvenement(etat, action.index, donnees); break;
       case 'plf-deposer': etat = deposerPLF(etat, action.plf ?? ctx.brouillonPLF); ctx.brouillonPLF = null; break;
       case 'plf-493': etat = recourir493PLF(etat); ctx.confirm493 = false; break;
-      case 'suivant': ctx.groupesAvant = etat.groupes ?? null; etat = tourSuivant(etat, donnees); if (etat.scenario?.statut === 'termine' && etatPrecedent.scenario?.statut === 'en_cours') { ctx.scenarioReplie = false; ctx.focusApres = 'h-scenario'; } if (ctx.horloge && raisonPause(etat)) ctx.horloge = pauser(ctx.horloge); break;
+      case 'suivant': ctx.groupesAvant = etat.groupes ?? null; etat = tourSuivant(etat, donnees); if (ctx.horloge && !action.horloge) ctx.horloge = reinitialiserMois(ctx.horloge); if (etat.scenario?.statut === 'termine' && etatPrecedent.scenario?.statut === 'en_cours') { ctx.scenarioReplie = false; ctx.focusApres = 'h-scenario'; } if (ctx.horloge && raisonPause(etat)) ctx.horloge = pauser(ctx.horloge); break;
       case 'exporter': telecharger(exporterPartie(etat), `hemicycle-mois-${etat.tour}.json`); return;
       case 'rejouer': etat = null; ecrire(CLE, ''); try { localStorage.removeItem(CLE); } catch { /* ignoré */ } return aller('accueil');
       default: throw new Error(`Action inconnue : ${action.type}`);
@@ -204,7 +205,7 @@ function boucleTemps(maintenant) {
   if (ctx.horloge?.marche && ecran === 'tableau' && etat && !etat.fin && !document.hidden) {
     const r = avancer(ctx.horloge, dt);
     ctx.horloge = r.horloge;
-    if (r.pas) dispatch({ type: 'suivant' });
+    if (r.pas) dispatch({ type: 'suivant', horloge: true }); // pas d'horloge : la progression est déjà remise à zéro par avancer()
     else { const texte = `jour ${jourDuMois(ctx.horloge)}`; document.querySelectorAll('[data-jour]').forEach((el) => { if (el.textContent !== texte) el.textContent = texte; }); }
   }
   requestAnimationFrame(boucleTemps);
