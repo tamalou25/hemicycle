@@ -45,7 +45,7 @@ function enteteBureau(etat, d, parti, ctx = {}) {
   return `<header class="mb-3 sm:mb-4">
       <h1 class="sr-only sm:not-sr-only font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
       ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
-      <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span>${ctx.difficulte ? ` · <span data-difficulte>difficulté ${esc(nomDifficulte(etat, { difficulte: ctx.difficulte }))}</span>` : ''}</p>
+      <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span>${ctx.difficulte ? `<span class="hidden sm:inline" data-difficulte> · difficulté ${esc(nomDifficulte(etat, { difficulte: ctx.difficulte }))}</span>` : ''}</p>
     </header>`;
 }
 
