@@ -1,5 +1,19 @@
 # Passation : Hémicycle
 
+## État au 04/11/2026, soir : `main` = `0cbb892`, déployé (Claude)
+- **Fusionnées dans l'ordre** : #34 (économie), #35 (diplomatie), #36 (défense), #37 (équilibrage et difficulté), puis #39 (correctif : entrées
+  de journal diplomatiques raccourcies pour la hauteur du Bureau mobile, libellé de difficulté masqué sur mobile, groupe de concurrence CI
+  par branche pour qu'une PR n'annule plus le déploiement de `main`).
+- **Déploiement vérifié** : workflow « Tests et déploiement » vert sur `0cbb892` (test, e2e, deploy) ; https://tamalou25.github.io/hemicycle/
+  sert `sw.js` `hemicycle-e87fb3fc9ebd` et `economie.json`, `pays.json`, `defense.json`, `difficulte.json` (200) ; parcours joué sur le site
+  public (Chromium) : Facile coché par défaut, campagne en Difficile, partenariat énergétique avec l'Allemagne conclu, stocks stratégiques
+  lancés, onglet Défense affiché, mois suivant passé, sauvegarde v16, 0 erreur JavaScript.
+- **Leçon CI** : le premier run de `main` après les fusions a échoué sur la hauteur du Bureau mobile (1 835 px > 1 830) à cause de lignes de
+  journal diplomatiques longues reprises dans le bilan du mois ; corrigé par #39. Les polices du runner (plus larges) laissent moins de marge
+  que les mesures locales (1 700 à 1 750 px) : garder des entrées de journal courtes.
+- **Suite** : mesurer la durée réelle d'une campagne et la compréhension des repères avec un vrai joueur ; équilibrer les pénuries
+  (rares sans sanctions cumulées) ; pays supplémentaires (hors mission).
+
 ## État au 04/11/2026, fin de la mission lots 2 à 5 (Claude) : `main` = `6b372dd`, 4 PR en brouillon empilées
 | Lot | Branche (base) | PR | Contenu |
 |---|---|---|---|
