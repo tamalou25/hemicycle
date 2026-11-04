@@ -10,7 +10,7 @@ const MAX = 3; // sur mobile, 2 par liste (le détail complet reste dans « Dét
 function qualite(e, etat) {
   // Inflation : mieux si la variation la rapproche de la cible de 2 % (comparer la distance avant / après)
   if (e.indicateur === 'inflation') { const apres = etat.indicateurs.inflation, avant = apres - e.delta; return Math.sign(Math.abs(avant - 2) - Math.abs(apres - 2)); }
-  if (e.indicateur?.startsWith('secteur:') || e.indicateur?.startsWith('filiere:') || e.indicateur?.startsWith('commerce:')) return Math.sign(e.delta);
+  if (e.indicateur?.startsWith('secteur:') || e.indicateur?.startsWith('filiere:') || e.indicateur?.startsWith('commerce:') || e.indicateur?.startsWith('defense:')) return Math.sign(e.delta);
   return (SENS[e.indicateur] ?? 0) * Math.sign(e.delta);
 }
 // 2 décimales : une variation affichée (≥ 0,05) ne doit jamais apparaître comme « −0 »

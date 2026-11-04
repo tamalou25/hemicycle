@@ -12,15 +12,16 @@ const STATUT_CLS = {
   disponible: 'bg-[#DDF3E6] text-[#157A48] border-[#157A48]', en_cours: 'bg-[#DEE8FB] text-bleu border-bleu',
   bloque: 'bg-[#FBE4E4] text-rouge border-rouge', fait: 'bg-[#EAEEF5] text-doux border-bord', urgent: 'bg-bordeaux text-white border-bordeaux',
 };
-const BOUTONS = { loi: 'Proposer', programme: 'Engager', investissement: 'Lancer', pays: 'Ouvrir la fiche pays', initiative: 'Répondre', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
+const BOUTONS = { loi: 'Proposer', programme: 'Engager', investissement: 'Lancer', pays: 'Ouvrir la fiche pays', initiative: 'Répondre', programme_defense: 'Lancer', engagement: 'Engager', accord: 'Négocier', '493': '49.3', dissolution: 'Dissolution', evenement: 'Répondre', gouvernement: 'Nommer' };
 const CONFIRMATIONS = {
   '493': ['Engager le 49.3 ?', 'Le texte est adopté sans vote, mais le gouvernement s’expose à une motion de censure.'],
   dissolution: ['Proposer une dissolution ?', 'Le Président peut refuser (vous perdriez 2 capital). S’il accepte, des législatives anticipées auront lieu dans deux mois et le texte en cours tombera.'],
+  engagement: ['Engager des forces ?', '1 capital. Les moyens engagés ne sont plus disponibles pour une crise pendant toute la durée ; le coût pèse sur le déficit. Les alliés en tiennent compte.'],
   gouvernement: ['Nommer ce gouvernement ?', '2 capital. Son parti soutiendra vos textes et ne votera pas la censure. Un parti éloigné de vous coûte en popularité (cohabitation). Sans censure, le prochain changement attendra 12 mois.'],
 };
 
 /** Données nécessaires au catalogue, à partir du contexte de l'interface. */
-export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays });
+export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense });
 export const catalogue = (etat, ctx) => catalogueDecisions(etat, donneesCatalogue(ctx));
 
 const filtres = (ctx) => ({ categorie: '', secteur: '', statut: 'disponible', ...(ctx.decisions ?? {}) });

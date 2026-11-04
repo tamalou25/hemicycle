@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { ouvrirOnglet } from './aide.js';
 
-const ONGLETS = ['Bureau', 'Décisions', 'Carte', 'Budget', 'Économie', 'Opinion', 'Parlement', 'Chronologie'];
+const ONGLETS = ['Bureau', 'Décisions', 'Carte', 'Budget', 'Économie', 'Défense', 'Opinion', 'Parlement', 'Chronologie'];
 
 async function auditer(page, nom) {
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();

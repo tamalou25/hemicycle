@@ -26,6 +26,8 @@ import { ecranMonde, brancherMonde } from '../components/carteMonde.js';
 import { ongletEconomie, brancherEconomie } from '../components/economie.js';
 import { alertesEconomie, initiativeEnCours } from '../../engine/index.js';
 import { sectionInitiative, brancherInitiative } from '../components/diplomatie.js';
+import { ongletDefense, brancherDefense } from '../components/defense.js';
+import { bilanDefense } from '../../engine/index.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
 
 const PASTILLES = { evenement: ['!', 'Événement', 'bg-[#FFF4D6] border-encre'], budget: ['€', 'Budget', 'bg-[#DEE8FB] border-bleu'] };
@@ -93,6 +95,8 @@ function prioritesCampagne(etat, ctx) {
   for (const a of alertesEco.filter((x) => x.type === 'penurie').slice(0, 1)) liste.push({ type: 'urgence', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
   // Alertes territoriales (indice sous le seuil critique) : rejoindre directement le territoire sur la carte
   for (const pt of briefing(etat, { regions: ctx.regions, projets: ctx.projets, evenements: ctx.evenements }).filter((p) => p.type === 'territoire').slice(0, 2)) liste.push({ type: 'territoire', titre: pt.titre, raison: `${pt.texte} Un projet dans la région peut l’améliorer.`, aller: { onglet: 'monde', region: pt.region, vue: pt.indice } });
+  const bd = etat.defense && ctx.defense ? bilanDefense(etat, { defense: ctx.defense }) : null;
+  if (bd?.alerte) liste.push({ type: 'territoire', titre: 'Forces peu disponibles', raison: `Disponibilité ${Math.round(bd.disponibilite.valeur)}/100 (seuil ${bd.seuil}) : les options militaires d’une crise sont bloquées. Programmes et budget de défense.`, aller: { onglet: 'defense' }, bouton: 'Voir la défense' });
   for (const a of alertesEco.filter((x) => x.type === 'dependance').slice(0, 1)) liste.push({ type: 'territoire', titre: a.titre, raison: `${a.texte} Un investissement renforce la filière (plusieurs années).`, aller: { onglet: 'economie' } });
   if (!liste.length) liste.push({ type: 'echeance', titre: 'Laisser le temps courir', raison: 'Vos décisions produisent leurs effets mois après mois ; le temps s’arrête de lui-même quand une réponse est attendue.', aller: { onglet: 'bureau', cible: 'temps' } });
   const ICONE = { urgence: '!', engagement: '◎', echeance: '⏱', decision: '€', territoire: '◎' };
@@ -186,7 +190,7 @@ export function render(racine, etat, dispatch, ctx) {
   const parti = partis.find((p) => p.id === etat.joueur.parti);
   const onglet = ONGLETS.some(([id]) => id === ctx.onglet) && !(ctx.onglet === 'monde' && !ctx.monde) ? ctx.onglet : 'bureau';
   // Toutes les définitions nécessaires aux phrases d'explication (programmes, partis…)
-  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis, economie: ctx.economie, pays: ctx.pays };
+  const donnees = { lois: ctx.lois, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, partis: ctx.partis, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense };
   const points = onglet === 'bureau' ? briefing(etat, donnees) : [];
   ctx.vue = vueValide(ctx.vue, etat);
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
@@ -198,6 +202,7 @@ export function render(racine, etat, dispatch, ctx) {
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
     : onglet === 'economie' ? ongletEconomie(etat, ctx)
+    : onglet === 'defense' ? ongletDefense(etat, ctx)
     : onglet === 'opinion' ? ongletOpinion(etat, ctx)
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
@@ -237,6 +242,7 @@ export function render(racine, etat, dispatch, ctx) {
   else if (onglet === 'carte') brancherCarte(racine, dispatch);
   else if (onglet === 'budget') brancherBudget(racine, dispatch, ctx, etat);
   else if (onglet === 'economie') brancherEconomie(racine, dispatch);
+  else if (onglet === 'defense') brancherDefense(racine, dispatch);
   else if (onglet === 'opinion') { /* contenu en lecture seule */ }
   else if (onglet === 'parlement') {
     brancherElections(racine, dispatch);
