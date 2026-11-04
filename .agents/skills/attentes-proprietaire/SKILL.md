@@ -8,7 +8,7 @@ description: Attentes durables du propriétaire du projet (Gary) pour les sessio
 ## Choix des modèles
 
 - **Fable 5.1** (`claude-fable-5-1`) est le modèle principal souhaité pour piloter le travail.
-- Les tâches déléguées (outil `Agent`, paramètre `model`) peuvent utiliser un modèle moins puissant quand son niveau suffit, afin d'économiser le quota :
+- Fable pilote, mais **délègue activement** les tâches plus simples à des sous-agents (outil `Agent`, paramètre `model`) avec le modèle le moins coûteux dont le niveau suffit, afin d'économiser le quota :
 
 | Modèle | Usage |
 |---|---|
