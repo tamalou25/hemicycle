@@ -1,0 +1,32 @@
+{
+  "note": "Défense stratégique de jeu (lot 4). Niveau STRATÉGIQUE uniquement : équipement, préparation, disponibilité, engagements et alliances ; aucune opération détaillée. Ordres de grandeur budgétaires sourcés (LPM 2024-2030) ; indices 0-100, sensibilités, programmes et engagements = PARAMÈTRES D'ÉQUILIBRAGE.",
+  "date_collecte": "2026-11-04",
+  "initial": { "equipement": 58, "engagementOtan": 55 },
+  "parametres": {
+    "usure_equipement": 0.15,
+    "equipement_par_md_ecart": 0.02,
+    "poids_equipement": 0.5,
+    "poids_preparation": 0.5,
+    "otan_derive_budget": 0.3,
+    "otan_derive_sans_budget": -0.4,
+    "otan_par_accord_defense": 0.3,
+    "part_pib_cible": 2,
+    "part_defense_du_poste": 0.55,
+    "seuil_disponibilite_critique": 40
+  },
+  "programmes": [
+    { "id": "renouvellement-equipements", "titre": "Renouvellement des équipements majeurs", "description": "Accélérer les livraisons de frégates, blindés et avions prévus par la programmation militaire.", "cout_total_md": 9, "delai_mois": 30, "montee_mois": 12, "gain_equipement": 12, "entretien_md": 0.6, "contrepartie": "Lourd pour le déficit ; les livraisons n'arrivent qu'en fin de chantier et l'entretien suit." },
+    { "id": "stocks-munitions", "titre": "Reconstitution des stocks de munitions", "description": "Remonter les stocks pour tenir un engagement prolongé.", "cout_total_md": 2.5, "delai_mois": 12, "montee_mois": 6, "gain_equipement": 6, "entretien_md": 0.2, "contrepartie": "Effet limité dans le temps : les stocks se consomment en cas d'engagement." },
+    { "id": "maintien-condition", "titre": "Maintien en condition opérationnelle", "description": "Financer la maintenance pour augmenter la part des matériels réellement disponibles.", "cout_total_md": 3, "delai_mois": 9, "montee_mois": 6, "gain_equipement": 5, "gain_preparation": 3, "entretien_md": 0.4, "contrepartie": "Dépense récurrente : l'arrêter fait retomber la disponibilité." },
+    { "id": "cyber-espace", "titre": "Cyberdéfense et espace", "description": "Capacités de cyberdéfense et de surveillance spatiale.", "cout_total_md": 2, "delai_mois": 18, "montee_mois": 12, "gain_equipement": 2, "gain_preparation": 6, "entretien_md": 0.3, "contrepartie": "N'augmente pas les forces conventionnelles ; renforce la préparation et la crédibilité auprès des alliés.", "otan": 3 }
+  ],
+  "engagements": [
+    { "id": "exercice-otan", "titre": "Participer à un exercice majeur de l'OTAN", "description": "Déployer des moyens pendant quelques mois aux côtés des alliés.", "duree_mois": 4, "cout_annuel_md": 0.6, "disponibilite": -4, "otan": 6, "relation_allies": 2, "contrepartie": "Immobilise des moyens et coûte ; rassure les alliés." },
+    { "id": "mission-europeenne", "titre": "Mission européenne de surveillance", "description": "Contribuer à une mission de l'Union européenne (surveillance maritime, formation).", "duree_mois": 12, "cout_annuel_md": 0.4, "disponibilite": -3, "ue": 5, "relation_allies": 1, "contrepartie": "Un an d'engagement ; les moyens ne sont plus disponibles pour une crise." }
+  ],
+  "sources": [
+    { "donnee": "Loi de programmation militaire 2024-2030 : 413 Md€ sur sept ans, marche vers environ 2 % du PIB", "source": "Légifrance, loi n° 2023-703 du 1er août 2023 relative à la programmation militaire pour les années 2024 à 2030", "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047914986", "date": "2023-08-02" },
+    { "donnee": "Engagement des Alliés de consacrer au moins 2 % du PIB à la défense", "source": "OTAN, « Les dépenses de défense des pays de l'OTAN »", "url": "https://www.nato.int/cps/fr/natohq/topics_49198.htm", "date": "2026-11-04" },
+    { "donnee": "Indices d'équipement et de préparation, sensibilités, programmes et engagements : hypothèses de jeu", "source": "Paramètres d'équilibrage (aucune donnée observée)", "url": "https://github.com/tamalou25/hemicycle/blob/main/docs/adr/0003-economie-diplomatie-defense.md", "date": "2026-11-04" }
+  ]
+}
