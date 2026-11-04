@@ -73,3 +73,8 @@ Fonctions relevées sur Wikipédia (fr), consultée le 2026-11-03 ; à recouper 
 - Source : Insee, POP6 « Population de 15 ans ou plus selon le groupe socioprofessionnel actuel ou antérieur, le sexe et l'âge en 2023 » (publié le 25/06/2026) — https://www.insee.fr/fr/statistiques/8953987?geo=FE-1
 - Parts calculées sur les effectifs ; arrondi à 0,1 pt, somme = 100,0. « Jeunes inactifs » = colonne « Autres sans activité professionnelle » (étudiants inclus, non isolés). Groupes d'actifs en « actuel ou antérieur ».
 - Écarté : enquête Emploi 2025 (https://www.insee.fr/fr/statistiques/2381478), champ 15-89 ans en logement ordinaire et sans effectif de retraités.
+
+## Carte du monde (écran « Monde », 04/11/2026)
+- Fond mondial : Natural Earth, Admin 0 – Countries, échelle 1:110m — domaine public — https://www.naturalearthdata.com/downloads/110m-cultural-vectors/ (fichier GeoJSON récupéré via https://github.com/nvkelso/natural-earth-vector) — collecté le 2026-11-04.
+- Régions de France métropolitaine : IGN ADMIN EXPRESS / INSEE via gregoiredavid/france-geojson, `regions-version-simplifiee.geojson` — Licence Ouverte / Open Licence (Etalab) — https://github.com/gregoiredavid/france-geojson — collecté le 2026-11-04.
+- Transformations : projection Mercator commune (largeur 8 192 unités pour 360°, latitude bornée à ±84°), arrondi au dixième, suppression des points confondus ; script `scripts/generer-carte-monde.mjs` → `src/data/carte-monde.json` (≈ 240 Ko, embarqué hors ligne). Les DROM gardent les tracés existants de `carte-regions.json` (encarts) et sont repérés par leurs coordonnées approximatives. Les frontières étrangères sont purement géographiques : aucune donnée de jeu n'y est attachée.
