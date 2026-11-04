@@ -5,6 +5,21 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 ## Attentes du propriétaire
 En début de session, suivre les skills `.agents/skills/demarrage/SKILL.md` puis `.agents/skills/attentes-proprietaire/SKILL.md` (vision, façon de travailler, politique de choix des modèles et de délégation). Ne pas dupliquer ces règles ici.
 
+## Skills ECC (`.agents/skills/`, voir `ECC.md`)
+Lire le skill **avant** la tâche concernée (les règles de ce fichier priment en cas de conflit) :
+
+| Tâche | Skill |
+|---|---|
+| Nouvelle fonctionnalité ou correction du moteur | `tdd-workflow` |
+| Écran, composant, style | `frontend-patterns`, `frontend-a11y`, `make-interfaces-feel-better` ; cohérence visuelle : `design-system`, `frontend-design-direction` |
+| Tests Playwright | `e2e-testing` |
+| Gros changement ou refonte | `change-impact` |
+| Décision structurante | `architecture-decision-records` |
+| Sauvegarde, import/export JSON | `security-review`, `error-handling` |
+| Recherche de données réelles | `deep-research` (règles de contenu ci-dessous) |
+| Avant de rendre la main | `verification-loop`, `ai-regression-testing` |
+| Revue de code | `coding-standards` |
+
 ## Stack
 - HTML + JavaScript vanilla, modules ES, sans framework. Tailwind **compilé localement** : `npm run build:css` → `assets/app.css` (à commiter ; la CI vérifie). Aucun CDN (jeu jouable hors ligne).
 - Données JSON dans `src/data/`, séparées du moteur
