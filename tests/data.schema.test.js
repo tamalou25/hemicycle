@@ -174,3 +174,22 @@ describe('objectifs.json', () => {
     for (const id of cat.defaut) expect(ids.has(id)).toBe(true);
   });
 });
+
+describe('mission.json', () => {
+  it('cadre, options vers des projets existants, acteur fictif, avertissement sur l’indice', () => {
+    const m = lire('mission.json');
+    const projets = lire('projets.json').projets;
+    for (const k of ['id', 'titre', 'indice', 'avertissement_indice']) expect(typeof m[k], k).toBe('string');
+    expect(['emploi', 'sante', 'transports']).toContain(m.indice);
+    expect(Number.isInteger(m.duree_mois) && m.duree_mois > 0).toBe(true);
+    expect(m.options.length).toBeGreaterThanOrEqual(2);
+    const ids = new Set();
+    for (const o of m.options) {
+      expect(projets.some((p) => p.id === o.projetId && p.effets?.[m.indice] > 0), o.projetId).toBe(true);
+      for (const k of ['libelle', 'resume']) expect(typeof o[k]).toBe('string');
+      expect(ids.has(o.projetId)).toBe(false); ids.add(o.projetId);
+    }
+    expect(m.acteur).toMatchObject({ fictif: true });
+    expect(typeof m.acteur.nom).toBe('string');
+  });
+});

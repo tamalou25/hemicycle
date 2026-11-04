@@ -19,6 +19,8 @@ export function importerPartie(texte) {
   if (etat.version === 9) etat = { ...etat, version: 10, confianceRegions: null };
   if (etat.version === 10) etat = { ...etat, version: 11, objectifs: [] };
   if (etat.version === 11) etat = { ...etat, version: 12, evenementRegion: null };
+  // v13 : mission d'initiation ; les anciennes parties n'en ont pas (aucune activation rétroactive)
+  if (etat.version === 12) etat = { ...etat, version: 13, mission: null, objectifsInitiaux: {} };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -42,6 +44,27 @@ const chaines = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string'
 const nombres = (o) => (o && typeof o === 'object' && !Array.isArray(o)
   ? Object.fromEntries(Object.entries(o).filter(([, v]) => Number.isFinite(v)).map(([k, v]) => [k.slice(0, 50), v]))
   : null);
+
+const RESULTATS_MISSION = ['realisation', 'engagement', 'manque'];
+/** Mission d'initiation (v13) : cadre + débrief éventuel ; null si absente ou invalide. */
+function assainirMission(m) {
+  if (!m || typeof m !== 'object' || typeof m.region !== 'string' || !['en_cours', 'terminee'].includes(m.statut)) return null;
+  const d = m.debrief && typeof m.debrief === 'object' ? m.debrief : null;
+  return {
+    id: ch(m.id, 40), debut: nb(m.debut), echeance: nb(m.echeance), region: ch(m.region, 60),
+    indice: ['emploi', 'sante', 'transports'].includes(m.indice) ? m.indice : 'sante',
+    valeurInitiale: nb(m.valeurInitiale), roleInitial: ROLES.includes(m.roleInitial) ? m.roleInitial : 'depute',
+    differe: nbOuNull(m.differe), statut: m.statut,
+    debrief: d && m.statut === 'terminee' ? {
+      tour: nb(d.tour), resultat: RESULTATS_MISSION.includes(d.resultat) ? d.resultat : 'manque',
+      projetId: chOuNull(d.projetId, 80), lance: nbOuNull(d.lance), service: nbOuNull(d.service), alea: chOuNull(d.alea, 200),
+      effetObserve: nb(d.effetObserve), effetTheorique: nb(d.effetTheorique), restantAttendu: nb(d.restantAttendu),
+      finMontee: nbOuNull(d.finMontee), valeurInitiale: nb(d.valeurInitiale), valeurFinale: nbOuNull(d.valeurFinale),
+      differe: nbOuNull(d.differe), roleChange: ROLES.includes(d.roleChange) ? d.roleChange : null,
+      fin: chOuNull(d.fin, 30), coutEngage: nb(d.coutEngage),
+    } : null,
+  };
+}
 
 function assainir(e) {
   const j = e.joueur;
@@ -79,6 +102,8 @@ function assainir(e) {
     sondage: s,
     historique: liste(e.historique, (x) => ({ tour: nb(x.tour), ...Object.fromEntries(INDICATEURS.map((i) => [i, nb(x[i])])) })),
     journal: liste(e.journal, (x) => ({ tour: nb(x.tour), type: ch(x.type, 30), texte: ch(x.texte, 300) })),
+    mission: assainirMission(e.mission),
+    objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({

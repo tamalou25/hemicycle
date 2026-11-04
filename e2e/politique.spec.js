@@ -13,7 +13,7 @@ test('relations : engager un programme modifie les relations et liste les réact
   const erreurs = surveiller(page);
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Testeur');
   await page.getByLabel(/Premier ministre/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();

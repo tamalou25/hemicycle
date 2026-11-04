@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 async function partieAvecEvenement(page, evenement, region) {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Région');
   await page.getByLabel(/Premier ministre/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();

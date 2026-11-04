@@ -1,4 +1,5 @@
 // Passage au mois suivant.
+import { avancerMission } from './mission.js';
 import { appliquerEffets } from './effects.js';
 import { bruit } from './rng.js';
 import { borner, EQUILIBRE, CAPITAL_MENSUEL, CAPITAL_MAX, DUREE_MANDAT, SEUIL_DEFAITE } from './constants.js';
@@ -24,6 +25,11 @@ import { dateDuTour } from './state.js';
  * 3. popularité  4. sondage  5. capital politique  6. conditions de fin
  */
 export function tourSuivant(etatInitial, donnees) {
+  // Mission d'initiation : clôturée à l'échéance ou en cas de fin de partie (même moteur)
+  return avancerMission(tourDeBase(etatInitial, donnees), donnees);
+}
+
+function tourDeBase(etatInitial, donnees) {
   if (etatInitial.fin) return etatInitial;
   const { partis } = donnees;
   let g = etatInitial.graine;
@@ -38,6 +44,9 @@ export function tourSuivant(etatInitial, donnees) {
     etat = ev ? resoudreEvenement(etat, ev.choix.length - 1, donnees) : { ...etat, evenement: null };
     // Réponse automatique au passage du mois : ses effets locaux sont datés du mois qui s'affiche
     etat = { ...etat, explications: (etat.explications ?? []).map((x, i) => (i >= n ? { ...x, tour: etat.tour + 1 } : x)) };
+    // Journal : la réponse n'a pas été choisie par le joueur (le bilan du mois ne la compte pas comme une décision)
+    const dernier = etat.journal[etat.journal.length - 1];
+    if (ev && dernier?.type === 'evenement') etat = { ...etat, journal: [...etat.journal.slice(0, -1), { ...dernier, type: 'evenement-auto', texte: `${dernier.texte.replace(/\.$/, '')} (réponse par défaut, faute de choix).` }] };
   }
   const loisAvant = etat.loisAdoptees.length;
   const texteAvant = etat.texte; // orientation finale (après amendements / CMP), effacée par la navette à la promulgation

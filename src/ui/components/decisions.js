@@ -1,7 +1,8 @@
 // Onglet « Décisions » : un seul endroit pour toutes les actions du joueur (lois, programmes, projets, négociations, 49.3…).
 import { esc, fmt } from '../util.js';
 import { reactionProbable } from './relations.js';
-import { catalogueDecisions, filtrerDecisions, compterDecisions, CATEGORIES, SECTEURS_DECISION } from '../../engine/index.js';
+import { catalogueDecisions, filtrerDecisions, compterDecisions, CATEGORIES, SECTEURS_DECISION, ficheDecision } from '../../engine/index.js';
+import { blocFiche } from './fiche.js';
 
 export const STATUTS = [['disponible', 'Disponibles'], ['en_cours', 'En cours'], ['bloque', 'Bloquées'], ['fait', 'Faites']];
 /** Au-delà, une catégorie se replie derrière « Afficher les N autres » (lisibilité sur mobile). */
@@ -18,7 +19,7 @@ const CONFIRMATIONS = {
 };
 
 /** Données nécessaires au catalogue, à partir du contexte de l'interface. */
-export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques });
+export const donneesCatalogue = (ctx) => ({ lois: ctx.lois, partis: ctx.partis, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, politiques: ctx.politiques, objectifs: ctx.objectifs });
 export const catalogue = (etat, ctx) => catalogueDecisions(etat, donneesCatalogue(ctx));
 
 const filtres = (ctx) => ({ categorie: '', secteur: '', statut: 'disponible', ...(ctx.decisions ?? {}) });
@@ -51,9 +52,10 @@ function carte(x, i, etat, ctx) {
       <span class="text-xs font-bold border rounded px-2 py-0.5 ${STATUT_CLS[x.statut] ?? STATUT_CLS.fait}">${esc(STATUT_LIB[x.statut] ?? x.statut)}</span>
     </div>
     ${x.secteur ? `<span class="inline-block text-xs border border-bord bg-[#EFE9D6] rounded-full px-2 py-0.5 mt-1">${esc(SECTEURS_DECISION[x.secteur] ?? x.secteur)}</span>` : ''}
-    <p class="text-sm text-doux line-clamp-1 mt-1" title="${esc(x.resume)}">${esc(x.resume)}</p>
+    <p class="text-sm text-doux line-clamp-1 mt-1">${esc(x.resume)}</p>
     ${meta.length ? `<p class="text-xs mt-1">${meta.map(esc).join(' · ')}</p>` : ''}
     ${x.contrepartie ? `<p class="text-xs text-doux mt-1"><strong>Contrepartie :</strong> ${esc(x.contrepartie)}</p>` : ''}
+    ${(() => { const f = ficheDecision(etat, x, donneesCatalogue(ctx)); return f ? blocFiche(f, `fiche-${i}`) : ''; })()}
     ${(() => { const r = reactionDe(x, etat, ctx); return r ? `<details class="mt-1 text-xs"><summary class="cursor-pointer text-bleu underline min-h-[32px] flex items-center">Réaction probable des partis</summary>${r}</details>` : ''; })()}
     ${afficheBouton ? `<div class="mt-2"><button type="button" id="dec-${i}" data-decision="${i}" class="btn ${urgent ? 'btn-p' : 'btn-s'}" ${bloque ? `disabled aria-describedby="${rid}"` : ''}>${esc(bouton)}</button>
       ${bloque ? `<p id="${rid}" class="text-xs text-doux mt-1">${esc(x.raison)}</p>` : ''}</div>` : ''}

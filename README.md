@@ -88,6 +88,17 @@ npm run build:css
 | `docs/SOURCES.md` | Sources des données, avec leur date de collecte |
 
 ## Fonctionnalités
+### Première expérience (refonte)
+- **Découvrir en jouant** : une vraie partie prête en un choix (famille politique, aucune présélection), Premier ministre fictif, objectifs par défaut.
+- **Mission d'initiation (6 mois)** : améliorer l'accès aux soins dans la région au plus bas indice de jeu. Deux réponses comparables
+  (voie courte / investissement lent) ou « différer ». Étapes déduites de l'état réel du moteur ; débrief : réalisation, engagement
+  ou occasion manquée. Puis la même partie continue.
+- **Bureau en trois questions** : Que se passe-t-il ? (bilan du mois, « Ce mois-ci », état du pays et ressources) ·
+  Que puis-je faire ? (au plus 3 priorités, avec leur raison) · Qu'attends-je de mes décisions ? (engagements et échéances).
+- **Fiches détaillées** des lois, programmes et projets : coûts, délais, effets théoriques, étape institutionnelle, risques, lien aux objectifs.
+- **Partie personnalisée** : toutes les options précédentes (rôle, positions, compétences, objectifs).
+- Détails, règles et limites : [`docs/REFONTE-EXPERIENCE.md`](docs/REFONTE-EXPERIENCE.md).
+
 ### Phase 6 : Partage
 - **Défis** : un lien `#defi=…` reproduit le même départ et le même hasard pour un ami
 - **Classement local** : les 10 meilleurs bilans, stockés sur l'appareil

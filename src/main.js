@@ -1,8 +1,9 @@
 // Store minimal, routeur d'écrans et sauvegarde automatique.
-import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique } from './engine/index.js';
+import { assurerTerritoires, lancerProjet, creerPartie, proposerLoi, amenderTexte, recourir493, negocierAccord, tourSuivant, actionCampagne, seDeclarerCandidat, proposerDissolution, decoderDefi, evaluerFin, entreeClassement, ajouterAuClassement, exporterPartie, importerPartie, resoudreEvenement, deposerPLF, recourir493PLF, engagerPolitique, differerMission } from './engine/index.js';
 import { render as accueil } from './ui/screens/accueil.js';
 import { render as choixElu } from './ui/screens/choixElu.js';
 import { render as creation } from './ui/screens/creation.js';
+import { render as decouverte } from './ui/screens/decouverte.js';
 import { render as tableau } from './ui/screens/tableau.js';
 import { render as fin } from './ui/screens/fin.js';
 import { render as defi } from './ui/screens/defi.js';
@@ -14,7 +15,7 @@ const CLE_ACCORD = 'hemicycle.accord';
 const CLE_CLASSEMENT = 'hemicycle.classement';
 const CLE_IDS = 'hemicycle.classement.ids';
 const CLE_ONGLET = 'hemicycle.onglet';
-const ECRANS = { accueil, creation, choixElu, tableau, fin, defi, classement };
+const ECRANS = { accueil, creation, decouverte, choixElu, tableau, fin, defi, classement };
 
 const lire = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const ecrire = (k, v) => { try { localStorage.setItem(k, v); } catch { /* stockage indisponible */ } };
@@ -50,7 +51,11 @@ function afficher({ focus = true } = {}) {
   ECRANS[ecran](racine, etat, dispatch, ctx);
   window.scrollTo(0, y);
   const cible = actif && document.getElementById(actif);
-  if (cible && !cible.disabled) cible.focus({ preventScroll: true });
+  // Après une action qui fait disparaître le bouton utilisé : focus sur un repère stable (ex. titre de la mission)
+  const repere = ctx.focusApres && document.getElementById(ctx.focusApres);
+  ctx.focusApres = null;
+  if (repere) { repere.setAttribute('tabindex', '-1'); repere.focus({ preventScroll: false }); }
+  else if (cible && !cible.disabled) cible.focus({ preventScroll: true });
   else if (focus) racine.focus({ preventScroll: true });
 }
 
@@ -83,21 +88,30 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, mission: ctx.mission };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
+      case 'exporterSauvegarde': { const s = lire(CLE); if (s) telecharger(s, 'hemicycle-sauvegarde.json'); return; }
       case 'classement': ctx.classement = lireJson(CLE_CLASSEMENT).filter((x) => typeof x === 'object' && Number.isFinite(x.score)); ctx.confirmEffacer = false; return aller('classement');
       case 'effacerClassement':
         if (action.etape === 'confirme') { ecrire(CLE_CLASSEMENT, '[]'); ctx.classement = []; toast('Classement effacé.', 'info'); }
         ctx.confirmEffacer = action.etape === 'demande';
         return afficher({ focus: false });
       case 'relever': {
-        etat = creerPartie({ ...ctx.defi, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs });
+        etat = creerPartie({ ...ctx.defi, mission: ctx.defi.joueur.mission ? ctx.mission : null, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
       case 'filtre': ctx.filtreTheme = action.theme; return afficher();
+      case 'decouverte': {
+        // Partie réelle : PM fictif, positions du parti choisi (sources publiques), objectifs par défaut, mission d'initiation
+        const parti = ctx.partis.find((p) => p.id === action.parti);
+        if (!parti) throw new Error('Choisissez une famille politique.');
+        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'premier_ministre', ideologie: { ...parti.positions } }, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, mission: ctx.mission, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        ctx.decouverte = null; ctx.brouillonPLF = null; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); break;
+      }
+      case 'mission-differer': etat = differerMission(etat); ctx.focusApres = 'h-mission'; break;
       case 'nouvelle': {
         etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
@@ -116,7 +130,7 @@ export function dispatch(action) {
         afficher({ focus: !!action.haut }); if (action.haut) window.scrollTo(0, 0); return;
       case 'region': ctx.region = action.id; return afficher({ focus: false });
       case 'ui': Object.assign(ctx, action.patch); return afficher({ focus: false });
-      case 'projet': etat = lancerProjet(etat, action.projetId, action.regionId, donnees); toast('Projet lancé.', 'info'); break;
+      case 'projet': etat = lancerProjet(etat, action.projetId, action.regionId, donnees); toast('Projet lancé.', 'info'); if (etat.mission?.statut === 'en_cours') ctx.focusApres = 'h-mission'; break;
       case 'politique': etat = engagerPolitique(etat, action.id, donnees); toast('Programme engagé.', 'info'); break;
       case 'proposer': etat = proposerLoi(etat, action.loi, donnees); break;
       case 'amender': etat = amenderTexte(etat, donnees); break;
@@ -134,7 +148,7 @@ export function dispatch(action) {
       default: throw new Error(`Action inconnue : ${action.type}`);
     }
     const cible = !etat ? 'accueil' : etat.fin ? 'fin' : 'tableau';
-    if (cible !== ecran || action.type === 'nouvelle' || action.type === 'relever' || action.type === 'reprendre' || action.type === 'importer') aller(cible);
+    if (cible !== ecran || action.type === 'nouvelle' || action.type === 'decouverte' || action.type === 'relever' || action.type === 'reprendre' || action.type === 'importer') aller(cible);
     else afficher({ focus: false });
     // Sauvegarde uniquement après un rendu réussi (une partie corrompue n'écrase pas la bonne)
     if (etat) ecrire(CLE, JSON.stringify(etat));
@@ -150,8 +164,8 @@ export function dispatch(action) {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs, ctx.mission] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'), chargerJson('./data/mission.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

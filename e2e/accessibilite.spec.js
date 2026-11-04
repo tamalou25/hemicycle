@@ -15,14 +15,14 @@ test('accueil et création de personnage', async ({ page }) => {
   await page.goto('/');
   await auditer(page, 'Accueil');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await auditer(page, 'Création');
 });
 
 test('tous les onglets de jeu, après 2 mois', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Audit');
   await page.getByLabel(/Premier ministre/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();
@@ -31,4 +31,23 @@ test('tous les onglets de jeu, après 2 mois', async ({ page }) => {
     await ouvrirOnglet(page, onglet);
     await auditer(page, onglet);
   }
+});
+
+test('découverte : écran de configuration, mission (choix, suivi, débrief) et fiche ouverte', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: 'Découvrir en jouant' }).click();
+  await auditer(page, 'Découverte');
+  await page.getByRole('radio').first().check();
+  await page.getByRole('button', { name: 'Commencer la découverte' }).click();
+  await page.getByText('Que mesure cet indice ?').click();
+  await auditer(page, 'Mission : choix');
+  await page.getByRole('button', { name: 'Choisir : Recrutement de soignants' }).click();
+  await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').first().click();
+  await auditer(page, 'Mission : suivi et bilan du mois');
+  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Mois suivant' }).locator('visible=true').first().click();
+  await auditer(page, 'Mission : débrief');
+  await ouvrirOnglet(page, 'Décisions');
+  await page.locator('#panneau details summary', { hasText: 'Fiche détaillée' }).first().click();
+  await auditer(page, 'Fiche détaillée');
 });

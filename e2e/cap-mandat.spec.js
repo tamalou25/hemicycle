@@ -9,7 +9,7 @@ async function nouvellePartie(page, role) {
   await page.getByRole('checkbox').first().check();
   await expect(page.getByRole('region', { name: 'Le but' })).toContainText('60 mois');
   await expect(page.getByRole('region', { name: 'Le but' })).toContainText('Choisissez vos actions du mois, puis passez au mois suivant');
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Cap');
   await page.getByLabel(role === 'pm' ? /Premier ministre/ : /Député/).check();
   await page.getByRole('button', { name: 'Commencer' }).click();
@@ -112,7 +112,7 @@ test('brief : clavier, cibles de 44 px, pas de débordement', async ({ page }) =
 async function partieAvecObjectifs(page, role, ids) {
   await page.goto('/');
   await page.getByRole('checkbox').first().check();
-  await page.getByRole('button', { name: 'Créer mon personnage' }).click();
+  await page.getByRole('button', { name: 'Partie personnalisée' }).click();
   await page.getByLabel(/^Nom/).fill('Cap');
   await page.getByLabel(role === 'pm' ? /Premier ministre/ : /Député/).check();
   for (const v of await page.locator('input[name=objectif]:checked').evaluateAll((l) => l.map((c) => c.value))) await page.locator(`input[name=objectif][value=${v}]`).uncheck();

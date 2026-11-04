@@ -73,16 +73,19 @@ const coulSpark = (id, etat) => {
   return haut ? '#1F6E43' : '#B3262B';
 };
 
-export function sectionEtatPays(etat) {
+export function sectionEtatPays(etat, sat = null) {
   const evo = evolutions(etat);
-  const kpi = CLES.map((id) => `<li class="bg-carte border border-bord rounded-lg px-3 py-1.5 filet-laiton">
-      <p class="text-sm text-doux">${esc(META[id].label)}</p>
-      <p class="font-serif font-bold text-xl tabular-nums leading-tight">${fmt(etat.indicateurs[id])}<span class="text-sm font-sans font-normal">${esc(META[id].unite)}</span></p>
+  // Mobile : libellé et valeur sur une ligne (cartes plus basses) ; ordinateur inchangé
+  const kpi = CLES.map((id) => `<li class="bg-carte border border-bord rounded-lg px-3 py-1.5 max-sm:py-1 filet-laiton">
+      <p class="text-sm text-doux max-sm:inline">${esc(META[id].label)}</p>
+      <p class="font-serif font-bold text-xl max-sm:text-lg max-sm:inline max-sm:ml-1 tabular-nums leading-tight">${fmt(etat.indicateurs[id])}<span class="text-sm font-sans font-normal">${esc(META[id].unite)}</span></p>
       <p>${variation(id, evo)}</p></li>`).join('');
   return `<section aria-labelledby="h-pays" class="mb-4">
-    <h2 id="h-pays" class="font-serif font-bold text-xl mb-1">État du pays</h2>
+    <h2 id="h-pays" class="font-serif font-bold text-xl mb-1 max-sm:sr-only">État du pays</h2>
     <p class="mb-1.5 font-semibold text-encre leading-snug" role="status">${esc(phraseSynthese(evo))}</p>
-    <ul class="grid grid-cols-2 lg:grid-cols-4 gap-2">${kpi}</ul></section>`;
+    <ul class="grid grid-cols-2 lg:grid-cols-4 gap-2">${kpi}</ul>
+    <p class="mt-2 text-sm" id="ressources">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
+      Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10${etat.finances ? ` · Enveloppe d’investissement : <strong>${fmt(etat.finances.enveloppe, 2)} Md€</strong>` : ''}${sat != null ? ` · Satisfaction territoriale : <strong>${fmt(sat, 0)}</strong>/100` : ''}</p></section>`;
 }
 
 /** Grille compacte (2 colonnes) de tous les indicateurs. */
@@ -94,11 +97,10 @@ export function sectionTousIndicateurs(etat, sat) {
       <p>${variation(id, evo)}</p><div class="[&_svg]:h-3 mt-0.5">${sparkline(hist(id), coulSpark(id, etat))}</div></li>`).join('');
   // Mobile : la grille complète est repliée (4 des 6 indicateurs sont déjà dans « État du pays ») ; ouverte sur ordinateur
   const ouvert = globalThis.matchMedia?.('(min-width: 640px)').matches ? ' open' : '';
-  return `<section aria-labelledby="h-ind" class="mb-4">
+  return `<section aria-labelledby="h-ind" class="mb-2">
     <details id="tous-indicateurs"${ouvert}>
-      <summary class="min-h-[44px] flex items-center justify-between gap-2 cursor-pointer"><h2 id="h-ind" class="font-serif font-bold text-xl">Tous les indicateurs</h2><span class="text-sm text-bleu underline">Afficher</span></summary>
+      <summary class="min-h-[44px] flex items-center justify-between gap-2 cursor-pointer bg-carte border border-bord rounded-lg px-3"><h2 id="h-ind" class="font-serif font-bold text-lg">Tous les indicateurs</h2><span class="text-sm text-bleu underline max-sm:sr-only">Afficher</span></summary>
       <ul class="grid grid-cols-2 lg:grid-cols-3 gap-2 mt-1">${cases}</ul>
     </details>
-    <p class="mt-2 text-sm">Dette publique : <strong>${fmt(etat.indicateurs.dette)} % du PIB</strong> ·
-      Capital politique : <strong id="capital">${etat.joueur.capital}</strong>/10${sat != null ? ` · Satisfaction territoriale : <strong>${fmt(sat, 0)}</strong>/100` : ''}</p></section>`;
+    </section>`;
 }
