@@ -52,3 +52,18 @@ test('découverte : écran de configuration, scénario (choix, suivi, cadre) et 
   await page.locator('#panneau details summary', { hasText: 'Fiche détaillée' }).first().click();
   await auditer(page, 'Fiche détaillée');
 });
+
+test('campagne présidentielle : écran de rôle, carte du monde et tous les onglets', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('checkbox').first().check();
+  await page.getByRole('button', { name: 'Campagne présidentielle' }).click();
+  await auditer(page, 'Campagne : rôle');
+  await page.getByRole('radio', { name: /^EPR ·/ }).check();
+  await page.getByRole('button', { name: 'Commencer le mandat' }).click();
+  await expect(page.locator('#monde')).toBeVisible();
+  await auditer(page, 'Monde');
+  for (const onglet of ONGLETS) {
+    await ouvrirOnglet(page, onglet);
+    await auditer(page, `Campagne : ${onglet}`);
+  }
+});

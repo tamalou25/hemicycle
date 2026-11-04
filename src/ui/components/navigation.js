@@ -37,7 +37,7 @@ export function commandesTemps(h, suffixe = '') {
   const sombre = suffixe === '';
   const vitesses = Object.keys(VITESSES).map((v) => `<button type="button" data-vitesse="${v}" aria-pressed="${Number(v) === h.vitesse}" class="min-w-[44px] min-h-[44px] px-2 text-sm font-bold rounded-md border ${Number(v) === h.vitesse ? (sombre ? 'bg-ambre text-encre border-ambre' : 'bg-encre text-white border-encre') : (sombre ? 'text-white border-white/50 hover:bg-white/10' : 'bg-carte border-bord text-encre')}" aria-label="Vitesse ${v}">×${v}</button>`).join('');
   return `<div class="flex items-center gap-1.5" role="group" aria-label="Temps" id="temps${suffixe}">
-    <button type="button" data-horloge="basculer" id="horloge-bascule${suffixe}" class="btn ${h.marche ? (sombre ? 'btn-fantome' : 'btn-s') : 'btn-ambre pulse'} !px-3" aria-pressed="${h.marche}" aria-label="${h.marche ? 'Mettre en pause' : 'Lancer le temps'}"><span aria-hidden="true">${h.marche ? '❚❚' : '▶'}</span><span class="text-sm">${h.marche ? 'Pause' : 'Lecture'}</span></button>
+    <button type="button" data-horloge="basculer" id="horloge-bascule${suffixe}" class="btn ${h.marche ? (sombre ? 'btn-fantome' : 'btn-s') : 'btn-ambre pulse'} !px-3" aria-pressed="${h.marche}" aria-label="${h.marche ? 'Pause du temps' : 'Lecture du temps'}"><span aria-hidden="true">${h.marche ? '❚❚' : '▶'}</span><span class="text-sm">${h.marche ? 'Pause' : 'Lecture'}</span></button>
     ${vitesses}
     <span class="text-xs ${sombre ? 'text-white/80' : 'text-doux'} tabular-nums ml-1 whitespace-nowrap" aria-live="off"><span class="sr-only">État du temps : ${h.marche ? 'en marche' : 'en pause'}, </span><span data-jour>jour ${jourDuMois(h)}</span></span>
   </div>`;
