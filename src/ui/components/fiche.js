@@ -5,15 +5,17 @@ import { META } from './jauge.js';
 const NOMS = { emploi: 'Emploi (région)', sante: 'Accès aux soins (région)', transports: 'Transports (région)' };
 const nomIndicateur = (k) => (k.startsWith('secteur:') ? `Niveau du secteur ${k.slice(8)}` : NOMS[k] ?? META[k]?.label ?? k);
 const signe = (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fmt(Math.abs(v), Math.abs(v) < 1 ? 2 : 1)}`;
+/** null = non chiffré par le modèle (ex. une loi : son coût passe par le déficit), 0 = vraiment gratuit. */
+const montant = (v) => (v == null ? 'non chiffré (effets via le déficit)' : v ? `${fmt(v, 2)} Md€` : 'aucun');
 const sens = (f) => (f === true ? 'favorable' : f === false ? 'défavorable' : 'à surveiller');
 
 export function blocFiche(f, id) {
   const effets = f.effets.map((e) => `<li><strong>${esc(nomIndicateur(e.indicateur))}</strong> : ${signe(e.valeur)}${e.regional ? ' pts' : ''}
       <span class="text-doux">(${e.delaiMois ? `après ${e.delaiMois} mois, ` : ''}réparti sur ${e.duree} mois · ${sens(e.favorable)})</span></li>`).join('');
   const lignes = [
-    ['Coût immédiat', f.coutImmediatMd ? `${fmt(f.coutImmediatMd, 2)} Md€` : 'aucun'],
-    ['Coût chaque année', f.coutAnnuelMd ? `${fmt(f.coutAnnuelMd, 2)} Md€` : 'aucun'],
-    ['Capital politique', f.capital ? `${f.capital}` : 'aucun'],
+    ['Coût immédiat', montant(f.coutImmediatMd)],
+    ['Coût chaque année', montant(f.coutAnnuelMd)],
+    ['Capital politique', f.capital == null ? 'non chiffré' : f.capital ? `${f.capital}` : 'aucun'],
     ['Premiers effets', f.premiersEffets],
     ...(f.beneficiaires ? [['Bénéficiaires', f.beneficiaires]] : []),
   ].map(([k, v]) => `<dt class="text-doux">${k}</dt><dd>${esc(v)}</dd>`).join('');

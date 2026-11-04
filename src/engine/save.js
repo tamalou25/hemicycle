@@ -57,7 +57,7 @@ function assainirMission(m) {
     differe: nbOuNull(m.differe), statut: m.statut,
     debrief: d && m.statut === 'terminee' ? {
       tour: nb(d.tour), resultat: RESULTATS_MISSION.includes(d.resultat) ? d.resultat : 'manque',
-      projetId: chOuNull(d.projetId, 80), lance: nbOuNull(d.lance), service: nbOuNull(d.service), alea: chOuNull(d.alea, 200),
+      projetId: chOuNull(d.projetId, 80), projets: chaines(d.projets), lance: nbOuNull(d.lance), service: nbOuNull(d.service), alea: chOuNull(d.alea, 200),
       effetObserve: nb(d.effetObserve), effetTheorique: nb(d.effetTheorique), restantAttendu: nb(d.restantAttendu),
       finMontee: nbOuNull(d.finMontee), valeurInitiale: nb(d.valeurInitiale), valeurFinale: nbOuNull(d.valeurFinale),
       differe: nbOuNull(d.differe), roleChange: ROLES.includes(d.roleChange) ? d.roleChange : null,

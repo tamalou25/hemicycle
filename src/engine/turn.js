@@ -31,6 +31,15 @@ export function tourSuivant(etatInitial, donnees) {
 
 function tourDeBase(etatInitial, donnees) {
   if (etatInitial.fin) return etatInitial;
+  const apres = passage(etatInitial, donnees);
+  // Journal : tout ce qui survient pendant le passage (votes, mises en service, élections, réponse par défaut)
+  // est daté du mois qui s'affiche. Le bilan du mois ne répète ainsi jamais un résultat sur deux mois.
+  const n = etatInitial.journal.length;
+  if (apres.journal.length === n) return apres;
+  return { ...apres, journal: apres.journal.map((j, i) => (i >= n ? { ...j, tour: apres.tour } : j)) };
+}
+
+function passage(etatInitial, donnees) {
   const { partis } = donnees;
   let g = etatInitial.graine;
   let n;

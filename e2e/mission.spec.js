@@ -130,6 +130,9 @@ test('fiche détaillée : accessible au clavier, sans modifier la partie', async
   await expect(fiche).toContainText('Premiers effets');
   await expect(fiche).toContainText('Étape institutionnelle');
   await expect(fiche).toContainText('le total futur n’est pas garanti');
+  // Une loi n'a pas de coût chiffré en Md€ : la fiche le dit, au lieu d'afficher « aucun » (qui voudrait dire gratuit)
+  await expect(fiche.locator('dd').first()).toContainText('non chiffré');
+  await expect(fiche.locator('dd').first()).not.toHaveText(/^aucun$/);
   expect(JSON.stringify(await sauve(page))).toBe(avant);
 });
 
