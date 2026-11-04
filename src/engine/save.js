@@ -121,6 +121,21 @@ function assainirEconomie(ec) {
   };
 }
 
+/** Diplomatie (v16) : relations, accords, sanctions, mesures, initiative ; null si absente ou invalide. */
+function assainirDiplomatie(d) {
+  if (!d || typeof d !== 'object' || !d.relations || typeof d.relations !== 'object') return null;
+  return {
+    relations: nombres(d.relations) ?? {},
+    ue: { relation: nb(d.ue?.relation, 60) },
+    accords: liste(d.accords, (a) => ({ pays: ch(a.pays, 10), type: ch(a.type, 30), debut: nb(a.debut), fin: nb(a.fin) })),
+    sanctions: liste(d.sanctions, (s) => ({ pays: ch(s.pays, 10), debut: nb(s.debut) })),
+    mesures: liste(d.mesures, (m) => ({ id: ch(m.id, 60), pays: ch(m.pays, 10), type: ch(m.type, 20), debut: nb(m.debut), fin: nb(m.fin), debouches: nb(m.debouches), disponibilite: nb(m.disponibilite) })),
+    initiative: d.initiative && typeof d.initiative === 'object' && typeof d.initiative.id === 'string' ? { id: ch(d.initiative.id, 60), pays: ch(d.initiative.pays, 10), tour: nb(d.initiative.tour) } : null,
+    initiativesPassees: liste(d.initiativesPassees, (i) => ({ id: ch(i.id, 60), pays: ch(i.pays, 10), tour: nb(i.tour), choix: nb(i.choix), parDefaut: bool(i.parDefaut) })),
+    dernieresInitiatives: nombres(d.dernieresInitiatives) ?? {},
+  };
+}
+
 function assainir(e) {
   const j = e.joueur;
   const texte = e.texte && typeof e.texte === 'object' && ETAPES.includes(e.texte.etape) ? {
@@ -164,7 +179,8 @@ function assainir(e) {
       : null,
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     economie: assainirEconomie(e.economie),
-    diplomatie: null, defense: null, difficulte: null,
+    diplomatie: assainirDiplomatie(e.diplomatie), diploCeMois: bool(e.diploCeMois),
+    defense: null, difficulte: null,
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({
@@ -224,7 +240,8 @@ function assainir(e) {
       ...(typeof x.libelle === 'string' ? { libelle: x.libelle.slice(0, 120) } : {}),
       ...(typeof x.region === 'string' ? { region: x.region.slice(0, 60) } : {}),
       ...(typeof x.filiere === 'string' ? { filiere: x.filiere.slice(0, 40) } : {}),
-      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation|filiere|commerce):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
+      ...(typeof x.pays === 'string' ? { pays: x.pays.slice(0, 10) } : {}),
+      tour: nb(x.tour), indicateur: [...INDICATEURS, 'emploi', 'sante', 'transports', 'confiance'].includes(x.indicateur) || /^(secteur|relation|filiere|commerce|pays):[a-z_-]{1,30}$/.test(x.indicateur ?? '') ? x.indicateur : 'popularite', delta: nb(x.delta),
       source: ch(x.source, 100), type: ch(x.type, 20), nature: x.nature === 'prevision' ? 'prevision' : 'observe',
       ...(Number.isFinite(x.depuis) ? { depuis: x.depuis } : {}), ...(Number.isFinite(x.duree) ? { duree: x.duree } : {}),
     })),

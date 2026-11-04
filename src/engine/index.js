@@ -25,6 +25,7 @@ export { INDICES, initialiserTerritoires, satisfactionNationale, indiceEmploi, i
 export { lancerProjet, raisonRefusProjet, prevoirProjets, facteurTaille } from './projets.js';
 export { briefing, SEUIL_CRITIQUE } from './briefing.js';
 export { economieInitiale, evoluerEconomie, lancerInvestissement, raisonRefusInvestissement, alertesEconomie, bilanCommerce, echangesAvec, dependanceFiliere, coutAnnuelChantier, ORDRE_FILIERES } from './economie.js';
+export { diplomatieInitiale, evoluerDiplomatie, relationCible, proposerAccord, raisonRefusAccordPays, sanctionner, raisonRefusSanction, leverSanctions, raisonRefusLevee, repondreInitiative, raisonRefusReponseInitiative, initiativeEnCours, fichePays, resumePartenaires, accordActifAvec, sousSanctions, DELAI_LEVEE_SANCTIONS } from './diplomatie.js';
 export {
   SECTEURS, RECETTES, VARIATION_MAX, solde, chiffrerPLF, orientationPLF, normaliserPLF,
   deposerPLF, recourir493PLF, raisonRefusPLF, budgetInitial, voterBudgetAssemblee,
