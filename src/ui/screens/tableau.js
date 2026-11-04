@@ -27,6 +27,8 @@ import { ongletEconomie, brancherEconomie } from '../components/economie.js';
 import { alertesEconomie, initiativeEnCours } from '../../engine/index.js';
 import { sectionInitiative, brancherInitiative } from '../components/diplomatie.js';
 import { ongletDefense, brancherDefense } from '../components/defense.js';
+import { repere, brancherReperes } from '../components/repere.js';
+import { nomDifficulte } from '../../engine/index.js';
 import { bilanDefense } from '../../engine/index.js';
 import { raisonRefusPLF, DUREE_MANDAT, SEUIL_DEFAITE, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
 
@@ -38,12 +40,12 @@ const LIB = { chomage: 'chômage', croissance: 'croissance', deficit: 'déficit'
 export { ONGLETS };
 const LIEN_SOURCES = 'https://github.com/tamalou25/hemicycle/blob/main/docs/SOURCES.md';
 
-function enteteBureau(etat, d, parti) {
+function enteteBureau(etat, d, parti, ctx = {}) {
   // Mobile : la date est déjà dans la barre fixe du bas ; le titre reste lisible par les lecteurs d'écran
   return `<header class="mb-3 sm:mb-4">
       <h1 class="sr-only sm:not-sr-only font-serif font-bold text-2xl sm:text-3xl capitalize">${esc(MOIS[d.mois - 1])} ${d.annee}</h1>
       ${etat.joueur.politicienId ? '<p class="inline-block text-xs font-bold uppercase border-2 border-encre bg-[#FFF4D6] rounded px-2 py-0.5 mb-1">Mode élu réel (simulation)</p>' : ''}
-      <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span></p>
+      <p class="text-sm sm:text-base text-doux">${esc(etat.joueur.nom)}, ${esc(parti?.sigle ?? '')} · ${esc(libelleRole(etat.joueur.role))}<span class="hidden sm:inline"> · mois ${etat.tour} sur 60</span>${ctx.difficulte ? ` · <span data-difficulte>difficulté ${esc(nomDifficulte(etat, { difficulte: ctx.difficulte }))}</span>` : ''}</p>
     </header>`;
 }
 
@@ -129,7 +131,7 @@ function ongletBureau(etat, ctx, donnees, points, brief, prio) {
     <section aria-labelledby="h-q1" class="mb-4">
       <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
-      ${sectionInitiative(etat, ctx)}
+      ${etat.diplomatie?.initiative ? repere('initiative') : ''}${sectionInitiative(etat, ctx)}
       ${scenario && etat.tour === etat.scenario.debut && !etat.evenement
         ? `<details class="mb-2"><summary class="min-h-[44px] flex items-center cursor-pointer text-sm underline text-bleu">Premier mois : rien n’a encore bougé. État du pays au départ</summary>${sectionEtatPays(etat, sat)}</details>`
         : `${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
@@ -196,24 +198,25 @@ export function render(racine, etat, dispatch, ctx) {
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
     { liste: catalogue(etat, ctx), refusPLF: raisonRefusPLF(etat), dureeMandat: DUREE_MANDAT, seuilDefaite: SEUIL_DEFAITE, points: POINTS_PAR_OBJECTIF }) : null;
   const prio = ['bureau', 'monde'].includes(onglet) && etat.scenario ? sectionPriorites(etat, ctx) : (['bureau', 'monde'].includes(onglet) && prioritesCampagne(etat, ctx)) || { html: '', liste: [] };
-  const contenu = onglet === 'monde' && ctx.monde ? ecranMonde(etat, ctx, prio.liste, prio.veille)
+  const contenu = onglet === 'monde' && ctx.monde ? (ctx.modeMonde === 'partenaires' && ctx.pays ? repere('partenaires') : repere('monde')) + ecranMonde(etat, ctx, prio.liste, prio.veille)
     : onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief, prio)
     : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
-    : onglet === 'economie' ? ongletEconomie(etat, ctx)
-    : onglet === 'defense' ? ongletDefense(etat, ctx)
+    : onglet === 'economie' ? repere('economie') + ongletEconomie(etat, ctx)
+    : onglet === 'defense' ? repere('defense') + ongletDefense(etat, ctx)
     : onglet === 'opinion' ? ongletOpinion(etat, ctx)
     : onglet === 'parlement' ? ongletParlement(etat, ctx) : ongletChronologie(etat, ctx);
 
   racine.innerHTML = `
     <div class="sm:sticky sm:top-0 z-30 bg-carte -mx-4 px-4 shadow-sm">${enteteCollant(etat, d, ctx.horloge)}${barreOnglets(onglet)}</div>
-    ${onglet === 'bureau' ? enteteBureau(etat, d, parti) : ''}
+    ${onglet === 'bureau' ? enteteBureau(etat, d, parti, ctx) : ''}
     <div id="panneau" role="tabpanel" aria-labelledby="tab-${onglet}" tabindex="-1">${contenu}</div>
     <p class="text-xs text-doux mt-4"><a class="underline text-bleu" href="${LIEN_SOURCES}" target="_blank" rel="noopener">Sources et méthode</a><span class="hidden sm:inline"> · Indices de jeu dérivés de données Insee/DREES ; transports : paramètre d’équilibrage.</span></p>
     ${navigationMobile(etat, d, onglet, ctx.horloge)}`;
 
   brancherNavigation(racine, dispatch);
+  brancherReperes(racine);
   racine.querySelectorAll('[data-aller-decisions]').forEach((b) => b.addEventListener('click', () => dispatch({ type: 'onglet', onglet: 'decisions', haut: true })));
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);

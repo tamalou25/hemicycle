@@ -92,7 +92,7 @@ export function dispatch(action) {
   // En cas d'échec (moteur ou rendu), on revient à l'état et à l'écran précédents.
   const etatPrecedent = etat, ecranPrecedent = ecran;
   try {
-    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, mission: ctx.mission, scenario: ctx.scenario, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense };
+    const donnees = { lois: ctx.lois, partis: ctx.partis, senat: ctx.senat, politiciens: ctx.politiciens, calendrier: ctx.calendrier, evenements: ctx.evenements, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, mission: ctx.mission, scenario: ctx.scenario, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte };
     switch (action.type) {
       case 'accepter': ctx.accepte = action.valeur; ecrire(CLE_ACCORD, action.valeur ? '1' : '0'); return afficher();
       case 'aller': return aller(action.ecran);
@@ -104,7 +104,7 @@ export function dispatch(action) {
         return afficher({ focus: false });
       case 'relever': {
         // ...ctx.defi apporte graine, joueur (rôle, positions, objectifs) et, pour une campagne présidentielle, dateDepart
-        etat = creerPartie({ ...ctx.defi, mission: ctx.defi.joueur.mission ? ctx.mission : null, scenario: ctx.defi.joueur.scenario ? ctx.scenario : null, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense });
+        etat = creerPartie({ ...ctx.defi, mission: ctx.defi.joueur.mission ? ctx.mission : null, scenario: ctx.defi.joueur.scenario ? ctx.scenario : null, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte });
         ctx.defi = null; ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'abandonnerDefi': ctx.defi = null; return aller('accueil');
@@ -113,14 +113,14 @@ export function dispatch(action) {
         // Partie réelle : PM fictif, positions du parti choisi (sources publiques), objectifs par défaut, scénario « Douze mois »
         const parti = ctx.partis.find((p) => p.id === action.parti);
         if (!parti) throw new Error('Choisissez une famille politique.');
-        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'premier_ministre', ideologie: { ...parti.positions } }, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, scenario: ctx.scenario, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
+        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'premier_ministre', ideologie: { ...parti.positions } }, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte, scenario: ctx.scenario, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
         ctx.decouverte = null; ctx.brouillonPLF = null; ctx.scenarioReplie = false; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); break;
       }
       case 'rejouer-scenario': {
         // Même scénario, même graine (mêmes aléas), mêmes nom et parti : on compare ses choix, pas la chance
         if (!etat?.scenario) throw new Error('Aucun scénario à rejouer.');
         const { nom, parti, ideologie } = etat.joueur;
-        etat = creerPartie({ joueur: { nom, parti, role: 'premier_ministre', ideologie: { ...ideologie } }, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, scenario: ctx.scenario, graine: etat.graineInitiale ?? 1 });
+        etat = creerPartie({ joueur: { nom, parti, role: 'premier_ministre', ideologie: { ...ideologie } }, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte, scenario: ctx.scenario, graine: etat.graineInitiale ?? 1 });
         ctx.brouillonPLF = null; ctx.scenarioReplie = false; ctx.onglet = 'bureau'; ecrire(CLE_ONGLET, 'bureau'); toast('Nouvelle partie : même scénario, même graine. À vous d’autres choix.', 'info'); break;
       }
       case 'mission-differer': etat = differerMission(etat); ctx.focusApres = 'h-mission'; break;
@@ -128,7 +128,7 @@ export function dispatch(action) {
         // Campagne présidentielle : président·e fictif·ve, mandat à partir de mai 2027, gouvernement du parti choisi, temps continu (en pause au départ)
         const parti = ctx.partis.find((p) => p.id === action.parti);
         if (!parti) throw new Error('Choisissez une famille politique.');
-        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'president', ideologie: { ...parti.positions } }, situation: ctx.situation, dateDepart: '2027-05-01', regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
+        etat = creerPartie({ joueur: { nom: action.nom, parti: parti.id, role: 'president', ideologie: { ...parti.positions }, difficulte: action.difficulte }, situation: ctx.situation, dateDepart: '2027-05-01', regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte, graine: action.graine ?? ((Date.now() ^ (Math.random() * 2 ** 32)) >>> 0) });
         ctx.presidence = null; ctx.brouillonPLF = null; ctx.region = null; ctx.onglet = 'monde'; ecrire(CLE_ONGLET, 'monde'); if (ctx.monde) ctx.monde.cadrage = cadrageInitial(ctx.monde.donnees); break;
       }
       case 'nommer': etat = nommerGouvernement(etat, action.parti, donnees); ctx.focusApres = 'h-gouv'; break;
@@ -141,7 +141,7 @@ export function dispatch(action) {
         return afficher({ focus: false });
       }
       case 'nouvelle': {
-        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
+        etat = creerPartie({ joueur: action.joueur, situation: ctx.situation, regions: ctx.regions, projets: ctx.projets, finances: ctx.finances, groupes: ctx.groupes, groupesEquilibrage: ctx.groupesEquilibrage, politiques: ctx.politiques, partis: ctx.partis, objectifs: ctx.objectifs, economie: ctx.economie, pays: ctx.pays, defense: ctx.defense, difficulte: ctx.difficulte, graine: (Date.now() ^ (Math.random() * 2 ** 32)) >>> 0 });
         ctx.brouillon = null; ctx.brouillonPLF = null; break;
       }
       case 'reprendre': {
@@ -236,8 +236,8 @@ document.addEventListener('keydown', (e) => {
 
 async function init() {
   try {
-    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs, ctx.mission, ctx.scenario, ctx.carteMonde, ctx.economie, ctx.pays, ctx.defense] = await Promise.all([
-      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'), chargerJson('./data/mission.json'), chargerJson('./data/scenario.json'), chargerJson('./data/carte-monde.json'), chargerJson('./data/economie.json'), chargerJson('./data/pays.json'), chargerJson('./data/defense.json'),
+    [ctx.partis, ctx.lois, ctx.situation, ctx.senat, ctx.politiciens, ctx.calendrier, ctx.evenements, ctx.regions, ctx.projets, ctx.carte, ctx.finances, ctx.groupes, ctx.groupesEquilibrage, ctx.politiques, ctx.objectifs, ctx.mission, ctx.scenario, ctx.carteMonde, ctx.economie, ctx.pays, ctx.defense, ctx.difficulte] = await Promise.all([
+      chargerJson('./data/parties.json'), chargerJson('./data/laws.json'), chargerJson('./data/situation.json'), chargerJson('./data/senat.json'), chargerJson('./data/politicians.json'), chargerJson('./data/calendrier.json'), chargerJson('./data/events.json'), chargerJson('./data/regions.json'), chargerJson('./data/projets.json'), chargerJson('./data/carte-regions.json'), chargerJson('./data/finances.json'), chargerJson('./data/groupes.json'), chargerJson('./data/groupes-equilibrage.json'), chargerJson('./data/politiques.json'), chargerJson('./data/objectifs.json'), chargerJson('./data/mission.json'), chargerJson('./data/scenario.json'), chargerJson('./data/carte-monde.json'), chargerJson('./data/economie.json'), chargerJson('./data/pays.json'), chargerJson('./data/defense.json'), chargerJson('./data/difficulte.json'),
     ]);
   } catch (e) {
     racine.innerHTML = '<p role="alert" class="p-4 border-l-4 border-rouge bg-white">Impossible de charger les données du jeu. Servez le site via un serveur HTTP.</p>';

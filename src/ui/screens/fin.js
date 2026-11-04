@@ -1,7 +1,7 @@
 import { RESULTATS_MISSION, RESULTATS_SCENARIO, ETATS_ENGAGEMENT } from '../../engine/index.js';
 import { esc, fmt, MOIS } from '../util.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
-import { dateDuTour, evaluerFin, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
+import { dateDuTour, evaluerFin, POINTS_PAR_OBJECTIF, bilanCampagne } from '../../engine/index.js';
 import { texteValeur } from '../components/objectifs.js';
 
 const evo = (etat, id, unite) => {
@@ -24,6 +24,8 @@ export function render(racine, etat, dispatch, ctx) {
   const elu = etat.fin.type === 'victoire';
   const president = etat.joueur.role === 'president';
   const nbElections = (etat.resultatsElections ?? []).length;
+  const bc = bilanCampagne(etat, { economie: ctx?.economie, pays: ctx?.pays, defense: ctx?.defense, difficulte: ctx?.difficulte });
+  const sectionsBc = bc.sections.map((s) => `<section aria-labelledby="h-bc-${s.id}" class="bg-carte border border-bord rounded-lg p-4 mt-4"><h2 id="h-bc-${s.id}" class="font-serif font-bold text-xl mb-2">${esc(s.titre)}</h2><dl class="grid grid-cols-[1fr_auto] gap-y-1 text-sm">${s.lignes.map((l) => `<dt>${esc(l.libelle)}</dt><dd class="text-right font-semibold tabular-nums ${l.alerte ? 'text-rouge' : ''}">${esc(String(l.valeur).replace(/(\d)\.(\d)/g, '$1,$2'))}${l.alerte ? '<span class="sr-only"> (point faible)</span>' : ''}</dd>`).join('')}</dl></section>`).join('');
   const couleur = f.score >= 55 ? '#157A48' : f.score >= 35 ? '#8A5A00' : '#C0262B';
   racine.innerHTML = `<section class="max-w-xl mx-auto py-4">
     <h1 class="font-serif font-bold text-3xl">${esc(f.titre)}</h1>
@@ -54,6 +56,8 @@ export function render(racine, etat, dispatch, ctx) {
       <p class="text-xs text-doux mt-2">Évolution : début de mandat → fin.</p>
     </div>
     ${sectionObj}
+    <p class="text-sm text-doux mt-4">Difficulté : <strong>${esc(bc.difficulte)}</strong>. Les lignes en rouge signalent ce qui a pesé sur le mandat.</p>
+    ${sectionsBc}
     <div class="mt-6 flex gap-3 flex-wrap">
       <button type="button" id="rejouer" class="btn btn-p">Rejouer</button>
       ${etat.scenario ? '<button type="button" id="rejouer-scenario" class="btn btn-s">Rejouer ce scénario (même graine)</button>' : ''}

@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-d28cf9484843';
+const CACHE = 'hemicycle-eed0ad6b6364';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -16,6 +16,7 @@ const FICHIERS = [
   "./src/data/carte-monde.json",
   "./src/data/carte-regions.json",
   "./src/data/defense.json",
+  "./src/data/difficulte.json",
   "./src/data/economie.json",
   "./src/data/events.json",
   "./src/data/finances.json",
@@ -34,6 +35,7 @@ const FICHIERS = [
   "./src/data/senat.json",
   "./src/data/situation.json",
   "./src/engine/bilan.js",
+  "./src/engine/bilanCampagne.js",
   "./src/engine/briefing.js",
   "./src/engine/budget.js",
   "./src/engine/budgetEtat.js",
@@ -41,6 +43,7 @@ const FICHIERS = [
   "./src/engine/constants.js",
   "./src/engine/decisions.js",
   "./src/engine/defense.js",
+  "./src/engine/difficulte.js",
   "./src/engine/diplomatie.js",
   "./src/engine/economie.js",
   "./src/engine/effects.js",
@@ -82,6 +85,7 @@ const FICHIERS = [
   "./src/ui/components/confirmations.js",
   "./src/ui/components/decisions.js",
   "./src/ui/components/defense.js",
+  "./src/ui/components/difficulte.js",
   "./src/ui/components/diplomatie.js",
   "./src/ui/components/economie.js",
   "./src/ui/components/elections.js",
@@ -99,6 +103,7 @@ const FICHIERS = [
   "./src/ui/components/partage.js",
   "./src/ui/components/reactions.js",
   "./src/ui/components/relations.js",
+  "./src/ui/components/repere.js",
   "./src/ui/components/scenario.js",
   "./src/ui/components/secteurs.js",
   "./src/ui/components/toast.js",
