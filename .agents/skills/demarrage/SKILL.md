@@ -6,6 +6,7 @@ description: Démarrer une session de travail sur Hémicycle (jeu de simulation 
 # Démarrage d'une session Hémicycle
 
 ## 1. Lire les consignes (dans cet ordre)
+0. Le skill `attentes-proprietaire` : ce que veut le propriétaire (vision, façon de travailler, format des réponses).
 1. `CLAUDE.md` : stack, architecture, **règles de contenu non négociables** (valables pour tous les agents).
 2. `AGENTS.md`, puis `docs/PASSATION.md` : état actuel, section « Travail en parallèle » (qui fait quoi).
 3. Selon la tâche : `docs/DESIGN-UI.md` (interface), `docs/REFONTE-EXPERIENCE.md` (mission, Bureau, bilans), `docs/DEMANDES-MOTEUR.md` (besoins croisés).
