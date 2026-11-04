@@ -1,12 +1,24 @@
 # Passation : Hémicycle
 
+## État au 04/11/2026, soir : `main` = `7c33177`, déployé (Claude)
+- **Fusionnées dans l'ordre** : #28 (passation), #29 (campagne présidentielle, temps continu, refonte visuelle), #30 (correctifs horloge et
+  défi partagé), #31 (carte du monde, écran principal). `main` = `7c33177`.
+- **Déploiement vérifié** : workflow « Tests et déploiement » du commit `7c33177` en succès (après une phase « waiting » de l'environnement
+  Pages) ; https://tamalou25.github.io/hemicycle/ sert `carte-monde.json` et un `sw.js` qui l'embarque ; parcours joué sur le site public
+  (Chromium) : Campagne présidentielle → carte du monde affichée → région Bretagne → projet « Recrutement de soignants » lancé, rôle
+  `president`, 0 erreur JavaScript. Les premiers chargements juste après le déploiement ont été lents (délai de propagation).
+- **Tests sur `7c33177`** : Vitest 224/224 (24 fichiers), Playwright 101 passed / 3 skipped / 0 failed (ordinateur et mobile), `npm run build`
+  et `npm run build:mobile` OK. Sauvegarde v15.
+- **Suite** : mesurer la durée réelle d'une campagne (30 à 90 min visées) et la lisibilité du premier mois avec un joueur ; lots 2 à 5 de
+  `docs/VISION-CAMPAGNE.md` (économie/commerce, diplomatie, défense stratégique, équilibrage et difficulté).
+
 ## Correctifs et carte du monde (Claude, 04/11/2026)
 - **Fusionnées** : #28 (passation) et #29 (campagne présidentielle, temps continu, refonte visuelle) → `main` = `63e45e9`. Déploiement : le
   workflow Pages de ce commit a d'abord été annulé par la concurrence des fusions successives, puis relancé (voir l'état en fin de section).
-- **PR #30 `correctifs-horloge-partage`** (brouillon, base `main`) : horloge en fraction de mois (changer de vitesse garde le jour, « Mois
+- **PR #30 `correctifs-horloge-partage`** (fusionnée) : horloge en fraction de mois (changer de vitesse garde le jour, « Mois
   suivant » manuel remet le mois à zéro, aucun double traitement) ; défi partagé avec date de départ (campagne en mai 2027 chez le
   destinataire, anciens liens lisibles). Tests : `tests/horloge.test.js` (6), `tests/presidence.test.js` (défi), `e2e/presidence.spec.js` (+2).
-- **Branche `carte-monde`** (dépend de #30) : `scripts/generer-carte-monde.mjs` → `src/data/carte-monde.json` (Natural Earth 110m, domaine
+- **PR #31 `carte-monde`** (fusionnée) : `scripts/generer-carte-monde.mjs` → `src/data/carte-monde.json` (Natural Earth 110m, domaine
   public + régions IGN/france-geojson, Licence Ouverte, projetés ensemble en Mercator ; sources dans `docs/SOURCES.md`) ;
   `src/ui/components/carteMonde.js` : écran « Monde » (onglet principal, écran d'arrivée de la campagne présidentielle), zoom et
   déplacement (souris, tactile, clavier), recentrage France / Europe / Monde, encarts DROM, vues existantes, tableau accessible, « Votre
