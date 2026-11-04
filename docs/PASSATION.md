@@ -1,5 +1,40 @@
 # Passation : Hémicycle
 
+## État au 04/11/2026, fin de la mission lots 2 à 5 (Claude) : `main` = `6b372dd`, 4 PR en brouillon empilées
+| Lot | Branche (base) | PR | Contenu |
+|---|---|---|---|
+| 2 Économie et commerce | `lot2-economie` (main) | #34 | filières, dépendances, commerce par partenaire, investissements, onglet Économie, sauvegarde v16 |
+| 3 Diplomatie | `lot3-diplomatie` (lot2) | #35 | 12 partenaires simulés + UE, accords, sanctions, initiatives, carte Partenaires, fiche pays |
+| 4 Défense stratégique | `lot4-defense` (lot3) | #36 | équipement, disponibilité expliquée, OTAN, programmes, engagements, crise conditionnée, onglet Défense |
+| 5 Équilibrage et prise en main | `lot5-equilibrage` (lot4) | #37 | difficultés Facile / Normal / Difficile, repères, bilan de fin, simulations, tests d'équilibrage |
+La branche de session `claude/pensive-shannon-mvvssk` pointe sur le même commit que `lot5-equilibrage` (version intégrée des quatre lots).
+**Rien n'est fusionné ni déployé** : le site public reste à `6b372dd`. Ordre de fusion : #34 → #35 → #36 → #37 (ou fusion de #37 seule après
+retarget sur `main`, elle contient tout).
+- **Vérifications sur `lot5-equilibrage`** : Vitest **285/285** (28 fichiers), Playwright **119 passed / 5 skipped / 0 failed** (ordinateur et
+  mobile), `npm run build` et `npm run build:mobile` OK, audit axe (WCAG 2.0/2.1 A et AA) sur tous les onglets, dont Économie et Défense.
+- **Simulations** (`node scripts/sim-campagne.mjs 10`, 10 graines × 5 stratégies × 3 niveaux, mandat de 60 mois ; résultats de simulation,
+  pas une preuve d'intérêt) : passif → score 16 à 26, popularité 12 à 17 %, 0 à 2 fins anticipées sur 10 (difficile) ; réactif → 43 à 46 ;
+  investisseur (tout lancer) → 46 à 50 mais déficit 11 à 13 % du PIB et dette 139 à 142 % ; négociateur → 39 à 43, alliés à 97-99 ;
+  tout azimut → 57 à 61, déficit 11 à 12 %. Aucune valeur invalide, aucune spirale irréversible pour un joueur réactif, pas de stratégie
+  gratuite (tests `tests/equilibrage.test.js`, 12). Pénuries : 0 mois dans ces stratégies (elles exigent sanctions ou ruptures cumulées :
+  limite connue). La difficulté agit surtout sur le joueur passif, les ressources et l'usure : un joueur réactif obtient des scores proches
+  en difficile (les événements répondus restent globalement payants, règle antérieure).
+- **À confirmer par un humain** : durée réelle d'une campagne (30 à 90 min visées, non mesurée), compréhension des nouveaux écrans par un
+  débutant (repères), lecteur d'écran réel, appareil physique.
+
+## Lot 5 : équilibrage et prise en main (Claude, branche `lot5-equilibrage`, base `lot4-defense`, 04/11/2026)
+- **Difficulté** : `src/data/difficulte.json` (paramètres explicites : capital mensuel ±1, amplitude des aléas, fréquence des événements et des
+  initiatives, enveloppe régionale, usure), `src/engine/difficulte.js` ; branchée dans `turn.js`, `events.js`, `diplomatie.js`, `secteurs.js`,
+  `economie.js`, `defense.js`. L'état garde le niveau (`etat.difficulte`, null = normal pour les parties antérieures), la sauvegarde l'assainit,
+  le défi le transmet (`k`). Choix sur l'écran de campagne (Facile coché, « conseillé pour débuter », tableau comparatif) et en partie
+  personnalisée ; niveau rappelé dans l'en-tête du Bureau et au bilan.
+- **Prise en main** : repères (`src/ui/components/repere.js`) affichés une fois à la première rencontre d'un système (carte, économie,
+  partenaires, initiative, défense), fermés par « Compris », mémorisés par appareil (hors état). Bilan de fin enrichi (`bilanCampagne.js`) :
+  institutions, économie, diplomatie, défense, lignes en rouge = points faibles, difficulté affichée.
+- **Équilibrage** : coefficients économie revus (croissance 0,35 et chômage 0,15 par point de production, marge d'importation 8 %, numérique +3),
+  `scripts/sim-campagne.mjs`, `tests/equilibrage.test.js` étendu (3 tests campagne), `tests/difficulte.test.js` (6), schéma (1), `e2e/difficulte.spec.js` (2).
+- **Captures** : `docs/captures/lot5/` (choix de difficulté, repère carte, bilan de fin ; ordinateur et 412 px).
+
 ## Lot 4 : défense stratégique et alliances (Claude, branche `lot4-defense`, base `lot3-diplomatie`, 04/11/2026)
 - **Moteur** : `src/engine/defense.js` : équipement 0-100 (usure mensuelle, écart budgétaire du poste « défense et sécurité », programmes),
   préparation = secteur « Défense (préparation) » existant (programmes nationaux `entretien-equipements`, `recrutement-reserve`),
