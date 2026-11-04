@@ -1,5 +1,22 @@
 # Passation : Hémicycle
 
+## Lot 4 : défense stratégique et alliances (Claude, branche `lot4-defense`, base `lot3-diplomatie`, 04/11/2026)
+- **Moteur** : `src/engine/defense.js` : équipement 0-100 (usure mensuelle, écart budgétaire du poste « défense et sécurité », programmes),
+  préparation = secteur « Défense (préparation) » existant (programmes nationaux `entretien-equipements`, `recrutement-reserve`),
+  **disponibilité des forces** expliquée (facteurs : équipement, préparation, engagements en cours), engagement OTAN 0-100 (suit l'effort
+  budgétaire par rapport à la cible de 2 % du PIB, les accords de défense, les exercices) qui pèse sur les relations avec les alliés
+  (`relationCible`) ; 4 programmes (`src/data/defense.json`, coût étalé → déficit et poste budgétaire, délai, livraisons, entretien) ;
+  2 engagements (exercice OTAN, mission européenne : moyens immobilisés, coût, alliés rassurés, expiration) ; crise sécuritaire des
+  initiatives diplomatiques : l'option militaire exige une disponibilité minimale et crée une opération extérieure (12 mois, coût, moyens).
+  Intégré dans `turn.js` après les secteurs ; sauvegarde v16 (`defense` assainie, anciennes parties complétées).
+- **Interface** : onglet « Défense » (dans « Plus ») : disponibilité avec « D'où vient ce chiffre ? », jauges, effort de défense (% du PIB vs
+  cible), alerte sous le seuil critique, programmes et engagements (coûts, durée, contrepartie, refus expliqué) ; programmes et engagements
+  au catalogue des Décisions (confirmation pour un engagement) ; priorité « Forces peu disponibles » au Bureau. Captures : `docs/captures/lot4/`.
+- **Tests** : `tests/defense.test.js` (10), schéma `defense.json` (1), `e2e/defense.spec.js` (2). Résultats : Vitest **275/275** (26 fichiers),
+  Playwright **115 passed / 5 skipped / 0 failed** (suite complète sur `lot4-defense`), `npm run build` OK.
+- **Limites** : un seul indice d'équipement (pas de composantes terre/air/mer) ; les crises sont celles des initiatives diplomatiques ;
+  équilibrage des coûts et de l'usure à confirmer au lot 5.
+
 ## Lot 3 : diplomatie et pays étrangers autonomes (Claude, branche `lot3-diplomatie`, base `lot2-economie`, 04/11/2026)
 - **Moteur** : `src/engine/diplomatie.js` : 12 partenaires simulés + Union européenne (`src/data/pays.json`, appartenances UE/OTAN sourcées,
   relations, intérêts, positions, seuils et probabilités = paramètres de simulation) ; relation 0-100 convergeant vers une cible
