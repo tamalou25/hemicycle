@@ -2,11 +2,13 @@
 import { esc, MOIS } from '../util.js';
 import { jourDuMois, VITESSES } from '../../engine/index.js';
 
-export const ONGLETS_PRINCIPAUX = [['bureau', 'Bureau'], ['decisions', 'Décisions'], ['carte', 'Carte'], ['budget', 'Budget']];
-export const ONGLETS_PLUS = [['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
+// « Monde » : carte mondiale cadrée sur la France, écran principal ; l'ancienne carte des régions reste dans « Plus »
+export const ONGLETS_PRINCIPAUX = [['monde', 'Monde'], ['bureau', 'Bureau'], ['decisions', 'Décisions'], ['budget', 'Budget']];
+export const ONGLETS_PLUS = [['carte', 'Carte'], ['opinion', 'Opinion'], ['parlement', 'Parlement'], ['chronologie', 'Chronologie']];
 export const ONGLETS = [...ONGLETS_PRINCIPAUX, ...ONGLETS_PLUS];
 
 const ICONES = {
+  monde: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   bureau: '<path d="M3 10l9-6 9 6v10H3z"/><path d="M9 20v-6h6v6"/>',
   decisions: '<path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/>',
   carte: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',

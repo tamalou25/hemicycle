@@ -13,9 +13,9 @@ export const VUES = [
 /** Valeur d'une région pour une vue : la confiance vient de etat.confianceRegions, le reste des territoires. */
 export const valeurRegion = (etat, id, vue) => (vue === 'confiance' ? etat.confianceRegions?.[id] : etat.territoires?.[id]?.[vue]);
 // 5 classes séquentielles ivoire → bleu nuit (lisibles aussi en niveaux de gris)
-const COULEURS = ['#E8ECF3', '#B9C9E6', '#7F9FD6', '#3F66B8', '#111C33'];
+export const COULEURS = ['#E8ECF3', '#B9C9E6', '#7F9FD6', '#3F66B8', '#111C33'];
 const BORNES = ['0 à 19', '20 à 39', '40 à 59', '60 à 79', '80 à 100'];
-const classe = (v) => Math.max(0, Math.min(4, Math.floor((v ?? 0) / 20)));
+export const classe = (v) => Math.max(0, Math.min(4, Math.floor((v ?? 0) / 20)));
 const LIB_INDICE = { emploi: 'Emploi', sante: 'Accès aux soins', transports: 'Transports' };
 const nf = (n) => Number(n).toLocaleString('fr-FR');
 
@@ -116,7 +116,7 @@ export function svgCarte(etat, ctx, vue, selection) {
     ${ordre.map(chemin).join('')}</svg>`;
 }
 
-function tableAccessible(etat, ctx) {
+export function tableAccessible(etat, ctx) {
   const lignes = ctx.regions.regions.map((r) => {
     const t = etat.territoires?.[r.id] ?? {};
     return `<tr class="border-b border-bord"><th scope="row" class="text-left py-1 pr-2 font-semibold">${esc(r.nom)}</th>
