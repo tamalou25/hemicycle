@@ -24,9 +24,9 @@ export function eligible(ev, etat, { scenario = false } = {}) {
 }
 
 /** Tire (ou non) un événement pour le mois. Renvoie { evenementId|null, graine }. */
-export function tirerEvenement(etat, evenements, graine) {
+export function tirerEvenement(etat, evenements, graine, facteur = 1) {
   let [r, g] = aleatoire(graine);
-  if (r >= PROBA_EVENEMENT) return { evenementId: null, graine: g };
+  if (r >= PROBA_EVENEMENT * facteur) return { evenementId: null, graine: g };
   const possibles = evenements.filter((ev) => eligible(ev, etat));
   const total = possibles.reduce((s, ev) => s + (ev.poids ?? 1), 0);
   if (!total) return { evenementId: null, graine: g };

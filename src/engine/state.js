@@ -14,6 +14,7 @@ import { gouvernementInitial } from './presidence.js';
 import { economieInitiale } from './economie.js';
 import { diplomatieInitiale } from './diplomatie.js';
 import { defenseInitiale, disponibiliteForces } from './defense.js';
+import { normaliserDifficulte } from './difficulte.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -23,7 +24,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null, scenario = null, economie = null, pays = null, defense = null }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null, scenario = null, economie = null, pays = null, defense = null, difficulte = null }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -93,7 +94,7 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     economie: economieInitiale(economie),
     diplomatie: diplomatieInitiale(pays), diploCeMois: false, // lot 3 : partenaires simulés, null sans données
     defense: defenseInitiale(defense), // lot 4 : équipement, engagements, null sans données
-    difficulte: null, // lot 5
+    difficulte: normaliserDifficulte(joueur.difficulte ?? difficulte?.defaut), // lot 5 : niveau (null = normal, parties antérieures)
   };
   // Population (E3) : calculée sur l'état initial complet
   if (etat.defense) etat.defense = { ...etat.defense, disponibilite: disponibiliteForces(etat, defense).valeur };

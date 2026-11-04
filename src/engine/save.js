@@ -1,5 +1,6 @@
 // Sérialisation / validation des sauvegardes (indépendant du stockage).
 import { VERSION_SAUVEGARDE, INDICATEURS, AXES, COMPETENCES, ROLES, ETAPES } from './constants.js';
+import { normaliserDifficulte } from './difficulte.js';
 
 export const exporterPartie = (etat) => JSON.stringify(etat);
 
@@ -190,7 +191,7 @@ function assainir(e) {
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     economie: assainirEconomie(e.economie),
     diplomatie: assainirDiplomatie(e.diplomatie), diploCeMois: bool(e.diploCeMois),
-    defense: assainirDefense(e.defense), difficulte: null,
+    defense: assainirDefense(e.defense), difficulte: normaliserDifficulte(e.difficulte),
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
     resultatsElections: liste(e.resultatsElections, (x) => ({

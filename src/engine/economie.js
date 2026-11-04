@@ -11,7 +11,7 @@ const r2 = (v) => Math.round(v * 100) / 100;
 const r3 = (v) => Math.round(v * 1000) / 1000;
 export const ORDRE_FILIERES = ['energie', 'agriculture', 'industrie', 'services'];
 export const DUREE_ENTRETIEN = 120;
-export const MARGE_IMPORTATIONS = 0.15; // hausse maximale des importations disponibles en cas de manque (équilibrage)
+export const MARGE_IMPORTATIONS = 0.08; // hausse maximale des importations disponibles en cas de manque (équilibrage)
 export const SUBSTITUTION_MAX = 0.5;    // part des importations qu'une capacité domestique supplémentaire peut remplacer (équilibrage) // mois d'entretien planifiés après la mise en service (au-delà du mandat)
 
 /** État économique initial d'après economie.json. */
@@ -93,7 +93,7 @@ export function lancerInvestissement(etat, id, { economie: eco, finances }) {
  * Évolution mensuelle. Renvoie { etat, entrees, deltas } ; `deltas` sont les variations à appliquer aux indicateurs
  * (croissance, chomage, inflation) par l'appelant (turn.js), déjà attribuées dans `entrees`.
  */
-export function evoluerEconomie(etat, { economie: eco }, tour) {
+export function evoluerEconomie(etat, { economie: eco }, tour, usure = 1) {
   const e0 = etat.economie;
   if (!e0 || !eco) return { etat, entrees: [], deltas: { croissance: 0, chomage: 0, inflation: 0 } };
   const entrees = [];
@@ -102,7 +102,7 @@ export function evoluerEconomie(etat, { economie: eco }, tour) {
   const filieres = Object.fromEntries(Object.entries(e0.filieres).map(([f, x]) => [f, { ...x, dependances: { ...x.dependances } }]));
 
   // 1. Usure des capacités
-  for (const f of ORDRE_FILIERES) if (filieres[f]) filieres[f].capacite = r2(filieres[f].capacite - (eco.filieres[f].usure_mensuelle ?? 0));
+  for (const f of ORDRE_FILIERES) if (filieres[f]) filieres[f].capacite = r2(filieres[f].capacite - (eco.filieres[f].usure_mensuelle ?? 0) * usure);
 
   // 2. Chantiers : montée en charge après le délai, mise en service, entretien
   const investissements = (e0.investissements ?? []).map((x) => {

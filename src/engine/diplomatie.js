@@ -223,10 +223,10 @@ function eligibleInitiative(def, x, etat, { pays: p }) {
 }
 
 /** Tirage d'une initiative étrangère pour le mois (ou aucune). */
-function tirerInitiative(etat, donnees, graine) {
+function tirerInitiative(etat, donnees, graine, facteur = 1) {
   const { pays: p } = donnees;
   let [r, g] = aleatoire(graine);
-  if (r >= p.parametres.proba_initiative) return { initiative: null, graine: g };
+  if (r >= p.parametres.proba_initiative * facteur) return { initiative: null, graine: g };
   const candidats = [];
   for (const x of p.pays) for (const def of p.initiatives) if (def.type !== 'ue' && eligibleInitiative(def, x, etat, donnees)) candidats.push({ def, pays: x.id, poids: (def.poids ?? 1) * (x.poids ?? 1) });
   for (const def of p.initiatives) if (def.type === 'ue' && eligibleInitiative(def, null, etat, donnees)) candidats.push({ def, pays: 'ue', poids: (def.poids ?? 1) * 2 });
@@ -243,7 +243,7 @@ function tirerInitiative(etat, donnees, graine) {
  * 1. Initiative ignorée → réponse par défaut. 2. Échéances (accords, mesures). 3. Convergence des relations.
  * 4. Modificateurs commerciaux écrits dans l'économie. 5. Nouvelle initiative éventuelle (tirage à la graine).
  */
-export function evoluerDiplomatie(etatInitial, donnees, tour, graine) {
+export function evoluerDiplomatie(etatInitial, donnees, tour, graine, facteurInitiatives = 1) {
   const { pays: p } = donnees;
   if (!etatInitial.diplomatie || !p) return { etat: etatInitial, entrees: [], graine };
   let etat = etatInitial;
@@ -289,7 +289,7 @@ export function evoluerDiplomatie(etatInitial, donnees, tour, graine) {
     economie = { ...economie, disponibilite, debouches };
   }
   // Nouvelle initiative (au plus une en attente)
-  const t = enAttente ? { initiative: null, graine } : tirerInitiative({ ...etat, tour, diplomatie: d }, donnees, graine);
+  const t = enAttente ? { initiative: null, graine } : tirerInitiative({ ...etat, tour, diplomatie: d }, donnees, graine, facteurInitiatives);
   if (t.initiative) d = { ...d, initiative: t.initiative, dernieresInitiatives: { ...(d.dernieresInitiatives ?? {}), [t.initiative.pays]: tour } };
   return { etat: { ...etat, diplomatie: d, economie, journal }, entrees, graine: t.graine };
 }

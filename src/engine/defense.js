@@ -101,14 +101,14 @@ export function engagerForces(etat, id, { defense: d, pays: p, finances }) {
  * Évolution mensuelle : usure, effet de l'écart budgétaire défense, programmes (livraisons), échéance des engagements,
  * engagement OTAN (effort budgétaire ≥ cible, accords de défense), disponibilité recalculée.
  */
-export function evoluerDefense(etat, { defense: d, pays: p }, tour) {
+export function evoluerDefense(etat, { defense: d, pays: p }, tour, usure = 1) {
   const df = etat.defense;
   if (!df || !d) return { etat, entrees: [] };
   const prm = d.parametres;
   const entrees = [];
   const journal = [...etat.journal];
-  let equipement = df.equipement - prm.usure_equipement;
-  entrees.push({ tour, indicateur: 'defense:equipement', delta: -prm.usure_equipement, source: 'usure', type: 'usure', nature: 'observe' });
+  let equipement = df.equipement - prm.usure_equipement * usure;
+  entrees.push({ tour, indicateur: 'defense:equipement', delta: -prm.usure_equipement * usure, source: 'usure', type: 'usure', nature: 'observe' });
   const ecart = etat.budget?.ecarts?.defense_securite ?? 0;
   if (ecart) { const dlt = r2(ecart * prm.equipement_par_md_ecart); equipement += dlt; entrees.push({ tour, indicateur: 'defense:equipement', delta: dlt, source: 'budget', type: 'budget', nature: 'observe' }); }
   let secteurs = etat.secteurs;

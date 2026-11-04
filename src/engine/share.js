@@ -21,6 +21,7 @@ export function encoderDefi({ graine, joueur, dateDepart }) {
     o: Array.isArray(joueur.objectifs) && joueur.objectifs.length ? joueur.objectifs : undefined, // objectifs de mandat (même défi = même barème)
     m: joueur.mission ? 1 : undefined, // ancienne découverte (v13) : même mission d'initiation
     s: joueur.scenario ? 1 : undefined, // partie courte « Douze mois pour convaincre » : même scénario
+    k: joueur.difficulte ?? undefined, // niveau de difficulté (lot 5) : même défi = mêmes paramètres
   };
   return versB64(JSON.stringify({ v: VERSION_DEFI, g: graine >>> 0, j, ...(d ? { d } : {}) }));
 }
@@ -43,6 +44,7 @@ export function decoderDefi(code) {
       // Objectifs : validés ensuite par normaliserObjectifs (ids connus, nombre exact) à la création de la partie
       ...(d.j.m === 1 ? { mission: true } : {}),
       ...(d.j.s === 1 ? { scenario: true } : {}),
+      ...(typeof d.j.k === 'string' ? { difficulte: d.j.k.slice(0, 20) } : {}),
       ...(Array.isArray(d.j.o) ? { objectifs: d.j.o.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 5) } : {}),
     },
   };
