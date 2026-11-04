@@ -5,6 +5,21 @@ Simulation politique de la France, tour par tour (1 tour = 1 mois), jouable dans
 ## Attentes du propriétaire
 En début de session, suivre les skills `.agents/skills/demarrage/SKILL.md` puis `.agents/skills/attentes-proprietaire/SKILL.md` (vision, façon de travailler, politique de choix des modèles et de délégation). Ne pas dupliquer ces règles ici.
 
+## Skills ECC (`.agents/skills/`, voir `ECC.md`)
+Lire le skill **avant** la tâche concernée (les règles de ce fichier priment en cas de conflit) :
+
+| Tâche | Skill |
+|---|---|
+| Nouvelle fonctionnalité ou correction du moteur | `tdd-workflow` |
+| Écran, composant, style | `frontend-patterns`, `frontend-a11y`, `make-interfaces-feel-better` ; cohérence visuelle : `design-system`, `frontend-design-direction` |
+| Tests Playwright | `e2e-testing` |
+| Gros changement ou refonte | `change-impact` |
+| Décision structurante | `architecture-decision-records` |
+| Sauvegarde, import/export JSON | `security-review`, `error-handling` |
+| Recherche de données réelles | `deep-research` (règles de contenu ci-dessous) |
+| Avant de rendre la main | `verification-loop`, `ai-regression-testing` |
+| Revue de code | `coding-standards` |
+
 ## Stack
 - HTML + JavaScript vanilla, modules ES, sans framework. Tailwind **compilé localement** : `npm run build:css` → `assets/app.css` (à commiter ; la CI vérifie). Aucun CDN (jeu jouable hors ligne).
 - Données JSON dans `src/data/`, séparées du moteur
@@ -30,14 +45,14 @@ En début de session, suivre les skills `.agents/skills/demarrage/SKILL.md` puis
 - Une branche par phase (`phase-N-nom`), PR en brouillon via `gh`
 - Mobile-first, contraste WCAG AA, tout est utilisable au clavier
 
-## Règles de contenu (NON NÉGOCIABLES)
-- **Citations réelles uniquement** : courtes (< 15 mots), exactes, vérifiées, avec `source`, `date` et `url`. Si la citation n'est pas vérifiable, on ne l'inclut pas.
-- **Aucune citation inventée** attribuée à une personne réelle. Les réactions simulées s'affichent **sans guillemets**, avec un badge **SIMULATION** (« X s'opposerait probablement… »).
-- **Aucun scandale, crime ou fait inventé** concernant une personne réelle. Les scandales concernent uniquement le joueur ou des personnages inventés.
-- Pas de photos de personnes réelles : on utilise les initiales ou des avatars génériques.
+## Règles de contenu
+- **Personnes réelles — NON NÉGOCIABLE** : aucune citation inventée attribuée à une personne réelle ; les citations réelles sont courtes (< 15 mots), exactes, avec `source`, `date` et `url` (sinon on ne les inclut pas). Aucun scandale, crime, fait de santé ou de vie privée inventé sur une personne réelle.
+- **Humour (décision du propriétaire, 04/11/2026)** : événements aléatoires drôles et absurdes bienvenus. Personnages inventés libres, sans badge ni source. Parodies de personnalités réelles autorisées seulement avec un **nom déformé**, un trait **absurde et inoffensif** (manies, tics, objets), **même dosage pour tous les partis**, jamais de crime, scandale, santé, famille ni fausse citation.
+- Les réactions simulées de partis réels restent affichées **sans guillemets**, avec le badge **SIMULATION**. Le badge n'est pas nécessaire sur le contenu manifestement fictif.
+- Pas de photos de personnes réelles : initiales ou avatars génériques.
 - Neutralité : même traitement pour tous les partis, positions tirées de sources publiques (programmes, votes).
 - Disclaimer visible au lancement et dans le footer : « Simulation fictive. Les événements simulés ne reflètent pas les actions ou propos réels des personnes citées. »
-- Toutes les sources sont listées dans `docs/SOURCES.md`, avec leur date de collecte.
+- `docs/SOURCES.md` liste les sources des **données réelles** (positions, chiffres, citations), avec leur date de collecte. Pas nécessaire pour le contenu fictif.
 
 ## Modèle de jeu (Phase 1)
 - Indicateurs : `chomage`, `croissance`, `deficit`, `inflation`, `popularite`, `tensions` (plus `dette`, suivie mais non affichée en jauge)

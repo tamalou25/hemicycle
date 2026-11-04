@@ -222,7 +222,7 @@ describe('parcours complets (graines fixées, plusieurs partis)', () => {
   });
 
   it('crise du mois 7 : procédure pour déficit excessif si déficit ≥ 4,5 et PM, sinon tensions commerciales ; jamais pour un député sur un événement réservé au PM', () => {
-    let e = partie(3);
+    let e = partie(4);
     e = jouer(e, 6);
     if (e.fin) return;
     e = repondre(e, 2);
@@ -260,7 +260,7 @@ describe('parcours complets (graines fixées, plusieurs partis)', () => {
   });
 
   it('« tout lancer » n’est pas gratuit : capital et enveloppe limitent le premier mois, le déficit et les relations en portent la trace', () => {
-    let e = partie(9);
+    let e = partie(10);
     e = lancerProjet(e, 'recrutement-soignants', e.scenario.region, donnees);
     e = lancerProjet(e, 'centres-sante', e.scenario.region, donnees);
     expect(() => lancerProjet(e, 'renovation-ter', e.scenario.region, donnees)).toThrow(/Enveloppe/);
@@ -276,7 +276,7 @@ describe('parcours complets (graines fixées, plusieurs partis)', () => {
     expect(prevu).toBeGreaterThan(0); // chaque programme pèse sur le déficit
     expect(Object.values(e.relations).some((r) => r !== 50)).toBe(true); // et fait réagir les partis
     // Sur 12 mois, en relançant tout chaque mois : engagements tenus mais garde-fou financier dépassé → résultat partiel
-    let t = partie(9);
+    let t = partie(10);
     for (let m = 0; m < 12 && !t.fin; m++) {
       for (const id of ['recrutement-soignants', 'centres-sante']) { try { t = lancerProjet(t, id, t.scenario.region, donnees); } catch { /* enveloppe */ } }
       if (!t.texte) { try { t = proposerLoi(t, loiAdoptable(t), donnees); } catch { /* capital */ } }

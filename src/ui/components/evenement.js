@@ -4,7 +4,7 @@ import { esc, fmt } from '../util.js';
 const LIB = { chomage: 'Chômage', croissance: 'Croissance', deficit: 'Déficit', inflation: 'Inflation', popularite: 'Popularité', tensions: 'Tensions', dette: 'Dette' };
 // sens : +1 si une hausse est favorable
 const BON = { chomage: -1, croissance: 1, deficit: -1, inflation: -1, popularite: 1, tensions: -1, dette: -1 };
-const THEMES_EV = { social: 'Social', international: 'International', climat: 'Climat', sante: 'Santé', securite: 'Sécurité', scandale: 'Scandale', europe: 'Europe', economie: 'Économie' };
+const THEMES_EV = { social: 'Social', international: 'International', climat: 'Climat', sante: 'Santé', securite: 'Sécurité', scandale: 'Scandale', insolite: 'Insolite', europe: 'Europe', economie: 'Économie' };
 
 import { raisonRefusChoix } from '../../engine/index.js';
 
