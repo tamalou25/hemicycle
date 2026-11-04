@@ -13,13 +13,15 @@ export function render(racine, etat, dispatch, ctx) {
   const sauv = ctx.sauvegardeExiste;
   racine.innerHTML = `<form id="form-dec" class="max-w-xl mx-auto" novalidate>
     <h1 class="font-serif font-bold text-3xl mb-2">Découvrir en jouant</h1>
-    <p class="mb-4">Une vraie partie, avec une première mission guidée de six mois. Tout le reste se règle par défaut ; vous pourrez tout personnaliser dans une prochaine partie.</p>
+    <p class="mb-4">Une vraie partie, courte : <strong>douze mois</strong> (environ 15 minutes) pour tenir trois engagements publics. Tout le reste se règle par défaut ; la partie personnalisée et le mandat complet restent disponibles à l’accueil.</p>
     <section class="bg-carte border border-bord rounded-lg p-4 mb-4" aria-labelledby="h-role">
-      <h2 id="h-role" class="font-serif font-bold text-lg">Votre rôle : Premier ministre (personnage fictif)</h2>
+      <h2 id="h-role" class="font-serif font-bold text-lg">Vous : Premier ministre (personnage fictif), nommé·e en novembre 2026</h2>
       <ul class="list-disc pl-5 text-sm mt-1 space-y-0.5">
-        <li>Vous dirigez le gouvernement : lois, programmes nationaux, budget de l’État (déposé à l’automne).</li>
-        <li>Vous disposez d’une enveloppe pour des projets en région, sans vote préalable.</li>
-        <li>Vous pouvez être renversé·e par une motion de censure. L’élection présidentielle d’avril 2027 peut aussi changer votre rôle.</li>
+        <li><strong>Vos pouvoirs</strong> : lois (navette de 3 mois au moins), programmes nationaux, budget de l’État, 49.3, accords avec les groupes ; une enveloppe pour des projets en région, sans vote.</li>
+        <li><strong>Le problème</strong> : ${esc(ctx.scenario?.situation ?? '')}</li>
+        <li><strong>Trois engagements</strong>, jugés en novembre 2027 : ${(ctx.scenario?.engagements ?? []).map((e) => `<em>${esc(e.titre.toLowerCase())}</em>`).join(' ; ')}. Chacun est <em>tenu</em>, <em>en partie</em> ou <em>non tenu</em> ; les conditions exactes sont au Bureau.</li>
+        <li><strong>Garde-fou</strong> : ${esc(ctx.scenario?.garde_fou?.texte ?? '')}</li>
+        <li><strong>Risques</strong> : motion de censure, présidentielle d’avril 2027 (vous pouvez perdre Matignon), crises à traiter en cours de route.</li>
       </ul>
       <label for="dec-nom" class="font-semibold block mt-3">Nom du personnage (fictif)</label>
       <input id="dec-nom" class="champ" type="text" maxlength="40" autocomplete="off" value="${esc(st.nom)}">
@@ -29,7 +31,7 @@ export function render(racine, etat, dispatch, ctx) {
       <p id="dec-parti-aide" class="text-sm text-doux mb-2">Choix obligatoire, aucun n’est proposé par défaut (ordre alphabétique). Vos positions reprendront celles du parti, tirées de ses programmes publics. Cela change vos alliés et les réactions, pas la mission : elle est réalisable quel que soit le parti.</p>
       <ul>${options}</ul>
     </fieldset>
-    <p class="text-sm mb-4">Objectifs de mandat attribués par défaut : chômage, déficit et territoires (modifiables en partie personnalisée).</p>
+    <p class="text-sm mb-4">À l’échéance, vous pourrez rejouer avec d’autres choix ou poursuivre le mandat (60 mois, objectifs par défaut : chômage, déficit, territoires).</p>
     ${sauv ? `<div class="border-l-4 border-laiton bg-[#FFF3C4] p-3 mb-4" role="note">
       <p class="font-semibold">Une partie est déjà sauvegardée sur cet appareil.</p>
       <p class="text-sm">Lancer la découverte la remplacera. Vous pouvez d’abord l’exporter dans un fichier.</p>

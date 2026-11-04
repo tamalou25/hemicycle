@@ -37,6 +37,7 @@ export { evaluerObjectifs, normaliserObjectifs, valeurObjectif, objectifPossible
 export { tourSuivant } from './turn.js';
 export { ficheDecision, favorable } from './fiches.js';
 export { bilanMois, engagements } from './bilan.js';
-export { creerMission, regionMission, projetMission, effetObserve, etapesMission, debriefMission, differerMission, apercuProjet, RESULTATS_MISSION } from './mission.js';
+export { creerMission, regionMission, projetMission, projetsMission, effetObserve, etapesMission, debriefMission, differerMission, apercuProjet, RESULTATS_MISSION } from './mission.js';
+export { creerScenario, projetsScenario, effetSoins, evaluerEngagements, resultatScenario, gardeFou, criseDue, bilanScenario, priorites, apercuAmendement, RESULTATS_SCENARIO, ETATS_ENGAGEMENT } from './scenario.js';
 export { exporterPartie, importerPartie } from './save.js';
 export { populariteCible, intentionsDeVote } from './polls.js';

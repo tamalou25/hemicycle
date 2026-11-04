@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   creerPartie, tourSuivant, proposerLoi, amenderTexte, recourir493, negocierAccord,
-  groupesAssemblee, groupesSenat, voterChambre, voterCensure, importerPartie, MAJORITE_CENSURE,
+  groupesAssemblee, groupesSenat, voterChambre, voterCensure, importerPartie, MAJORITE_CENSURE, VERSION_SAUVEGARDE,
 } from '../src/engine/index.js';
 import { avancerNavette } from '../src/engine/navette.js';
 
@@ -117,7 +117,7 @@ describe('migration', () => {
     const v1 = { ...partie('ps'), version: 1 };
     delete v1.texte; delete v1.accords; delete v1.joueur.role;
     const e = importerPartie(JSON.stringify(v1));
-    expect(e.version).toBe(13);
+    expect(e.version).toBe(VERSION_SAUVEGARDE);
     expect(e.joueur.role).toBe('depute');
     expect(e.accords).toEqual([]);
   });

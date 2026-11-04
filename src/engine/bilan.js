@@ -48,9 +48,11 @@ export function engagements(etat, donnees) {
 export function bilanMois(etat, donnees) {
   const t = etat.tour;
   if (t === 0) return null;
-  const journal = (etat.journal ?? []).filter((j) => j.tour === t - 1 || j.tour === t);
+  // Décisions : prises par le joueur pendant le mois précédent. Résultats : survenus au passage (datés du mois courant),
+  // donc jamais repris dans le bilan du mois suivant.
+  const journal = etat.journal ?? [];
   const decisions = journal.filter((j) => j.tour === t - 1 && estDecision(j)).map((j) => j.texte);
-  const resultats = journal.filter((j) => !estDecision(j) && j.type !== 'debut').map((j) => j.texte);
+  const resultats = journal.filter((j) => j.tour === t && !estDecision(j) && j.type !== 'debut').map((j) => j.texte);
   const registre = (etat.explications ?? []).filter((e) => e.tour === t && e.nature === 'observe' && e.delta);
   const nationaux = registre.filter((e) => !e.region && !e.groupe && !e.parti);
   const vosEffets = nationaux.filter((e) => DECISIONS_JOUEUR.has(e.type));

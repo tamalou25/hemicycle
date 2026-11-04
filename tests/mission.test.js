@@ -2,7 +2,8 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
-  creerPartie, tourSuivant, lancerProjet, etapesMission, differerMission, apercuProjet, projetMission, effetObserve,
+  creerPartie, tourSuivant, lancerProjet, etapesMission, differerMission, apercuProjet, projetMission, projetsMission, effetObserve,
+  catalogueDecisions, proposerLoi, bilanMois,
   exporterPartie, importerPartie, encoderDefi, decoderDefi, VERSION_SAUVEGARDE,
 } from '../src/engine/index.js';
 
@@ -171,5 +172,69 @@ describe('mission d’initiation', () => {
     const r = creerPartie({ ...d, situation, ...donnees, mission: d.joueur.mission ? mission : null });
     expect(r.mission).toEqual(e.mission);
     expect(decoderDefi(encoderDefi({ graine: 1, joueur: { nom: 'S', parti: 'epr' } })).joueur.mission).toBeUndefined();
+  });
+});
+
+describe('consolidation (relecture) : plusieurs projets, bilan sans répétition', () => {
+  it('deux projets lancés pour la mission : les effets des deux sont attribués, le débrief les cumule', () => {
+    let e = partie(3);
+    e = lancerProjet(e, 'recrutement-soignants', e.mission.region, donnees);
+    e = lancerProjet(e, 'centres-sante', e.mission.region, donnees);
+    expect(projetsMission(e, donnees).map((p) => p.projetId)).toEqual(['recrutement-soignants', 'centres-sante']);
+    e = jouer(e, 6);
+    if (e.fin) return;
+    const d = e.mission.debrief;
+    expect(d.projets).toEqual(['recrutement-soignants', 'centres-sante']);
+    expect(d.coutEngage).toBeCloseTo(0.45, 6);
+    // Effet théorique et reste attendu : somme des deux projets (le second n'est plus ignoré)
+    const ps = projetsMission(e, donnees);
+    const theorique = ps.reduce((a, p) => a + Math.round(p.def.effets.sante * p.efficacite * p.facteur * 10) / 10, 0);
+    expect(d.effetTheorique).toBeCloseTo(theorique, 1);
+    expect(d.restantAttendu).toBeCloseTo(theorique - d.effetObserve, 1);
+    expect(d.finMontee).toBe(Math.max(...ps.map((p) => p.service + p.def.montee_mois - 1)));
+    // L'effet observé = somme des entrées du registre des deux sources
+    const somme = e.explications.filter((x) => ['projet:recrutement-soignants', 'projet:centres-sante'].includes(x.source) && x.region === e.mission.region && x.indicateur === 'sante').reduce((a, x) => a + x.delta, 0);
+    expect(d.effetObserve).toBeCloseTo(somme, 1);
+  });
+
+  it('un second projet lancé après la mise en service du premier compte dans l’effet observé', () => {
+    let e = partie(3);
+    e = lancerProjet(e, 'recrutement-soignants', e.mission.region, donnees);
+    e = jouer(e, 4); // le premier est en service et produit déjà
+    const avant = effetObserve(e, projetsMission(e, donnees));
+    e = lancerProjet(e, 'centres-sante', e.mission.region, donnees);
+    expect(effetObserve(e, projetsMission(e, donnees))).toBe(avant); // lancer ne crée aucun effet
+    expect(etapesMission(e, donnees).find((s) => s.id === 'chantier').detail).toMatch(/2 projets/);
+  });
+
+  it('bilan du mois : un résultat (vote, mise en service, élection) n’apparaît jamais deux mois de suite', () => {
+    for (const graine of [1, 2, 3, 5, 8]) {
+      let e = partie(graine);
+      e = lancerProjet(e, 'recrutement-soignants', e.mission.region, donnees);
+      const loi = catalogueDecisions(e, donnees).find((x) => x.type === 'loi' && !x.raison);
+      e = proposerLoi(e, loi.id.slice(4), donnees);
+      let precedent = new Set();
+      for (let i = 0; i < 8 && !e.fin; i++) {
+        e = tourSuivant(e, donnees);
+        const b = bilanMois(e, donnees);
+        for (const r of b.resultats) expect(precedent.has(r), `graine ${graine}, mois ${e.tour} : « ${r} » déjà montré le mois précédent`).toBe(false);
+        // Les résultats du passage sont datés du mois affiché ; les décisions, du mois précédent
+        for (const r of b.resultats) expect(e.journal.some((j) => j.tour === e.tour && j.texte === r)).toBe(true);
+        precedent = new Set([...b.resultats, ...b.decisions]);
+      }
+    }
+  });
+
+  it('bilan du mois : le vote de l’Assemblée et la mise en service sont bien rapportés (pas seulement non répétés)', () => {
+    let e = partie(3);
+    e = lancerProjet(e, 'recrutement-soignants', e.mission.region, donnees);
+    const loi = catalogueDecisions(e, donnees).find((x) => x.type === 'loi' && !x.raison);
+    e = proposerLoi(e, loi.id.slice(4), donnees);
+    e = tourSuivant(e, donnees);
+    const b1 = bilanMois(e, donnees);
+    expect(b1.decisions.some((d) => d.includes('déposé'))).toBe(true);
+    expect(b1.resultats.some((r) => /Assemblée/.test(r))).toBe(true);
+    e = jouer(e, 2);
+    expect(bilanMois(e, donnees).resultats.some((r) => r.startsWith('Mise en service'))).toBe(true);
   });
 });

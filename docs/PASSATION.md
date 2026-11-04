@@ -20,6 +20,26 @@
 - **Règle apprise** : toujours lancer `npm run build` avant de commiter (CSS et `sw.js`). `npm test` le vérifie désormais.
 - **Restant (hors code)** : tests sur un vrai téléphone (APK de la CI), build iOS sur Mac, publication sur les stores, recoupement des fonctions des élus, citations vérifiées (0 aujourd'hui), équilibrage par de vraies parties jouées.
 
+## Partie courte « Douze mois pour convaincre » (Claude, branche `partie-courte`, à partir de `refonte-experience`)
+- **Dépendance** : la branche part de `refonte-experience` (PR #25, relue au commit `e15cc0b`) et contient aussi les skills de la PR #26
+  (`.agents/skills/attentes-proprietaire/SKILL.md` = version Codex + section « Choix des modèles » ; `demarrage/SKILL.md` identique).
+  Ordre de fusion conseillé : #25, puis #26, puis cette PR (conflit attendu sur `SKILL.md` : garder la version de cette branche, qui est un
+  sur-ensemble). Aucune fusion automatique.
+- **Lot 1 (consolidation de la refonte)** : `projetsMission` (tous les projets comptent), journal daté du mois affiché pour les résultats du
+  passage (`bilanMois` sans répétition), coût absent « non chiffré » ≠ « aucun », premier écran mobile traité par le bloc du scénario
+  (3,3 écrans → 2,6, bouton principal visible à l'arrivée). Tests dans `tests/mission.test.js` et `e2e/scenario.spec.js`.
+- **Lot 2 à 4** : `src/data/scenario.json`, `src/engine/scenario.js` (engagements, crises programmées, bilan, priorités, aperçu de
+  l'amendement, garde-fou), `turn.js` (crise programmée à la place du tirage), **sauvegarde v14** (`scenario`, migration v13 → v14 sans
+  activation rétroactive), défi `s: 1`, événement `maternite-fermee` (déclenchement par scénario uniquement), interface
+  (`src/ui/components/scenario.js`, `confirmations.js`, découverte, écran de fin, aperçu du compromis dans Parlement, toasts limités à deux).
+- **Simulations** (`node scripts/sim-partie-courte.mjs`, 5 partis × 10 graines, résultats de simulation et non preuve d'intérêt) :
+  constructive 39 complets / 11 partiels / 0 échec ; compromis 36 / 14 / 0 ; inaction 0 / 0 / 50 ; « tout lancer » 16 / 34 / 0 (garde-fou
+  financier dépassé). Matignon perdu à la présidentielle dans environ la moitié des parties (règle existante : vainqueur à plus de 60 d'écart).
+- **Tests** (commit `afc78a1`) : Vitest 207/207 (21 fichiers), Playwright 72/72 (ordinateur et mobile), `npm run build` et `npm run build:mobile` OK, CI verte.
+  Défaut préexistant corrigé au passage : l'onglet Parlement ne s'affichait plus dès qu'un texte était en navette (`r493` indéfini).
+- **À confirmer par le propriétaire** : durée réelle (10 à 20 minutes visées, non mesurée automatiquement), compréhension par un débutant
+  (parcours chronométré dans `docs/PARTIE-COURTE.md`), lecteur d'écran réel, appareil physique.
+
 ## Refonte de la première expérience (Claude, branche `refonte-experience`, PR #25 en brouillon)
 - **Fait** : « Découvrir en jouant » (mission d'initiation de 6 mois, même moteur), Bureau en trois questions, fiches comparables,
   bilan du mois, engagements, objectifs « départ → actuel / cible ». Détail : `docs/REFONTE-EXPERIENCE.md`.

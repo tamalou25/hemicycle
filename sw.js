@@ -1,6 +1,6 @@
 // FICHIER GÉNÉRÉ par scripts/generer-sw.js — ne pas modifier à la main.
 // Service worker : le jeu fonctionne hors ligne après une première visite.
-const CACHE = 'hemicycle-0d68bfcfef89';
+const CACHE = 'hemicycle-097f051ca573';
 const FICHIERS = [
   "./",
   "./index.html",
@@ -26,6 +26,7 @@ const FICHIERS = [
   "./src/data/politiques.json",
   "./src/data/projets.json",
   "./src/data/regions.json",
+  "./src/data/scenario.json",
   "./src/data/senat.json",
   "./src/data/situation.json",
   "./src/engine/bilan.js",
@@ -55,6 +56,7 @@ const FICHIERS = [
   "./src/engine/relations.js",
   "./src/engine/rng.js",
   "./src/engine/save.js",
+  "./src/engine/scenario.js",
   "./src/engine/secteurs.js",
   "./src/engine/share.js",
   "./src/engine/state.js",
@@ -67,6 +69,7 @@ const FICHIERS = [
   "./src/ui/components/carte.js",
   "./src/ui/components/carteLoi.js",
   "./src/ui/components/ceMois.js",
+  "./src/ui/components/confirmations.js",
   "./src/ui/components/decisions.js",
   "./src/ui/components/elections.js",
   "./src/ui/components/etatPays.js",
@@ -82,6 +85,7 @@ const FICHIERS = [
   "./src/ui/components/partage.js",
   "./src/ui/components/reactions.js",
   "./src/ui/components/relations.js",
+  "./src/ui/components/scenario.js",
   "./src/ui/components/secteurs.js",
   "./src/ui/components/toast.js",
   "./src/ui/components/vote.js",

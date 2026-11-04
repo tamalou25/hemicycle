@@ -53,3 +53,20 @@ description: Ce que veut le propriétaire d'Hémicycle (Gary) : vision du jeu, f
 3. `docs/PASSATION.md` mis à jour pour le sujet.
 4. PR en brouillon à jour (description, nombre de tests exact), CI vérifiée.
 5. Résumé court au format ci-dessus.
+
+## Choix des modèles (ajouté le 04/11/2026)
+- **Fable 5.1** (`claude-fable-5-1`) est le modèle principal souhaité pour piloter le travail.
+- Fable pilote, mais **délègue activement** les tâches plus simples à des sous-agents (outil `Agent`, paramètre `model`) avec le modèle le moins coûteux dont le niveau suffit, afin d'économiser le quota :
+
+| Modèle | Usage |
+|---|---|
+| `haiku` | Tâches simples et délimitées (recherche ciblée, renommage, vérification mécanique) |
+| `sonnet` | Développement courant, corrections, tests |
+| `opus` | Analyses difficiles, problèmes complexes, relectures exigeantes |
+| `fable` (fork) | Quand le contexte complet de la session est nécessaire |
+
+- Choisir selon la difficulté réelle, les capacités disponibles et le coût d'usage. Ne pas supposer qu'un modèle est toujours moins coûteux.
+- Ne pas demander l'accord du propriétaire pour chaque choix de modèle.
+- Éviter les délégations inutiles, la duplication des recherches et les longs comptes rendus de sous-agents.
+- Vérifier les résultats délégués avant de les intégrer : l'économie ne doit pas diminuer la qualité.
+- Limites : n'utiliser que les mécanismes réellement disponibles (`Agent` avec `model`, ou `subagent_type: "fork"`) ; ne jamais prétendre avoir changé de modèle si ce n'est pas possible ; le modèle de la session principale ne se change que par l'utilisateur (`/model`) ; si « Fable 5.1 » n'est pas reconnu, le signaler et conserver le modèle configuré ; n'activer aucune facturation API supplémentaire.

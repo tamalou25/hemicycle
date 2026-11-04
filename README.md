@@ -90,9 +90,14 @@ npm run build:css
 ## Fonctionnalités
 ### Première expérience (refonte)
 - **Découvrir en jouant** : une vraie partie prête en un choix (famille politique, aucune présélection), Premier ministre fictif, objectifs par défaut.
-- **Mission d'initiation (6 mois)** : améliorer l'accès aux soins dans la région au plus bas indice de jeu. Deux réponses comparables
-  (voie courte / investissement lent) ou « différer ». Étapes déduites de l'état réel du moteur ; débrief : réalisation, engagement
-  ou occasion manquée. Puis la même partie continue.
+- **Partie courte « Douze mois pour convaincre »** (10 à 20 minutes visées) : trois engagements publics jugés sur l'état réel au bout de 12 mois
+  (accès aux soins d'une région grâce à vos projets, une loi promulguée, un programme national qui produit ses premiers effets), un garde-fou
+  financier, des crises programmées aux mois 3 et 7, la présidentielle d'avril 2027 au mois 5. Conclusion : réussite complète, partielle ou
+  échec (distinct du score de bilan), puis « rejouer avec d'autres choix » (même graine) ou « poursuivre la simulation ».
+  Règles et limites : [`docs/PARTIE-COURTE.md`](docs/PARTIE-COURTE.md). L'ancienne mission d'initiation (6 mois) reste jouable sur les
+  sauvegardes v13 qui l'avaient.
+- **Comment jouer cette version** : `npm install` puis `npx serve .` (ou `python3 -m http.server`), ouvrir l'adresse affichée, cocher
+  l'avertissement, **Découvrir en jouant**, choisir une famille politique, **Commencer la découverte**.
 - **Bureau en trois questions** : Que se passe-t-il ? (bilan du mois, « Ce mois-ci », état du pays et ressources) ·
   Que puis-je faire ? (au plus 3 priorités, avec leur raison) · Qu'attends-je de mes décisions ? (engagements et échéances).
 - **Fiches détaillées** des lois, programmes et projets : coûts, délais, effets théoriques, étape institutionnelle, risques, lien aux objectifs.

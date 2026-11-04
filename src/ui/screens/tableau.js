@@ -16,6 +16,7 @@ import { briefing, satisfactionNationale, compterDecisions } from '../../engine/
 import { ongletDecisions, brancherDecisions, catalogue } from '../components/decisions.js';
 import { briefMandat } from '../components/objectifs.js';
 import { sectionMission, brancherMission } from '../components/mission.js';
+import { sectionScenario, sectionPriorites, brancherScenario } from '../components/scenario.js';
 import { sectionBilanMois, sectionEngagements } from '../components/bilanMois.js';
 import { panneauSecteurs } from '../components/secteurs.js';
 import { ongletCarte, brancherCarte, vueValide } from '../components/carte.js';
@@ -67,26 +68,32 @@ function lienDecisions(etat, ctx) {
     <button type="button" class="underline text-bleu min-h-[44px] px-2 font-semibold" data-aller-decisions>→ Décisions</button></p>`;
 }
 
-function ongletBureau(etat, ctx, donnees, points, brief) {
+function ongletBureau(etat, ctx, donnees, points, brief, prio) {
   const sat = etat.territoires ? satisfactionNationale(etat.territoires, ctx.regions.regions) : null;
-  const plfOuvert = etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
-  return `${sectionMission(etat, ctx)}${brief.html}
+  const scenario = !!etat.scenario;
+  // Scénario : les priorités du mois remplacent le briefing, le budget y figure déjà ; le brief du mandat long se replie
+  const plfOuvert = !scenario && etat.budget && etat.joueur.role === 'premier_ministre' && !etat.plf && !raisonRefusPLF(etat);
+  const mandat = scenario ? `<details class="mb-3" id="mandat-long"><summary class="min-h-[44px] flex items-center cursor-pointer font-semibold text-sm underline text-bleu">Votre mandat (${DUREE_MANDAT} mois) et ses objectifs</summary>${brief.html}</details>` : brief.html;
+  return `${scenario ? sectionScenario(etat, ctx) : sectionMission(etat, ctx)}${scenario ? '' : mandat}
     <section aria-labelledby="h-q1" class="mb-4">
       <h2 id="h-q1" class="font-serif font-bold text-xl mb-2">Que se passe-t-il ?</h2>
       ${sectionEvenement(etat, ctx)}
-      ${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
-        ${sectionEtatPays(etat, sat)}
+      ${scenario && etat.tour === etat.scenario.debut && !etat.evenement
+        ? `<details class="mb-2"><summary class="min-h-[44px] flex items-center cursor-pointer text-sm underline text-bleu">Premier mois : rien n’a encore bougé. État du pays au départ</summary>${sectionEtatPays(etat, sat)}</details>`
+        : `${sectionCeMois(etat, donnees, sectionBilanMois(etat, ctx))}
+        ${sectionEtatPays(etat, sat)}`}
     </section>
     <section aria-labelledby="h-brief" class="mb-4">
       <h2 id="h-brief" class="font-serif font-bold text-xl mb-2">Que puis-je faire ?</h2>
       ${plfOuvert ? '<p class="mb-3 border-l-4 border-laiton bg-[#FFF3C4] p-3" role="status"><strong>Budget à présenter avant décembre.</strong> <button type="button" class="underline text-bleu min-h-[44px]" data-aller-budget>Ouvrir l’onglet Budget</button></p>' : ''}
-      <ul class="grid md:grid-cols-3 gap-2 mb-1">${(() => { const vus = new Set(); return points.map((pt, i) => carteBriefing(pt, i, etat, vus)).join(''); })()}</ul>
+      ${scenario ? prio.html : `<ul class="grid md:grid-cols-3 gap-2 mb-1">${(() => { const vus = new Set(); return points.map((pt, i) => carteBriefing(pt, i, etat, vus)).join(''); })()}</ul>`}
       ${lienDecisions(etat, ctx)}
     </section>
     <section aria-labelledby="h-attendu" class="mb-4">
       <h2 id="h-attendu" class="font-serif font-bold text-xl mb-2">Qu’attends-je de mes décisions ?</h2>
       ${sectionEngagements(etat, ctx)}
     </section>
+    ${scenario ? mandat : ''}
     <div class="grid grid-cols-2 gap-2 items-start mb-4 [&>*]:!mb-0 [&>*:has([open])]:col-span-2 [&>details[open]]:col-span-2" id="details-bureau">
       ${sectionTousIndicateurs(etat, sat)}
       ${panneauSecteurs(etat, ctx)}
@@ -141,7 +148,8 @@ export function render(racine, etat, dispatch, ctx) {
   ctx.vue = vueValide(ctx.vue, etat);
   const brief = onglet === 'bureau' ? briefMandat(etat, { regions: ctx.regions, objectifs: ctx.objectifs },
     { liste: catalogue(etat, ctx), refusPLF: raisonRefusPLF(etat), dureeMandat: DUREE_MANDAT, seuilDefaite: SEUIL_DEFAITE, points: POINTS_PAR_OBJECTIF }) : null;
-  const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief)
+  const prio = onglet === 'bureau' && etat.scenario ? sectionPriorites(etat, ctx) : { html: '', liste: [] };
+  const contenu = onglet === 'bureau' ? ongletBureau(etat, ctx, donnees, points, brief, prio)
     : onglet === 'decisions' ? ongletDecisions(etat, ctx)
     : onglet === 'carte' ? ongletCarte(etat, ctx)
     : onglet === 'budget' ? sectionBudget(etat, ctx)
@@ -160,6 +168,7 @@ export function render(racine, etat, dispatch, ctx) {
   if (onglet === 'bureau') {
     brancherEvenement(racine, dispatch);
     brancherMission(racine, dispatch, etat);
+    brancherScenario(racine, dispatch, etat, prio.liste);
     // Pistes du mandat : simple navigation (aucune décision exécutée). Le filtre de Décisions est remplacé
     // pour qu'un ancien filtre (statut, secteur) ne masque pas le levier proposé.
     racine.querySelectorAll('[data-piste]').forEach((b) => b.addEventListener('click', () => {

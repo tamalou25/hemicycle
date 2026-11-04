@@ -1,4 +1,4 @@
-import { RESULTATS_MISSION } from '../../engine/index.js';
+import { RESULTATS_MISSION, RESULTATS_SCENARIO, ETATS_ENGAGEMENT } from '../../engine/index.js';
 import { esc, fmt, MOIS } from '../util.js';
 import { boutonPartage, zonePartage, brancherPartage } from '../components/partage.js';
 import { dateDuTour, evaluerFin, POINTS_PAR_OBJECTIF } from '../../engine/index.js';
@@ -31,6 +31,10 @@ export function render(racine, etat, dispatch, ctx) {
     ${etat.fin.texte ? `<p class="mt-1 text-doux">${esc(etat.fin.texte)}</p>` : ''}
     ${elu ? '<p class="mt-2 text-sm text-doux">Résultat issu d’un scrutin simulé, sans lien avec une élection réelle.</p>' : ''}
     ${etat.mission?.debrief ? `<p class="mt-3 text-sm border-l-4 border-laiton bg-carte p-2" id="fin-mission"><strong>Mission d’initiation :</strong> ${esc(RESULTATS_MISSION[etat.mission.debrief.resultat])}. Elle n’entre pas dans le score de bilan.</p>` : ''}
+    ${etat.scenario?.bilan ? `<section class="mt-3 text-sm border-l-4 border-laiton bg-carte p-2" id="fin-scenario" aria-labelledby="h-fin-scenario"><h2 id="h-fin-scenario" class="font-semibold">Scénario « Douze mois pour convaincre » : ${esc(RESULTATS_SCENARIO[etat.scenario.bilan.resultat])}</h2>
+      <p class="text-doux">${etat.scenario.bilan.tour < etat.scenario.echeance ? `Partie arrêtée au mois ${etat.scenario.bilan.tour}, avant l’échéance : conclusion sur ce qui a été fait.` : `Scénario conclu au mois ${etat.scenario.bilan.tour}.`} Le scénario n’entre pas dans le score de bilan.</p>
+      <ul class="mt-1">${etat.scenario.bilan.engagements.map((e) => `<li class="py-0.5"><span class="text-xs font-bold border rounded px-1.5 mr-1">${esc(ETATS_ENGAGEMENT[e.etat])}</span>${esc(e.titre)} <span class="text-doux">— ${esc(e.detail)}</span></li>`).join('')}</ul>
+      ${etat.scenario.bilan.roleChange ? '<p class="mt-1">Vous aviez quitté Matignon après la présidentielle.</p>' : ''}</section>` : ''}
     <div class="bg-carte border border-bord rounded-lg p-4 mt-4">
       <div class="flex justify-between items-baseline"><h2 class="font-serif font-bold text-xl">Score de bilan</h2><span class="text-2xl font-bold tabular-nums">${f.score}<span class="text-sm text-doux"> /100</span></span></div>
       <div class="h-3 bg-[#E8E1CD] rounded mt-2" role="meter" aria-label="Score de bilan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${f.score}" aria-valuetext="${f.score} sur 100"><div class="h-3 rounded" style="width:${f.score}%;background:${couleur}"></div></div>
@@ -51,6 +55,7 @@ export function render(racine, etat, dispatch, ctx) {
     ${sectionObj}
     <div class="mt-6 flex gap-3 flex-wrap">
       <button type="button" id="rejouer" class="btn btn-p">Rejouer</button>
+      ${etat.scenario ? '<button type="button" id="rejouer-scenario" class="btn btn-s">Rejouer ce scénario (même graine)</button>' : ''}
       <button type="button" id="export" class="btn btn-s">Exporter la partie</button>
       ${boutonPartage(etat)}
     </div>
@@ -58,5 +63,6 @@ export function render(racine, etat, dispatch, ctx) {
   </section>`;
   brancherPartage(racine, etat);
   racine.querySelector('#rejouer').addEventListener('click', () => dispatch({ type: 'rejouer' }));
+  racine.querySelector('#rejouer-scenario')?.addEventListener('click', () => dispatch({ type: 'rejouer-scenario' }));
   racine.querySelector('#export').addEventListener('click', () => dispatch({ type: 'exporter' }));
 }

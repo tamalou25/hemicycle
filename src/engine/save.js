@@ -21,6 +21,8 @@ export function importerPartie(texte) {
   if (etat.version === 11) etat = { ...etat, version: 12, evenementRegion: null };
   // v13 : mission d'initiation ; les anciennes parties n'en ont pas (aucune activation rétroactive)
   if (etat.version === 12) etat = { ...etat, version: 13, mission: null, objectifsInitiaux: {} };
+  // v14 : scénario « Douze mois pour convaincre » ; les anciennes parties n'en ont pas (aucune activation rétroactive)
+  if (etat.version === 13) etat = { ...etat, version: 14, scenario: null };
   if (etat.version !== VERSION_SAUVEGARDE) throw new Error('Version de sauvegarde incompatible.');
   if (typeof etat.joueur?.nom !== 'string' || !etat.joueur.nom.trim()) throw new Error('Sauvegarde incomplète.');
   for (const i of INDICATEURS) {
@@ -57,11 +59,45 @@ function assainirMission(m) {
     differe: nbOuNull(m.differe), statut: m.statut,
     debrief: d && m.statut === 'terminee' ? {
       tour: nb(d.tour), resultat: RESULTATS_MISSION.includes(d.resultat) ? d.resultat : 'manque',
-      projetId: chOuNull(d.projetId, 80), lance: nbOuNull(d.lance), service: nbOuNull(d.service), alea: chOuNull(d.alea, 200),
+      projetId: chOuNull(d.projetId, 80), projets: chaines(d.projets), lance: nbOuNull(d.lance), service: nbOuNull(d.service), alea: chOuNull(d.alea, 200),
       effetObserve: nb(d.effetObserve), effetTheorique: nb(d.effetTheorique), restantAttendu: nb(d.restantAttendu),
       finMontee: nbOuNull(d.finMontee), valeurInitiale: nb(d.valeurInitiale), valeurFinale: nbOuNull(d.valeurFinale),
       differe: nbOuNull(d.differe), roleChange: ROLES.includes(d.roleChange) ? d.roleChange : null,
       fin: chOuNull(d.fin, 30), coutEngage: nb(d.coutEngage),
+    } : null,
+  };
+}
+
+const RESULTATS_SCENARIO = ['complet', 'partiel', 'echec'];
+const ETATS_ENGAGEMENT = ['atteint', 'partiel', 'manque'];
+/** Scénario « Douze mois » (v14) : cadre, crises déclenchées et bilan éventuel ; null si absent ou invalide. */
+function assainirScenario(s) {
+  if (!s || typeof s !== 'object' || typeof s.region !== 'string' || !['en_cours', 'termine'].includes(s.statut)) return null;
+  const b = s.bilan && typeof s.bilan === 'object' && s.statut === 'termine' ? s.bilan : null;
+  const objet = (o) => (o && typeof o === 'object' && !Array.isArray(o) ? o : {});
+  return {
+    id: ch(s.id, 40), debut: nb(s.debut), echeance: nb(s.echeance), region: ch(s.region, 60),
+    indice: ['emploi', 'sante', 'transports'].includes(s.indice) ? s.indice : 'sante',
+    valeurInitiale: nb(s.valeurInitiale), roleInitial: ROLES.includes(s.roleInitial) ? s.roleInitial : 'premier_ministre',
+    loisInitiales: nb(s.loisInitiales), popularite: nb(s.popularite, 30), deficit: nb(s.deficit, 5),
+    crises: liste(s.crises, (c) => ({ id: ch(c.id, 80), tour: nb(c.tour) })), statut: s.statut,
+    bilan: b ? {
+      tour: nb(b.tour), resultat: RESULTATS_SCENARIO.includes(b.resultat) ? b.resultat : 'echec',
+      engagements: liste(b.engagements, (x) => ({
+        id: ch(x.id, 40), type: ch(x.type, 40), titre: ch(x.titre, 160), resume: ch(x.resume, 400), lever: ch(x.lever, 400),
+        etat: ETATS_ENGAGEMENT.includes(x.etat) ? x.etat : 'manque', valeur: nb(x.valeur), cible: nb(x.cible, 1), detail: ch(x.detail, 400),
+        engage: bool(x.engage), mesure: bool(x.mesure), effet: bool(x.effet), restantAttendu: nb(x.restantAttendu), finMontee: nbOuNull(x.finMontee),
+        projets: liste(x.projets, (p) => ({ projetId: ch(p.projetId, 60), titre: ch(p.titre, 120), lance: nb(p.lance), service: nb(p.service), statut: ch(p.statut, 20), alea: chOuNull(p.alea, 200), cout: nb(p.cout) })),
+        lois: chaines(x.lois), rejets: nb(x.rejets), enNavette: chOuNull(x.enNavette, 120), etape: chOuNull(x.etape, 30),
+        programmes: liste(x.programmes, (p) => ({ id: ch(p.id, 80), titre: ch(p.titre, 120), statut: ch(p.statut, 20), enService: nb(p.enService), coutAnnuel: nb(p.coutAnnuel), contrepartie: chOuNull(p.contrepartie, 300) })),
+      })),
+      crises: liste(b.crises, (c) => ({ id: ch(c.id, 80), tour: nb(c.tour), titre: ch(c.titre, 120), choix: nbOuNull(c.choix), libelle: chOuNull(c.libelle, 200), parDefaut: bool(c.parDefaut) })),
+      compromis: { accords: nb(objet(b.compromis).accords), accordsRefuses: nb(objet(b.compromis).accordsRefuses), amendements: nb(objet(b.compromis).amendements), recours493: nb(objet(b.compromis).recours493), censures: nb(objet(b.compromis).censures), budget: ['adopte', 'loi_speciale', 'aucun'].includes(objet(b.compromis).budget) ? b.compromis.budget : 'aucun' },
+      roleChange: ROLES.includes(b.roleChange) ? b.roleChange : null, fin: chOuNull(b.fin, 30),
+      gardeFou: b.gardeFou && typeof b.gardeFou === 'object' ? { indicateur: ch(b.gardeFou.indicateur, 20), hausseMax: nb(b.gardeFou.hausseMax, 1), debut: nb(b.gardeFou.debut), fin: nb(b.gardeFou.fin), hausse: nb(b.gardeFou.hausse), respecte: bool(b.gardeFou.respecte), texte: ch(b.gardeFou.texte, 300) } : null,
+      popularite: { debut: nb(objet(b.popularite).debut), fin: nb(objet(b.popularite).fin) }, deficit: { debut: nb(objet(b.deficit).debut), fin: nb(objet(b.deficit).fin) },
+      indice: { debut: nb(objet(b.indice).debut), fin: nbOuNull(objet(b.indice).fin) },
+      elections: liste(b.elections, (x) => ({ id: ch(x.id, 100), type: ch(x.type, 30), tour: nb(x.tour), vainqueur: chOuNull(x.vainqueur, 50) })),
     } : null,
   };
 }
@@ -103,6 +139,7 @@ function assainir(e) {
     historique: liste(e.historique, (x) => ({ tour: nb(x.tour), ...Object.fromEntries(INDICATEURS.map((i) => [i, nb(x[i])])) })),
     journal: liste(e.journal, (x) => ({ tour: nb(x.tour), type: ch(x.type, 30), texte: ch(x.texte, 300) })),
     mission: assainirMission(e.mission),
+    scenario: assainirScenario(e.scenario),
     objectifsInitiaux: nombres(e.objectifsInitiaux) ?? {},
     fin: e.fin && typeof e.fin === 'object' ? { type: ch(e.fin.type, 30), texte: ch(e.fin.texte, 300) } : null,
     sieges: nombres(e.sieges),
