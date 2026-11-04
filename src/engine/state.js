@@ -13,6 +13,7 @@ import { creerScenario } from './scenario.js';
 import { gouvernementInitial } from './presidence.js';
 import { economieInitiale } from './economie.js';
 import { diplomatieInitiale } from './diplomatie.js';
+import { defenseInitiale, disponibiliteForces } from './defense.js';
 
 const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
 
@@ -22,7 +23,7 @@ const borne = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
  * @param {object} p.situation  situation.json (indicateurs réels de départ)
  * @param {number} p.graine
  */
-export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null, scenario = null, economie = null, pays = null }) {
+export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, objectifs, mission = null, scenario = null, economie = null, pays = null, defense = null }) {
   if (!joueur?.nom?.trim()) throw new Error('Le personnage doit avoir un nom.');
   const ind = situation?.indicateurs ?? {};
   const ideologie = Object.fromEntries(AXES.map((a) => [a, borne(joueur.ideologie?.[a], -100, 100)]));
@@ -91,9 +92,11 @@ export function creerPartie({ joueur, situation, graine = 1, dateDepart, regions
     // Économie (lot 2) : filières, commerce extérieur, investissements ; null sans données
     economie: economieInitiale(economie),
     diplomatie: diplomatieInitiale(pays), diploCeMois: false, // lot 3 : partenaires simulés, null sans données
-    defense: null, difficulte: null, // lots 4 et 5
+    defense: defenseInitiale(defense), // lot 4 : équipement, engagements, null sans données
+    difficulte: null, // lot 5
   };
   // Population (E3) : calculée sur l'état initial complet
+  if (etat.defense) etat.defense = { ...etat.defense, disponibilite: disponibiliteForces(etat, defense).valeur };
   const avecGroupes = { ...etat, groupes: initialiserGroupes(etat, { regions, finances, groupes, groupesEquilibrage }), chocs: {} };
   // Valeurs de départ des objectifs (pour afficher départ, actuel et cible : la jauge n'est pas un progrès accompli)
   const complet = { ...avecGroupes, objectifsInitiaux: Object.fromEntries(evaluerObjectifs(avecGroupes, { objectifs, regions }).filter((o) => o.valeur != null).map((o) => [o.id, o.valeur])) };
@@ -115,7 +118,7 @@ export function etatTerritorial(regions, projets) {
 }
 
 /** Complète une partie qui n'a pas encore de territoires (sauvegarde antérieure à E1). */
-export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, economie, pays }) {
+export function assurerTerritoires(etat, { regions, projets, finances, groupes, groupesEquilibrage, politiques, partis, economie, pays, defense }) {
   let e = etat.territoires ? etat : { ...etat, ...etatTerritorial(regions, projets) };
   if (!e.budget && finances) e = { ...e, budget: budgetInitial(finances), plf: null, dernierPLF: null };
   if (!e.confianceRegions && e.territoires) e = { ...e, confianceRegions: confianceRegionsInitiale(e.territoires) };
@@ -125,5 +128,6 @@ export function assurerTerritoires(etat, { regions, projets, finances, groupes, 
   // Économie (lot 2) : une ancienne partie reçoit l'économie au niveau de départ (sans investissement rétroactif)
   if (!e.economie && economie) e = { ...e, economie: economieInitiale(economie) };
   if (!e.diplomatie && pays) e = { ...e, diplomatie: diplomatieInitiale(pays), diploCeMois: false };
+  if (!e.defense && defense) { const df = defenseInitiale(defense); e = { ...e, defense: { ...df, disponibilite: disponibiliteForces({ ...e, defense: df }, defense).valeur } }; }
   return e;
 }

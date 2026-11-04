@@ -336,3 +336,17 @@ describe('pays.json (lot 3)', () => {
     for (const k of ['convergence_mensuelle', 'proba_initiative', 'delai_initiative_pays', 'effet_sanction_echanges']) expect(typeof p.parametres[k]).toBe('number');
   });
 });
+
+describe('defense.json (lot 4)', () => {
+  const d = lire('defense.json');
+  it('état initial borné, paramètres présents, programmes et engagements avec coût, durée, contrepartie', () => {
+    expect(d.initial.equipement).toBeGreaterThanOrEqual(0); expect(d.initial.equipement).toBeLessThanOrEqual(100);
+    for (const k of ['usure_equipement', 'equipement_par_md_ecart', 'poids_equipement', 'poids_preparation', 'part_pib_cible', 'part_defense_du_poste', 'seuil_disponibilite_critique']) expect(typeof d.parametres[k]).toBe('number');
+    expect(d.parametres.poids_equipement + d.parametres.poids_preparation).toBeCloseTo(1, 5);
+    expect(new Set(d.programmes.map((p) => p.id)).size).toBe(d.programmes.length);
+    for (const p of d.programmes) { expect(p.cout_total_md).toBeGreaterThan(0); expect(p.delai_mois).toBeGreaterThanOrEqual(6); expect(p.contrepartie.length).toBeGreaterThan(10); expect((p.gain_equipement ?? 0) + (p.gain_preparation ?? 0)).toBeGreaterThan(0); }
+    for (const e of d.engagements) { expect(e.duree_mois).toBeGreaterThanOrEqual(1); expect(e.disponibilite).toBeLessThan(0); expect(e.contrepartie.length).toBeGreaterThan(10); }
+    expect(d.note).toMatch(/STRATÉGIQUE/);
+    for (const s of d.sources) { expect(s.url).toMatch(/^https?:\/\//); expect(s.date).toMatch(/^\d{4}-\d{2}/); }
+  });
+});
