@@ -254,3 +254,40 @@ describe('mission.json', () => {
     expect(typeof m.acteur.nom).toBe('string');
   });
 });
+
+describe('economie.json (lot 2)', () => {
+  const eco = lire('economie.json');
+  const carte = lire('carte-monde.json');
+  it('quatre filières, dépendances vers des filières connues, échanges positifs, paramètres présents', () => {
+    expect(Object.keys(eco.filieres)).toEqual(['energie', 'agriculture', 'industrie', 'services']);
+    for (const [id, f] of Object.entries(eco.filieres)) {
+      expect(f.production_md).toBeGreaterThan(0); expect(f.capacite_initiale).toBeGreaterThanOrEqual(100); expect(f.part_pib).toBeGreaterThan(0);
+      expect(eco.commerce.filieres[id].importations_md).toBeGreaterThanOrEqual(0); expect(eco.commerce.filieres[id].exportations_md).toBeGreaterThanOrEqual(0);
+    }
+    expect(Object.values(eco.filieres).reduce((s, f) => s + f.part_pib, 0)).toBeCloseTo(0.97, 1);
+    for (const deps of Object.values(eco.dependances)) for (const [g, c] of Object.entries(deps)) { expect(eco.filieres[g]).toBeTruthy(); expect(c).toBeGreaterThan(0); expect(c).toBeLessThan(1); }
+    for (const k of ['croissance_par_point_production', 'chomage_par_point_production', 'inflation_par_penurie', 'seuil_alerte_penurie', 'seuil_dependance']) expect(typeof eco.parametres[k]).toBe('number');
+  });
+  it('partenaires : identifiants uniques présents sur la carte du monde, parts bornées (somme ≤ 1 par filière)', () => {
+    const ids = eco.commerce.partenaires.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids) expect(carte.pays.some((p) => p.id === id), id).toBe(true);
+    for (const f of Object.keys(eco.filieres)) for (const cle of ['parts_importations', 'parts_exportations']) {
+      const total = eco.commerce.partenaires.reduce((s, p) => s + (p[cle][f] ?? 0), 0);
+      expect(total, `${cle} ${f}`).toBeLessThanOrEqual(1);
+      expect(total).toBeGreaterThan(0.3);
+    }
+  });
+  it('investissements : ids uniques, filière connue, coût, délai et contrepartie', () => {
+    expect(new Set(eco.investissements.map((i) => i.id)).size).toBe(eco.investissements.length);
+    for (const i of eco.investissements) {
+      expect(eco.filieres[i.filiere]).toBeTruthy(); expect(i.cout_total_md).toBeGreaterThan(0); expect(i.delai_mois).toBeGreaterThanOrEqual(6); expect(i.montee_mois).toBeGreaterThanOrEqual(1);
+      expect(i.contrepartie.length).toBeGreaterThan(10); expect(i.entretien_md).toBeGreaterThanOrEqual(0);
+      expect((i.gain_capacite ?? 0) > 0 || i.amortissement_penurie || i.reduction_dependance, i.id).toBeTruthy();
+    }
+  });
+  it('sources datées avec URL', () => {
+    expect(eco.date_collecte).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    for (const s of eco.sources) { expect(s.url).toMatch(/^https?:\/\//); expect(s.date).toMatch(/^\d{4}-\d{2}/); }
+  });
+});

@@ -68,6 +68,29 @@ export function ficheDecision(etat, item, donnees) {
       mission: false,
     };
   }
+  if (type === 'investissement') {
+    const inv = donnees.economie?.investissements?.find((x) => x.id === id);
+    if (!inv) return null;
+    const nom = donnees.economie.filieres[inv.filiere]?.nom ?? inv.filiere;
+    const pib = etat.budget?.pib ?? 2900;
+    return {
+      type, titre: inv.titre, description: inv.description, beneficiaires: null,
+      coutImmediatMd: null, coutAnnuelMd: Math.round((inv.cout_total_md / Math.max(1, inv.delai_mois / 12)) * 100) / 100, capital: 1,
+      premiersEffets: `après ${inv.delai_mois} mois de chantier, puis montée en charge sur ${inv.montee_mois} mois ; ensuite ${String(inv.entretien_md ?? 0).replace('.', ',')} Md€/an d’entretien`,
+      effets: [
+        ...(inv.gain_capacite ? [{ indicateur: `filiere:${inv.filiere}`, valeur: inv.gain_capacite, delaiMois: inv.delai_mois, duree: inv.montee_mois, favorable: true, libelle: `capacité ${nom}` }] : []),
+        { indicateur: 'deficit', valeur: Math.round((inv.cout_total_md / pib) * 100 * 100) / 100, delaiMois: 0, duree: inv.delai_mois, favorable: false },
+        ...(inv.amortissement_penurie ? [{ indicateur: 'penurie', valeur: -inv.amortissement_penurie * 100, delaiMois: inv.delai_mois, duree: inv.montee_mois, favorable: true, libelle: `pénuries ${nom} amorties (%)` }] : []),
+        ...Object.entries(inv.reduction_dependance ?? {}).map(([g, v]) => ({ indicateur: 'dependance', valeur: -v * 100, delaiMois: inv.delai_mois, duree: 1, favorable: true, libelle: `dépendance de ${nom} à ${donnees.economie.filieres[g]?.nom ?? g} (pts)` })),
+      ],
+      contrepartie: inv.contrepartie ?? null,
+      institution: 'Décision du gouvernement : pas de vote. Le coût du chantier s’étale sur sa durée et pèse sur le déficit ; une capacité supplémentaire remplace une partie des importations (l’autre part est structurelle).',
+      risques: [],
+      blocage: item.raison ?? null,
+      objectifs: liensObjectifs(etat, donnees, 'investissement', ['croissance', 'chomage', 'inflation']),
+      mission: false,
+    };
+  }
   if (type === 'projet') {
     const p = donnees.projets?.projets.find((x) => x.id === id);
     if (!p) return null;

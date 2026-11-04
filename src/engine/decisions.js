@@ -13,12 +13,13 @@ import { raisonRefusPLF } from './budgetEtat.js';
 import { raisonRefusDissolution } from './elections.js';
 import { raisonRefusProjet } from './projets.js';
 import { gouverne, raisonRefusNommer } from './presidence.js';
+import { raisonRefusInvestissement } from './economie.js';
 
 export const CATEGORIES = { nationale: 'Politiques nationales', territoriale: 'Projets territoriaux', exceptionnelle: 'Décisions exceptionnelles', negociation: 'Négociations' };
 export const SECTEURS_DECISION = {
   social: 'Social et logement', sante: 'Santé', education: 'Éducation', emploi: 'Emploi et économie', transports: 'Transports',
   energie: 'Énergie et environnement', securite: 'Sécurité et justice', defense: 'Défense', recherche: 'Recherche',
-  finances: 'Finances publiques', institutions: 'Institutions et Europe',
+  finances: 'Finances publiques', institutions: 'Institutions et Europe', agriculture: 'Agriculture et alimentation',
 };
 const THEME_LOI = { retraites: 'social', immigration: 'securite', fiscalite: 'finances', europe: 'institutions', ecologie: 'energie', securite: 'securite' };
 const SECTEUR_POLITIQUE = { logement: 'social', education: 'education', energie: 'energie', securite: 'securite', defense: 'defense', recherche: 'recherche' };
@@ -48,6 +49,17 @@ export function catalogueDecisions(etat, d) {
       cout: { capital: 1, mdAn: p.cout_annuel_md }, delai: `${p.delai_mois} mois, puis montée en charge sur ${p.montee_mois} mois`, contrepartie: p.contrepartie,
       statut: engage ? (engage.statut === 'en_oeuvre' ? 'fait' : 'en_cours') : undefined,
       raison: engage ? null : raisonRefusPolitique(etat, p, d.politiques), action: { type: 'politique', id: p.id } }));
+  }
+  // Investissements économiques (lot 2) : capacité d'une filière, coût sur plusieurs années, entretien
+  if (etat.economie && d.economie) {
+    const SECTEUR_FILIERE = { energie: 'energie', industrie: 'emploi', services: 'emploi', agriculture: 'agriculture' };
+    for (const inv of d.economie.investissements ?? []) {
+      const lance = (etat.economie.investissements ?? []).find((x) => x.id === inv.id);
+      res.push(item({ id: `investissement:${inv.id}`, categorie: 'nationale', type: 'investissement', secteur: SECTEUR_FILIERE[inv.filiere] ?? 'emploi', titre: inv.titre, resume: inv.description,
+        cout: { capital: 1, md: inv.cout_total_md, mdAn: inv.entretien_md || undefined }, delai: `${inv.delai_mois} mois de chantier, puis montée en charge sur ${inv.montee_mois} mois`, contrepartie: inv.contrepartie,
+        statut: lance ? (lance.statut === 'service' ? 'fait' : 'en_cours') : undefined,
+        raison: lance ? null : raisonRefusInvestissement(etat, inv, d.economie), action: { type: 'investissement', id: inv.id } }));
+    }
   }
   // Budget
   if (etat.budget) res.push(item({ id: 'budget:plf', categorie: 'nationale', type: 'budget', secteur: 'finances', titre: 'Projet de loi de finances', resume: 'Arbitrer dépenses et recettes de l’année.',
